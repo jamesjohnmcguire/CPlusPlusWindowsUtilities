@@ -1,0 +1,26 @@
+*.cod
+*.exp
+*.ilk
+*.ncb
+*.obj
+*.pdb
+*.sbr
+*.suo
+*.user
+*/Debug\*.*
+*/Debug/*.*
+*\Debug\*.*
+debug\*.*
+release\*.*
+Release\*.*
+obj\*.*
+bin\debug\*.*
+./Src/Bin/Debug/*.*
+.\Src\Bin\Debug\*.*
+./Debug/*.* ./Src/Bin
+Debug/*.* ./Src/Bin
+.\Debug\*.* .\Src\Bin
+Debug\*.* .\Src\Bin
+*/bin
+*/Bin
+*/obj
