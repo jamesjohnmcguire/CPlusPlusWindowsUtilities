@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Resource.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -218,6 +222,10 @@
 			</File>
 			<File
 				RelativePath=".\Registry.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Resource.h"
 				>
 			</File>
 			<File
