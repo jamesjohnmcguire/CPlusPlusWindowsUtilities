@@ -19,14 +19,14 @@
 /////////////////////////////////////////////////////////////////////////////
 // defines
 /////////////////////////////////////////////////////////////////////////////
-const ULONG CodePageShiftJis		= 932;		// ANSI/OEM - Japanese, Shift-JIS 
-const ULONG CodePageJis				= 50220;	// ISO 2022 Japanese with no halfwidth Katakana 
-const ULONG CodePage50221			= 50221;	// ISO 2022 Japanese with halfwidth Katakana 
+const ULONG CodePageShiftJis		= 932;		// ANSI/OEM - Japanese, Shift-JIS
+const ULONG CodePageJis				= 50220;	// ISO 2022 Japanese with no halfwidth Katakana
+const ULONG CodePage50221			= 50221;	// ISO 2022 Japanese with halfwidth Katakana
 const ULONG CodePage50222			= 50222;	// ISO 2022 Japanese JIS X 0201-1989
 const ULONG CodePageEucOfficial		= 51932;	// EUC - Japanese - doesn't work, at least on XP
 const ULONG CodePageEucUndocumented	= 20932;	// EUC - Japanese - undocumented, works on, at least, XP
-const ULONG CodePageUsAscii			= 20127;	// US-ASCII (7-bit) 
-const ULONG CodePageUtf8			= 65001;	// Unicode UTF-8 
+const ULONG CodePageUsAscii			= 20127;	// US-ASCII (7-bit)
+const ULONG CodePageUtf8			= 65001;	// Unicode UTF-8
 
 /////////////////////////////////////////////////////////////////////////////
 // APIs
@@ -95,7 +95,7 @@ GetDateFromYYMMDDHHMMSS(
 
 DllExport void
 GetDateFromTime_t(
-    time_t* time_t,
+	time_t* time_t,
 	TCHAR* formattedDate,
 	size_t len);
 #endif
