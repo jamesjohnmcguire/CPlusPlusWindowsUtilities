@@ -36,7 +36,7 @@ Registry::~Registry(void)
 // Delete
 /////////////////////////////////////////////////////////////////////////////
 LONG
-Registry::Delete(
+	Registry::Delete(
 	HKEY	hKeyRoot,
 	LPCTSTR	pszRegKeyPath,
 	LPCTSTR	pszSubKey,
@@ -46,19 +46,19 @@ Registry::Delete(
 	HKEY	hKey;
 
 	lRet = RegOpenKeyEx(	hKeyRoot,
-							pszRegKeyPath,
-							0,
-							KEY_READ,
-							&hKey);
+		pszRegKeyPath,
+		0,
+		KEY_READ,
+		&hKey);
 
 	if (ERROR_SUCCESS == lRet)
 	{
 		if (bOnlyIfEmpty)
 			lRet	= RegDeleteKey(	hKey,
-									pszSubKey );
+			pszSubKey );
 		else
 			lRet	= SHDeleteKey(	hKey,
-									pszSubKey );
+			pszSubKey );
 
 		RegCloseKey( hKey );
 	}
@@ -70,7 +70,7 @@ Registry::Delete(
 // GetDwordValue
 /////////////////////////////////////////////////////////////////////////////
 DWORD
-Registry::GetDwordValue(
+	Registry::GetDwordValue(
 	HKEY KeyRoot,
 	LPCTSTR KeyPath,
 	LPCTSTR KeyVariable)
@@ -80,19 +80,19 @@ Registry::GetDwordValue(
 	DWORD	RetunValue	= NULL;
 	DWORD	BufferSize	= sizeof(DWORD);
 	ReturnCode = RegOpenKeyEx(	KeyRoot,
-								KeyPath,
-								0,
-								KEY_READ,
-								&hKey);
+		KeyPath,
+		0,
+		KEY_READ,
+		&hKey);
 
 	if (ERROR_SUCCESS == ReturnCode)
 	{
 		ReturnCode	= RegQueryValueEx(	hKey,
-										KeyVariable,
-										0,
-										NULL,
-										(LPBYTE)&RetunValue,
-										&BufferSize);
+			KeyVariable,
+			0,
+			NULL,
+			(LPBYTE)&RetunValue,
+			&BufferSize);
 
 		RegCloseKey( hKey );
 	}
@@ -104,7 +104,7 @@ Registry::GetDwordValue(
 // GetSubKeyNames
 /////////////////////////////////////////////////////////////////////////////
 TCHAR**
-Registry::GetSubKeyNames(
+	Registry::GetSubKeyNames(
 	HKEY	KeyRoot,
 	TCHAR*	RegKey,
 	DWORD*	KeyCount)
@@ -115,25 +115,25 @@ Registry::GetSubKeyNames(
 	TCHAR**	KeyNames		= NULL;
 
 	lRet = RegOpenKeyEx(KeyRoot,
-						RegKey,
-						0,
-						KEY_READ,
-						&hKey);
+		RegKey,
+		0,
+		KEY_READ,
+		&hKey);
 
 	if (ERROR_SUCCESS == lRet)
 	{
 		lRet	= RegQueryInfoKey(	hKey,
-									NULL,
-									NULL,
-									NULL,
-									NULL,
-									NULL,
-									NULL,
-									&KeyValuesCount,
-									NULL,
-									NULL,
-									NULL,
-									NULL);
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			&KeyValuesCount,
+			NULL,
+			NULL,
+			NULL,
+			NULL);
 
 		if ((ERROR_SUCCESS == lRet) && (KeyValuesCount > 0))
 		{
@@ -144,18 +144,18 @@ Registry::GetSubKeyNames(
 				TCHAR	KeyName[MAX_KEY_LENGTH];
 				DWORD	KeyNameLength = MAX_KEY_LENGTH;
 
-				for (DWORD Index=0; Index < KeyValuesCount; Index++) 
+				for (DWORD Index=0; Index < KeyValuesCount; Index++)
 				{
 					KeyName[0] = '\0';
 					KeyNameLength = MAX_KEY_LENGTH;
 					lRet = RegEnumValue(hKey,
-										Index,
-										KeyName,
-										&KeyNameLength,
-										NULL,
-										NULL,
-										NULL,
-										NULL);
+						Index,
+						KeyName,
+						&KeyNameLength,
+						NULL,
+						NULL,
+						NULL,
+						NULL);
 
 					if (ERROR_SUCCESS == lRet)
 					{
@@ -175,7 +175,7 @@ Registry::GetSubKeyNames(
 // GetSubKeysCount
 /////////////////////////////////////////////////////////////////////////////
 DWORD
-Registry::GetSubKeysCount(
+	Registry::GetSubKeysCount(
 	HKEY KeyRoot,
 	LPCTSTR RegKey)
 {
@@ -184,25 +184,25 @@ Registry::GetSubKeysCount(
 	DWORD	KeyValuesCount	= 0;
 
 	lRet = RegOpenKeyEx(KeyRoot,
-						RegKey,
-						0,
-						KEY_READ,
-						&hKey);
+		RegKey,
+		0,
+		KEY_READ,
+		&hKey);
 
 	if (ERROR_SUCCESS == lRet)
 	{
 		lRet	= RegQueryInfoKey(	hKey,
-									NULL,
-									NULL,
-									NULL,
-									NULL,
-									NULL,
-									NULL,
-									&KeyValuesCount,
-									NULL,
-									NULL,
-									NULL,
-									NULL);
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			NULL,
+			&KeyValuesCount,
+			NULL,
+			NULL,
+			NULL,
+			NULL);
 
 		RegCloseKey( hKey );
 	}
@@ -214,7 +214,7 @@ Registry::GetSubKeysCount(
 // GetValue
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
-Registry::GetValue(
+	Registry::GetValue(
 	HKEY KeyRoot,
 	LPCTSTR RegKeyPath,
 	LPCTSTR RegKeyVar)
@@ -224,30 +224,30 @@ Registry::GetValue(
 	TCHAR*	StringValue	= NULL;
 	DWORD	BufferSize	= 0;
 	ReturnCode = RegOpenKeyEx(	KeyRoot,
-								RegKeyPath,
-								0,
-								KEY_READ,
-								&hKey);
+		RegKeyPath,
+		0,
+		KEY_READ,
+		&hKey);
 
 	if (ERROR_SUCCESS == ReturnCode)
 	{
 		ReturnCode	= RegQueryValueEx(	hKey,
-										RegKeyVar,
-										0,
-										NULL,
-										NULL,
-										&BufferSize);
+			RegKeyVar,
+			0,
+			NULL,
+			NULL,
+			&BufferSize);
 
 		if (ERROR_SUCCESS == ReturnCode)
 		{
 			StringValue = new TCHAR[BufferSize+1];
 
 			ReturnCode	= RegQueryValueEx(	hKey,
-											RegKeyVar,
-											0,
-											NULL,
-											(LPBYTE)StringValue,
-											&BufferSize);
+				RegKeyVar,
+				0,
+				NULL,
+				(LPBYTE)StringValue,
+				&BufferSize);
 		}
 
 		RegCloseKey( hKey );
@@ -260,7 +260,7 @@ Registry::GetValue(
 // GetValue
 /////////////////////////////////////////////////////////////////////////////
 LONG
-Registry::GetValue(
+	Registry::GetValue(
 	HKEY	hKeyRoot,
 	LPCTSTR	pszRegKeyPath,
 	LPCTSTR	pszRegKeyVar,
@@ -273,19 +273,19 @@ Registry::GetValue(
 	if (pszValue)
 	{
 		lRet = RegOpenKeyEx(	hKeyRoot,
-								pszRegKeyPath,
-								0,
-								KEY_READ,
-								&hKey);
+			pszRegKeyPath,
+			0,
+			KEY_READ,
+			&hKey);
 
 		if (ERROR_SUCCESS == lRet)
 		{
 			lRet	= RegQueryValueEx(	hKey,
-										pszRegKeyVar,
-										0,
-										NULL,
-										(LPBYTE)pszValue,
-										&dwValueBufSize );
+				pszRegKeyVar,
+				0,
+				NULL,
+				(LPBYTE)pszValue,
+				&dwValueBufSize );
 
 			RegCloseKey( hKey );
 		}
@@ -298,7 +298,7 @@ Registry::GetValue(
 // SetValue
 /////////////////////////////////////////////////////////////////////////////
 LONG
-Registry::SetValue(
+	Registry::SetValue(
 	HKEY	hKeyRoot,
 	LPCTSTR	pszRegKeyPath,
 	LPCTSTR	pszRegKeyVar,
@@ -311,31 +311,31 @@ Registry::SetValue(
 	if (pszValue)
 	{
 		lRet = RegCreateKeyEx(	hKeyRoot,
-								pszRegKeyPath,
-								0,
-								NULL,
-								REG_OPTION_NON_VOLATILE,
-								KEY_ALL_ACCESS,
-								NULL,
-								&hKey,
-								&dwKeyOut);
+			pszRegKeyPath,
+			0,
+			NULL,
+			REG_OPTION_NON_VOLATILE,
+			KEY_ALL_ACCESS,
+			NULL,
+			&hKey,
+			&dwKeyOut);
 
 		/*
 		lRet = RegOpenKeyEx(	hKeyRoot,
-								pszRegKeyPath,
-								0,
-								KEY_READ | KEY_SET_VALUE,
-								&hKey);
-*/
+		pszRegKeyPath,
+		0,
+		KEY_READ | KEY_SET_VALUE,
+		&hKey);
+		*/
 		if (ERROR_SUCCESS == lRet)
 		{
 			//ShowDebug( _T("SetRegKeyValue-RegCreateKeyEx = ERROR_SUCCESS") );
 			lRet	= RegSetValueEx(	hKey,
-										pszRegKeyVar,
-										0,
-										REG_SZ,
-										(LPBYTE)pszValue,
-										(DWORD)(_tcslen(pszValue) + 1) * sizeof(TCHAR));
+				pszRegKeyVar,
+				0,
+				REG_SZ,
+				(LPBYTE)pszValue,
+				(DWORD)(_tcslen(pszValue) + 1) * sizeof(TCHAR));
 
 			//if (ERROR_SUCCESS == lRet)
 			//	ShowDebug( _T("SetRegKeyValue-RegSetValueEx = ERROR_SUCCESS") );
@@ -354,7 +354,7 @@ Registry::SetValue(
 // SetValue
 /////////////////////////////////////////////////////////////////////////////
 LONG
-Registry::SetValue(
+	Registry::SetValue(
 	HKEY KeyRoot,
 	LPCTSTR RegKeyPath,
 	LPCTSTR RegKeyVar,
@@ -365,23 +365,23 @@ Registry::SetValue(
 	DWORD	dwKeyOut;
 
 	lRet = RegCreateKeyEx(	KeyRoot,
-							RegKeyPath,
-							0,
-							NULL,
-							REG_OPTION_NON_VOLATILE,
-							KEY_ALL_ACCESS,
-							NULL,
-							&hKey,
-							&dwKeyOut);
+		RegKeyPath,
+		0,
+		NULL,
+		REG_OPTION_NON_VOLATILE,
+		KEY_ALL_ACCESS,
+		NULL,
+		&hKey,
+		&dwKeyOut);
 
 	if (ERROR_SUCCESS == lRet)
 	{
 		lRet	= RegSetValueEx(hKey,
-								RegKeyVar,
-								0,
-								REG_DWORD,
-								(LPBYTE)&Value,
-								(DWORD)sizeof(DWORD));
+			RegKeyVar,
+			0,
+			REG_DWORD,
+			(LPBYTE)&Value,
+			(DWORD)sizeof(DWORD));
 
 		RegCloseKey( hKey );
 	}

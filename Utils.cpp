@@ -1,11 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
 // Utils.cpp
 //
-// Defines the entry point for the DLL application.
+// String and other common functions.
 //
-// Created: 2007-04-19
-//
-// Copyright (c) 2007-2010 by James John McGuire
+// Copyright (c) 2007-2015 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 
@@ -16,6 +14,7 @@
 #ifndef INSTALLHELPER_EXPORTS
 #define _CRTDBG_MAP_ALLOC
 #endif
+#include <string>
 #include <crtdbg.h>
 #include <stdlib.h>
 #include <shlobj.h>
@@ -23,7 +22,7 @@
 #include "Registry.h"
 
 #if defined _DEBUG
-	#define new new(_NORMAL_BLOCK,__FILE__, __LINE__)
+#define new new(_NORMAL_BLOCK,__FILE__, __LINE__)
 #endif
 
 #ifdef INSTALLHELPER_EXPORTS
@@ -34,12 +33,6 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #define DATE_FORMAT _T("%02d/%02d %d %02d:%02d")
-
-#ifdef BUILD_JAPAN
-static WORD g_LanguageId = LANG_JAPANESE;
-#else
-static WORD g_LanguageId = LANG_ENGLISH;
-#endif
 
 static HMODULE g_ResourceModule	= NULL;
 
@@ -54,42 +47,39 @@ BOOL CWinApp::InitInstance()
 	return TRUE;
 }
 
-
 /////////////////////////////////////////////////////////////////////////////
 // ConcatStreams
 // Caller is responsible for 'delete'ing the return stream.
 /////////////////////////////////////////////////////////////////////////////
-BYTE*
-ConcatStreams(
-	BYTE*	FirstStream,
-	DWORD	FirstStreamLength,
-	BYTE*	SecondStream,
-	DWORD	SecondStreamLength)
+BYTE* ConcatStreams(BYTE* firstStream, DWORD firstStreamLength,
+	BYTE* SecondStream, DWORD SecondStreamLength)
 {
-	BYTE*	ConcatStream	= NULL;
+	BYTE* ConcatStream	= NULL;
 
 	// if both null, nothing to do
-	if ((NULL != FirstStream) || (NULL != SecondStream))
+	if ((NULL != firstStream) || (NULL != SecondStream))
 	{
 		try
 		{
 			// even though we shouldn't assume these are strings, we want to insure
 			// the buffer is zero-terminated.
 			// there are some situations, where a memory blob is cast as a string.
-			DWORD	ConcatStreamLength = FirstStreamLength + SecondStreamLength + 2;
+			DWORD	ConcatStreamLength =
+				firstStreamLength + SecondStreamLength + 2;
 
 			ConcatStream = new BYTE[ConcatStreamLength];
 
 			SecureZeroMemory(ConcatStream, ConcatStreamLength);
-			errno_t ErrorCode = memcpy_s(ConcatStream, ConcatStreamLength, FirstStream, FirstStreamLength);
+			errno_t ErrorCode = memcpy_s(ConcatStream, ConcatStreamLength,
+				firstStream, firstStreamLength);
 			if ((ErrorCode == 0) || (ErrorCode == EINVAL))
 			{
-				BYTE* SecondPart = ConcatStream + FirstStreamLength;
+				BYTE* SecondPart = ConcatStream + firstStreamLength;
 
 				ErrorCode = memcpy_s(SecondPart,
-									ConcatStreamLength-FirstStreamLength,
-									SecondStream,
-									SecondStreamLength);
+					ConcatStreamLength - firstStreamLength,
+					SecondStream,
+					SecondStreamLength);
 
 				if ((ErrorCode != 0) && (ErrorCode != EINVAL))
 				{
@@ -110,6 +100,7 @@ ConcatStreams(
 			throw;
 		}
 	}
+
 	return ConcatStream;
 }
 
@@ -121,7 +112,7 @@ ConcatStreams(
 // Caller is responsible for 'delete'ing the string.
 /////////////////////////////////////////////////////////////////////////////
 char*
-ConcatStringsA(
+	ConcatStringsA(
 	const char*	FirstString,
 	const char*	SecondString)
 {
@@ -142,8 +133,8 @@ ConcatStringsA(
 			else
 			{
 				UINT	ConcatStringLength = (UINT)strlen(FirstString) +
-													(UINT)strlen(SecondString) +
-													1;
+					(UINT)strlen(SecondString) +
+					1;
 
 				ConcatString = new char[ConcatStringLength];
 
@@ -170,7 +161,7 @@ ConcatStringsA(
 // Caller is responsible for 'delete'ing the string.
 /////////////////////////////////////////////////////////////////////////////
 char* __cdecl
-ConcatStringsVA(
+	ConcatStringsVA(
 	const char*	FirstString,
 	const char*	SecondString,
 	...)
@@ -200,13 +191,13 @@ ConcatStringsVA(
 }
 
 WORD
-GetLanguageId()
+	GetLanguageId()
 {
 	return g_LanguageId;
 }
 
 void
-SetLanguageId(
+	SetLanguageId(
 	WORD	LangId,
 	HMODULE ResourceModule )
 {
@@ -220,39 +211,39 @@ SetLanguageId(
 // Some code pages don't support the converion flags
 /////////////////////////////////////////////////////////////////////////////
 bool
-AllowConversionFlags(
+	AllowConversionFlags(
 	ULONG CodePage)
 {
 	bool ReturnCode = true;
 
 	switch(CodePage)
 	{
-		case 50220:
-		case 50221:
-		case 50222:
-		case 50225:
-		case 50227:
-		case 50229:
-		case 52936:
-		case 54936:
-		case 57002:
-		case 57003:
-		case 57004:
-		case 57005:
-		case 57006:
-		case 57007:
-		case 57008:
-		case 57009:
-		case 57010:
-		case 57011:
-		case 65000:
-		case 65001:
-		case 42:
+	case 50220:
+	case 50221:
+	case 50222:
+	case 50225:
+	case 50227:
+	case 50229:
+	case 52936:
+	case 54936:
+	case 57002:
+	case 57003:
+	case 57004:
+	case 57005:
+	case 57006:
+	case 57007:
+	case 57008:
+	case 57009:
+	case 57010:
+	case 57011:
+	case 65000:
+	case 65001:
+	case 42:
 		{
 			ReturnCode = false;
 			break;
 		}
-		default:
+	default:
 		{
 			ReturnCode = true;
 			break;
@@ -277,7 +268,7 @@ AllowConversionFlags(
 // Exceptions:	None.
 /////////////////////////////////////////////////////////////////////////////
 DllExport char *
-GetMultiByteStringFromUnicodeString(
+	GetMultiByteStringFromUnicodeString(
 	LPCWSTR	UnicodeString,
 	ULONG	CodePage)
 {
@@ -295,13 +286,13 @@ GetMultiByteStringFromUnicodeString(
 			}
 
 			int MultiByteBufferSize = WideCharToMultiByte( CodePage,
-															0,
-															UnicodeString,
-															-1,
-															NULL,
-															0,
-															NULL,
-															NULL);
+				0,
+				UnicodeString,
+				-1,
+				NULL,
+				0,
+				NULL,
+				NULL);
 
 			MultiByteString = new char[MultiByteBufferSize];
 
@@ -319,13 +310,13 @@ GetMultiByteStringFromUnicodeString(
 
 			// If writing to UTF8, flags, default char and boolean flag must be NULL
 			nCharsWritten = WideCharToMultiByte(CodePage,
-												Flags,
-												UnicodeString,
-												-1,
-												MultiByteString,
-												MultiByteBufferSize,
-												NULL,
-												NULL);
+				Flags,
+				UnicodeString,
+				-1,
+				MultiByteString,
+				MultiByteBufferSize,
+				NULL,
+				NULL);
 
 			// If no chars were written and the buffer is not 0, error!
 			if (nCharsWritten == 0 && MultiByteBufferSize > 0)
@@ -356,11 +347,11 @@ GetMultiByteStringFromUnicodeString(
 }
 
 char*
-GetMultiByteString(
+	GetMultiByteString(
 	LPCTSTR UnicodeString)
 {
-// if this is not a Unicode build, just use the string itself.
-// this function is then essentially a NOP, but its stamped all over the place.
+	// if this is not a Unicode build, just use the string itself.
+	// this function is then essentially a NOP, but its stamped all over the place.
 #ifndef UNICODE
 	return UnicodeString;
 #else
@@ -369,7 +360,7 @@ GetMultiByteString(
 	if (NULL != UnicodeString)
 	{
 		MultiByteString = GetMultiByteStringFromUnicodeString(	UnicodeString,
-																-1);
+			-1);
 	}
 
 	return MultiByteString;
@@ -377,11 +368,11 @@ GetMultiByteString(
 }
 
 char*
-GetUtfMultiByteString(
+	GetUtfMultiByteString(
 	LPCTSTR UnicodeString)
 {
-// if this is not a Unicode build, just use the string itself.
-// this function is then essentially a NOP, but its stamped all over the place.
+	// if this is not a Unicode build, just use the string itself.
+	// this function is then essentially a NOP, but its stamped all over the place.
 #ifndef UNICODE
 	return UnicodeString;
 #else
@@ -390,7 +381,7 @@ GetUtfMultiByteString(
 	if (NULL != UnicodeString)
 	{
 		MultiByteString = GetMultiByteStringFromUnicodeString(	UnicodeString,
-																CP_UTF8);
+			CP_UTF8);
 	}
 
 	return MultiByteString;
@@ -398,21 +389,20 @@ GetUtfMultiByteString(
 }
 
 char*
-GetMultiByteString(
+	GetMultiByteString(
 	ULONG	CodePage,
 	LPCTSTR UnicodeString)
 {
-// if this is not a Unicode build, just use the string itself.
-// this function is then essentially a NOP, but its stamped all over the place.
+	// if this is not a Unicode build, just use the string itself.
+	// this function is then essentially a NOP, but its stamped all over the place.
 #ifndef UNICODE
 	return UnicodeString;
 #else
 	char* MultiByteString	= NULL;
 
 	if (NULL != UnicodeString) {
-
 		MultiByteString = GetMultiByteStringFromUnicodeString(	UnicodeString,
-																CodePage);
+			CodePage);
 	}
 
 	return MultiByteString;
@@ -433,7 +423,7 @@ GetMultiByteString(
 // Purpose:		Gets a Unicode string from a MultiByte string.
 /////////////////////////////////////////////////////////////////////////////
 int
-GetUnicodeStringFromMultiByteString(
+	GetUnicodeStringFromMultiByteString(
 	LPCSTR		szMultiByteString,
 	wchar_t*	szUnicodeString,
 	int			nUnicodeBufferSize,
@@ -468,11 +458,11 @@ GetUnicodeStringFromMultiByteString(
 			// When converting to UTF8, don't set any flags (see Q175392).
 			for (int codePageIndex = 0;;) {
 				nCharsWritten = MultiByteToWideChar(nCodePage,
-													Flags,
-													szMultiByteString,
-													-1,
-													szUnicodeString,
-													nUnicodeBufferSize+1);
+					Flags,
+					szMultiByteString,
+					-1,
+					szUnicodeString,
+					nUnicodeBufferSize+1);
 
 				if (nCharsWritten > 0 || alternativeCodePages[codePageIndex] == 0)
 					break;
@@ -485,7 +475,8 @@ GetUnicodeStringFromMultiByteString(
 		{
 			CString cError;
 			LPTSTR pszError = cError.GetBuffer();
-			_tprintf(_T("Exception: %s\r\n"), ex->GetErrorMessage(pszError, 3));
+			ex->GetErrorMessage(pszError, 3);
+			_tprintf(_T("Exception: %s\r\n"), pszError);
 			cError.ReleaseBuffer();
 			TRACE(_T("Controlled exception in MultiByteToWideChar!\n"));
 		}
@@ -510,7 +501,7 @@ GetUnicodeStringFromMultiByteString(
 // GetUnicodeString
 /////////////////////////////////////////////////////////////////////////////
 wchar_t*
-GetUnicodeString(
+	GetUnicodeString(
 	LPCSTR	MultiByteString)
 {
 	wchar_t*	UnicodeString	= NULL;
@@ -529,7 +520,7 @@ GetUnicodeString(
 // GetUnicodeString
 /////////////////////////////////////////////////////////////////////////////
 wchar_t*
-GetUnicodeString(
+	GetUnicodeString(
 	ULONG	CodePage,
 	LPCSTR	MultiByteString)
 {
@@ -546,7 +537,7 @@ GetUnicodeString(
 }
 
 char*
-GetStringCopyA(
+	GetStringCopyA(
 	const char*	SourceString)
 {
 	char* StringCopy = NULL;
@@ -576,7 +567,7 @@ GetStringCopyA(
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
-GetStringCopyAmount(
+	GetStringCopyAmount(
 	LPCTSTR	SourceString,
 	size_t	Amount)
 {
@@ -595,9 +586,9 @@ GetStringCopyAmount(
 			if (NULL != StringCopy)
 			{
 				_tcsncpy_s(	StringCopy,
-							Amount+1,
-							SourceString,
-							Amount);
+					Amount+1,
+					SourceString,
+					Amount);
 			}
 		}
 	}
@@ -611,7 +602,7 @@ GetStringCopyAmount(
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
 char*
-GetStringCopyAmountA(
+	GetStringCopyAmountA(
 	const char*	SourceString,
 	size_t		Amount)
 {
@@ -630,9 +621,9 @@ GetStringCopyAmountA(
 			if (NULL != StringCopy)
 			{
 				strncpy_s(	StringCopy,
-							Amount+1,
-							SourceString,
-							Amount);
+					Amount+1,
+					SourceString,
+					Amount);
 			}
 		}
 	}
@@ -644,7 +635,7 @@ GetStringCopyAmountA(
 // IsUtf8BomMark
 /////////////////////////////////////////////////////////////////////////////
 bool
-IsUtf8BomMark(
+	IsUtf8BomMark(
 	BYTE ByteInQuestion)
 {
 	bool	Utf8BomMark	= false;
@@ -663,7 +654,7 @@ IsUtf8BomMark(
 // delete returned buffer after use.
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
-GetBaseFileName(
+	GetBaseFileName(
 	LPCTSTR	FileName)
 {
 	TCHAR*	BaseFileName	= NULL;
@@ -694,17 +685,17 @@ GetBaseFileName(
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
-GetUserDataPath(
+	GetUserDataPath(
 	TCHAR*	FileName)
 {
 	TCHAR*	DataFilePath	= NULL;
 	TCHAR*	UserDataPath	= new TCHAR[MAX_PATH];
 
 	HRESULT	ResultCode	= SHGetFolderPath(	NULL,
-											CSIDL_PERSONAL|CSIDL_FLAG_CREATE,
-											NULL,
-											SHGFP_TYPE_CURRENT,
-											UserDataPath);
+		CSIDL_PERSONAL|CSIDL_FLAG_CREATE,
+		NULL,
+		SHGFP_TYPE_CURRENT,
+		UserDataPath);
 
 	if(FAILED(ResultCode))
 	{
@@ -722,13 +713,12 @@ GetUserDataPath(
 
 		if (NULL != UserDataPath)
 		{
-			delete UserDataPath;
+			delete[] UserDataPath;
 		}
 	}
 
 	return DataFilePath;
 }
-
 
 /////////////////////////////////////////////////////////////////////////////
 // GetWindowsDllPath
@@ -736,17 +726,17 @@ GetUserDataPath(
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
 LPCTSTR
-GetWindowsDllPath(
+	GetWindowsDllPath(
 	TCHAR*	FileName)
 {
 	TCHAR*	DataFilePath	= NULL;
 	TCHAR*	UserDataPath	= new TCHAR[MAX_PATH];
 
 	HRESULT	ResultCode	= SHGetFolderPath(	NULL,
-											CSIDL_WINDOWS|CSIDL_FLAG_CREATE,
-											NULL,
-											SHGFP_TYPE_CURRENT,
-											UserDataPath);
+		CSIDL_WINDOWS|CSIDL_FLAG_CREATE,
+		NULL,
+		SHGFP_TYPE_CURRENT,
+		UserDataPath);
 
 	if(FAILED(ResultCode))
 	{
@@ -764,7 +754,7 @@ GetWindowsDllPath(
 
 		if (NULL != UserDataPath)
 		{
-			delete UserDataPath;
+			delete[] UserDataPath;
 		}
 	}
 
@@ -796,7 +786,7 @@ LPCTSTR	GetFileNameTempPath(
 // ShowMessageString
 /////////////////////////////////////////////////////////////////////////////
 int
-ShowMessageString(
+	ShowMessageString(
 	LPCTSTR Title,
 	LPCTSTR Message,
 	UINT uType)
@@ -836,7 +826,7 @@ TCHAR*	StringSprintfInt(
 // GetTempFilePathName
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
-GetTempFilePathName(
+	GetTempFilePathName(
 	LPCTSTR	ApplicationName)
 {
 	TCHAR*	TempFileName	= new TCHAR[MAX_PATH];
@@ -857,7 +847,7 @@ GetTempFilePathName(
 // GetLastErrorInfo
 /////////////////////////////////////////////////////////////////////////////
 bool
-GetLastErrorInfo(
+	GetLastErrorInfo(
 	HMODULE	ModuleHandle)
 {
 	bool	bRet		= false;
@@ -873,12 +863,12 @@ GetLastErrorInfo(
 	}
 
 	dwRet	= FormatMessage(FormatFlags,
-							ModuleHandle,
-							dwErr,
-							MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-							reinterpret_cast<LPTSTR>(&pMsgBuffer),
-							0,
-							NULL);
+		ModuleHandle,
+		dwErr,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		reinterpret_cast<LPTSTR>(&pMsgBuffer),
+		0,
+		NULL);
 
 	if (pMsgBuffer)
 	{
@@ -896,7 +886,7 @@ GetLastErrorInfo(
 // ShowTestResult
 /////////////////////////////////////////////////////////////////////////////
 void
-ShowTestResult(
+	ShowTestResult(
 	TCHAR * TestName,
 	long TestResult)
 {
@@ -914,7 +904,7 @@ ShowTestResult(
 // ShowConditionResult
 /////////////////////////////////////////////////////////////////////////////
 void
-ShowConditionResult(
+	ShowConditionResult(
 	TCHAR * TestName,
 	long TestResult,
 	long ExpectedResult)
@@ -933,7 +923,7 @@ ShowConditionResult(
 // ShowConditionResultNot
 /////////////////////////////////////////////////////////////////////////////
 void
-ShowConditionResultNot(
+	ShowConditionResultNot(
 	TCHAR * TestName,
 	long TestResult,
 	long ExpectedResult)
@@ -952,7 +942,7 @@ ShowConditionResultNot(
 // ShowTestResultNot
 /////////////////////////////////////////////////////////////////////////////
 void
-ShowConditionResultNot(
+	ShowConditionResultNot(
 	TCHAR*	TestName,
 	void*	TestResult,
 	void*	ExpectedResult)
@@ -974,7 +964,7 @@ ShowConditionResultNot(
 // Caller is responsible for 'delete'ing the string.
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
-ConcatStrings(
+	ConcatStrings(
 	LPCTSTR	FirstString,
 	LPCTSTR	SecondString)
 {
@@ -995,8 +985,8 @@ ConcatStrings(
 			else
 			{
 				UINT	ConcatStringLength = (UINT)_tcslen(FirstString) +
-													(UINT)_tcslen(SecondString) +
-													1;
+					(UINT)_tcslen(SecondString) +
+					1;
 
 				ConcatString = new TCHAR[ConcatStringLength];
 
@@ -1020,7 +1010,7 @@ ConcatStrings(
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
-GetStringCopy(
+	GetStringCopy(
 	LPCTSTR	SourceString)
 {
 	TCHAR* StringCopy = NULL;
@@ -1046,7 +1036,7 @@ GetStringCopy(
 }
 
 TCHAR* __cdecl
-ConcatStringsV(
+	ConcatStringsV(
 	LPCTSTR	FirstString,
 	LPCTSTR	SecondString,
 	...)
@@ -1076,7 +1066,7 @@ ConcatStringsV(
 }
 
 bool
-IsEmailValid(const TCHAR* Address)
+	IsEmailValid(const TCHAR* Address)
 {
 	int				Count = 0;
 	const TCHAR*	c;

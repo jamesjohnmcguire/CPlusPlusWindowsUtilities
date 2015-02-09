@@ -20,8 +20,8 @@
 
 #include "utils.h"
 
-#if defined _DEBUG 
-	#define new new(_NORMAL_BLOCK,__FILE__, __LINE__) 
+#if defined _DEBUG
+#define new new(_NORMAL_BLOCK,__FILE__, __LINE__)
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ FileWrapper::~FileWrapper(void)
 // Append
 /////////////////////////////////////////////////////////////////////////////
 bool
-FileWrapper::Append(
+	FileWrapper::Append(
 	BYTE*	Contents,
 	DWORD	ContentsLength)
 {
@@ -61,12 +61,12 @@ FileWrapper::Append(
 	if ((NULL != m_FileName) && (NULL != Contents))
 	{
 		HANDLE	FileHandle	= CreateFile(m_FileName,
-										GENERIC_WRITE,
-										FILE_SHARE_READ | FILE_SHARE_WRITE,
-										0,
-										OPEN_ALWAYS,
-										0,
-										0);
+			GENERIC_WRITE,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,
+			0,
+			OPEN_ALWAYS,
+			0,
+			0);
 
 		if (INVALID_HANDLE_VALUE != FileHandle)
 		{
@@ -92,7 +92,7 @@ FileWrapper::Append(
 // Create
 /////////////////////////////////////////////////////////////////////////////
 bool
-FileWrapper::Create(
+	FileWrapper::Create(
 	BYTE*	Contents,
 	DWORD	ContentsLength)
 {
@@ -101,12 +101,12 @@ FileWrapper::Create(
 	if ((NULL != m_FileName) && (NULL != Contents))
 	{
 		HANDLE	FileHandle	= CreateFile(m_FileName,
-										GENERIC_WRITE,
-										FILE_SHARE_READ | FILE_SHARE_WRITE,
-										0,
-										CREATE_ALWAYS,
-										0,
-										0);
+			GENERIC_WRITE,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,
+			0,
+			CREATE_ALWAYS,
+			0,
+			0);
 
 		if (INVALID_HANDLE_VALUE != FileHandle)
 		{
@@ -130,7 +130,7 @@ FileWrapper::Create(
 // Read
 /////////////////////////////////////////////////////////////////////////////
 BYTE*
-FileWrapper::Read(
+	FileWrapper::Read(
 	DWORD*	ContentsLength)
 {
 	BYTE*	InputContents = NULL;
@@ -138,12 +138,12 @@ FileWrapper::Read(
 	if (NULL != m_FileName)
 	{
 		HANDLE	FileHandle	= CreateFile(m_FileName,
-										GENERIC_READ,
-										FILE_SHARE_READ | FILE_SHARE_WRITE,
-										0,
-										OPEN_EXISTING,
-										0,
-										0);
+			GENERIC_READ,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,
+			0,
+			OPEN_EXISTING,
+			0,
+			0);
 
 		if (INVALID_HANDLE_VALUE != FileHandle)
 		{
@@ -159,7 +159,7 @@ FileWrapper::Read(
 
 					SecureZeroMemory(InputContents, ContentsSize);
 
-					BOOL	ResultCode	= ReadFile(FileHandle, InputContents, ContentsSize, &BytesRead, NULL) ; 
+					BOOL	ResultCode	= ReadFile(FileHandle, InputContents, ContentsSize, &BytesRead, NULL) ;
 
 					CloseHandle(FileHandle);
 
@@ -179,19 +179,19 @@ FileWrapper::Read(
 // ReadText
 /////////////////////////////////////////////////////////////////////////////
 char*
-FileWrapper::ReadText(void)
+	FileWrapper::ReadText(void)
 {
 	char*	InputContents = NULL;
 
 	if (NULL != m_FileName)
 	{
 		HANDLE	FileHandle	= CreateFile(m_FileName,
-										GENERIC_READ,
-										FILE_SHARE_READ | FILE_SHARE_WRITE,
-										0,
-										OPEN_EXISTING,
-										0,
-										0);
+			GENERIC_READ,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,
+			0,
+			OPEN_EXISTING,
+			0,
+			0);
 
 		if (INVALID_HANDLE_VALUE != FileHandle)
 		{
@@ -207,7 +207,11 @@ FileWrapper::ReadText(void)
 
 					SecureZeroMemory(InputContents, ContentsSize);
 
-					ReadFile(FileHandle, InputContents, ContentsSize, &BytesRead, NULL) ; 
+					BOOL result = ReadFile(FileHandle, InputContents, ContentsSize, &BytesRead, NULL) ;
+
+					if (result == FALSE)
+					{
+					}
 
 					CloseHandle(FileHandle);
 				}
@@ -222,19 +226,19 @@ FileWrapper::ReadText(void)
 // ReadUnicodeText
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
-FileWrapper::ReadUnicodeText(void)
+	FileWrapper::ReadUnicodeText(void)
 {
 	TCHAR*	InputContents = NULL;
 
 	if (NULL != m_FileName)
 	{
 		HANDLE	FileHandle	= CreateFile(m_FileName,
-										GENERIC_READ,
-										FILE_SHARE_READ | FILE_SHARE_WRITE,
-										0,
-										OPEN_EXISTING,
-										0,
-										0);
+			GENERIC_READ,
+			FILE_SHARE_READ | FILE_SHARE_WRITE,
+			0,
+			OPEN_EXISTING,
+			0,
+			0);
 
 		if (INVALID_HANDLE_VALUE != FileHandle)
 		{
@@ -250,7 +254,11 @@ FileWrapper::ReadUnicodeText(void)
 
 					SecureZeroMemory(InputContents, ContentsSize);
 
-					ReadFile(FileHandle, InputContents, ContentsSize, &BytesRead, NULL) ; 
+					BOOL result = ReadFile(FileHandle, InputContents, ContentsSize, &BytesRead, NULL) ;
+
+					if (result == FALSE)
+					{
+					}
 
 					CloseHandle(FileHandle);
 				}
