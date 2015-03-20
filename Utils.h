@@ -4,9 +4,7 @@
 // Public header file for the Utils DLL
 // Utils contains commonly used functions.
 //
-// Created: 2008-07-09
-//
-// Copyright ©  2008-2010 by James John McGuire
+// Copyright (c) 2008 - 2015 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 #pragma once

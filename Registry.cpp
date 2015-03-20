@@ -3,9 +3,7 @@
 //
 // Represents the  Windows registry.
 //
-// Created: 2008-09-15
-//
-// Copyright ©  2008-2010 by James John McGuire
+// Copyright (c) 2008 - 2015 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 
@@ -69,71 +67,42 @@ LONG
 /////////////////////////////////////////////////////////////////////////////
 // GetDwordValue
 /////////////////////////////////////////////////////////////////////////////
-DWORD
-	Registry::GetDwordValue(
-	HKEY KeyRoot,
-	LPCTSTR KeyPath,
+DWORD Registry::GetDwordValue(HKEY KeyRoot, LPCTSTR KeyPath,
 	LPCTSTR KeyVariable)
 {
-	LONG	ReturnCode	= -1;
+	LONG	successCode	= -1;
 	HKEY	hKey;
 	DWORD	RetunValue	= NULL;
 	DWORD	BufferSize	= sizeof(DWORD);
-	ReturnCode = RegOpenKeyEx(	KeyRoot,
-		KeyPath,
-		0,
-		KEY_READ,
-		&hKey);
+	successCode = RegOpenKeyEx(KeyRoot, KeyPath, 0, KEY_READ, &hKey);
 
-	if (ERROR_SUCCESS == ReturnCode)
+	if (ERROR_SUCCESS == successCode)
 	{
-		ReturnCode	= RegQueryValueEx(	hKey,
-			KeyVariable,
-			0,
-			NULL,
-			(LPBYTE)&RetunValue,
-			&BufferSize);
+		successCode = RegQueryValueEx(hKey, KeyVariable, 0, NULL,
+			(LPBYTE)&RetunValue, &BufferSize);
 
 		RegCloseKey( hKey );
 	}
 
-	return RetunValue;
+	return successCode;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // GetSubKeyNames
 /////////////////////////////////////////////////////////////////////////////
-TCHAR**
-	Registry::GetSubKeyNames(
-	HKEY	KeyRoot,
-	TCHAR*	RegKey,
-	DWORD*	KeyCount)
+TCHAR** Registry::GetSubKeyNames(HKEY KeyRoot, TCHAR* RegKey, DWORD* KeyCount)
 {
-	LONG	lRet	= -1;
+	LONG	lRet = -1;
 	HKEY	hKey;
 	DWORD	KeyValuesCount	= 0;
-	TCHAR**	KeyNames		= NULL;
+	TCHAR**	KeyNames = NULL;
 
-	lRet = RegOpenKeyEx(KeyRoot,
-		RegKey,
-		0,
-		KEY_READ,
-		&hKey);
+	lRet = RegOpenKeyEx(KeyRoot, RegKey, 0, KEY_READ, &hKey);
 
 	if (ERROR_SUCCESS == lRet)
 	{
-		lRet	= RegQueryInfoKey(	hKey,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			&KeyValuesCount,
-			NULL,
-			NULL,
-			NULL,
-			NULL);
+		lRet = RegQueryInfoKey(hKey, NULL, NULL, NULL, NULL, NULL, NULL,
+			&KeyValuesCount, NULL, NULL, NULL, NULL);
 
 		if ((ERROR_SUCCESS == lRet) && (KeyValuesCount > 0))
 		{

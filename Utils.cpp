@@ -3,7 +3,7 @@
 //
 // String and other common functions.
 //
-// Copyright (c) 2007-2015 by James John McGuire
+// Copyright (c) 2007 - 2015 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 
@@ -31,6 +31,12 @@
 /////////////////////////////////////////////////////////////////////////////
 // Defines
 /////////////////////////////////////////////////////////////////////////////
+
+#ifdef BUILD_JAPAN
+static WORD g_LanguageId = LANG_JAPANESE;
+#else
+static WORD g_LanguageId = LANG_ENGLISH;
+#endif
 
 #define DATE_FORMAT _T("%02d/%02d %d %02d:%02d")
 
@@ -190,8 +196,7 @@ char* __cdecl
 	return	NewString;
 }
 
-WORD
-	GetLanguageId()
+WORD GetLanguageId()
 {
 	return g_LanguageId;
 }
@@ -705,7 +710,7 @@ TCHAR*
 		if (FileName[0] != '\\')
 		{
 			TCHAR*	TempUserDataPath = ConcatStrings(UserDataPath, _T("\\"));
-			delete UserDataPath;
+			delete[] UserDataPath;
 			UserDataPath	= TempUserDataPath;
 		}
 
@@ -746,7 +751,7 @@ LPCTSTR
 		if (FileName[0] != '\\')
 		{
 			TCHAR*	TempUserDataPath = ConcatStrings(UserDataPath, _T("\\"));
-			delete UserDataPath;
+			delete[] UserDataPath;
 			UserDataPath	= TempUserDataPath;
 		}
 

@@ -3,9 +3,7 @@
 //
 // Represents the  Windows registry.
 //
-// Created: 2008-09-15
-//
-// Copyright ©  2008-2010 by James John McGuire
+// Copyright (c) 2008 - 2015 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 #pragma once
