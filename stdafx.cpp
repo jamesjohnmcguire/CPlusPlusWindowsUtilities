@@ -1,4 +1,9 @@
-// Copyright (c) 2006 - 2015 by James John McGuire
+/////////////////////////////////////////////////////////////////////////////
+// $Id$
+//
+// Copyright (c) 2006-2015 by James John McGuire
+// All rights reserved.
+/////////////////////////////////////////////////////////////////////////////
 // stdafx.cpp : source file that includes just the standard includes
 // Utils.pch will be the pre-compiled header
 // stdafx.obj will contain the pre-compiled type information
