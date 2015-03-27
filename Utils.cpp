@@ -861,6 +861,8 @@ bool
 	DWORD	dwErr		= GetLastError();
 	DWORD	dwRet;
 	DWORD	FormatFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
+//	LPTSTR buffer = reinterpret_cast<LPTSTR>(&pMsgBuffer);
+	LPTSTR buffer = NULL;
 
 	if (NULL != ModuleHandle)
 	{
@@ -871,16 +873,15 @@ bool
 		ModuleHandle,
 		dwErr,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		reinterpret_cast<LPTSTR>(&pMsgBuffer),
+		(LPWSTR)&buffer,
 		0,
 		NULL);
 
-	if (NULL != pMsgBuffer)
+	if (NULL != buffer)
 	{
-		LPTSTR ErrorMsg = reinterpret_cast<LPTSTR>(pMsgBuffer);
-		OutputDebugString(ErrorMsg);
-		//TRACE(_T("Error: %s\r\n"), ErrorMsg);
-		_tprintf(_T("\tError: %s"), ErrorMsg);
+		OutputDebugString(buffer);
+		//TRACE(_T("Error: %s\r\n"), buffer);
+		_tprintf(_T("\tError: %s"), buffer);
 		LocalFree(pMsgBuffer);
 	}
 
