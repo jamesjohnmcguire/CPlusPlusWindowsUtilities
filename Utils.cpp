@@ -857,7 +857,7 @@ bool
 {
 	bool	bRet		= false;
 
-	LPVOID	pMsgBuffer;
+	LPVOID	pMsgBuffer = NULL;
 	DWORD	dwErr		= GetLastError();
 	DWORD	dwRet;
 	DWORD	FormatFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
@@ -875,7 +875,7 @@ bool
 		0,
 		NULL);
 
-	if (pMsgBuffer)
+	if (NULL != pMsgBuffer)
 	{
 		LPTSTR ErrorMsg = reinterpret_cast<LPTSTR>(pMsgBuffer);
 		OutputDebugString(ErrorMsg);

@@ -94,7 +94,7 @@ TCHAR** Registry::GetSubKeyNames(HKEY KeyRoot, TCHAR* RegKey, DWORD* KeyCount)
 {
 	LONG	lRet = -1;
 	HKEY	hKey;
-	DWORD	KeyValuesCount	= 0;
+	DWORD	KeyValuesCount = 0;
 	TCHAR**	KeyNames = NULL;
 
 	lRet = RegOpenKeyEx(KeyRoot, RegKey, 0, KEY_READ, &hKey);
@@ -132,46 +132,35 @@ TCHAR** Registry::GetSubKeyNames(HKEY KeyRoot, TCHAR* RegKey, DWORD* KeyCount)
 					}
 				}
 			}
+
+			*KeyCount = KeyValuesCount;
 		}
 		RegCloseKey( hKey );
 	}
 
-	*KeyCount = KeyValuesCount;
 	return KeyNames;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // GetSubKeysCount
 /////////////////////////////////////////////////////////////////////////////
-DWORD
-	Registry::GetSubKeysCount(
-	HKEY KeyRoot,
-	LPCTSTR RegKey)
+DWORD Registry::GetSubKeysCount(HKEY KeyRoot, LPCTSTR RegKey)
 {
 	LONG	lRet	= -1;
 	HKEY	hKey;
 	DWORD	KeyValuesCount	= 0;
 
-	lRet = RegOpenKeyEx(KeyRoot,
-		RegKey,
-		0,
-		KEY_READ,
-		&hKey);
+	lRet = RegOpenKeyEx(KeyRoot, RegKey, 0, KEY_READ, &hKey);
 
 	if (ERROR_SUCCESS == lRet)
 	{
-		lRet	= RegQueryInfoKey(	hKey,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			NULL,
-			&KeyValuesCount,
-			NULL,
-			NULL,
-			NULL,
-			NULL);
+		lRet	= RegQueryInfoKey(	hKey, NULL, NULL, NULL, NULL, NULL, NULL,
+			&KeyValuesCount, NULL, NULL, NULL, NULL);
+
+		if (ERROR_SUCCESS != lRet)
+		{
+			KeyValuesCount = 0;
+		}
 
 		RegCloseKey( hKey );
 	}
