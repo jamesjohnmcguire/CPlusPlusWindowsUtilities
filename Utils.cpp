@@ -1041,34 +1041,31 @@ TCHAR*
 	return StringCopy;
 }
 
-TCHAR* __cdecl
-	ConcatStringsV(
-	LPCTSTR	FirstString,
-	LPCTSTR	SecondString,
-	...)
+// The last parameter passed needs to be NULL
+TCHAR* __cdecl ConcatStringsV(LPCTSTR firstString, LPCTSTR secondString, ...)
 {
-	TCHAR*	NewString	= NULL;
-	va_list	Arguments;
+	TCHAR* newString = NULL;
+	va_list	arguments;
 
-	va_start( Arguments, SecondString );
+	va_start(arguments, secondString);
 
-	TCHAR*	OldString	= NewString = ConcatStrings(FirstString, SecondString);
+	TCHAR* oldString = newString = ConcatStrings(firstString, secondString);
 
-	TCHAR*	NextArg	= va_arg( Arguments, TCHAR*);
+	TCHAR* nextArg = va_arg(arguments, TCHAR*);
 
-	while (NULL != NextArg)
+	while (NULL != nextArg)
 	{
-		NewString	= ConcatStrings(OldString, NextArg);
+		newString = ConcatStrings(oldString, nextArg);
 
-		delete OldString;
-		OldString	= NewString;
+		delete oldString;
+		oldString = newString;
 
-		NextArg	= va_arg( Arguments, TCHAR*);
+		nextArg = va_arg(arguments, TCHAR*);
 	}
 
-	va_end( Arguments );
+	va_end(arguments);
 
-	return	NewString;
+	return newString;
 }
 
 bool
