@@ -3,7 +3,7 @@
 //
 // Encapsulation class for reading and writing files.
 //
-// Copyright (c) 2008 - 2015 by James John McGuire
+// Copyright © 2008 - 2016 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 #pragma once

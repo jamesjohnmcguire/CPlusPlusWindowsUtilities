@@ -3,7 +3,7 @@
 //
 // String and other common functions.
 //
-// Copyright (c) 2007 - 2015 by James John McGuire
+// Copyright © 2007 - 2016 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 
