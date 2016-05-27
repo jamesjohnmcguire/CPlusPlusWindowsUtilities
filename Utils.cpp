@@ -54,6 +54,54 @@ BOOL CWinApp::InitInstance()
 }
 
 /////////////////////////////////////////////////////////////////////////////
+// AllowConversionFlags
+//
+// Some code pages don't support the conversion flags
+/////////////////////////////////////////////////////////////////////////////
+bool
+AllowConversionFlags(
+	ULONG CodePage)
+{
+	bool ReturnCode = true;
+
+	switch (CodePage)
+	{
+	case 50220:
+	case 50221:
+	case 50222:
+	case 50225:
+	case 50227:
+	case 50229:
+	case 52936:
+	case 54936:
+	case 57002:
+	case 57003:
+	case 57004:
+	case 57005:
+	case 57006:
+	case 57007:
+	case 57008:
+	case 57009:
+	case 57010:
+	case 57011:
+	case 65000:
+	case 65001:
+	case 42:
+	{
+		ReturnCode = false;
+		break;
+	}
+	default:
+	{
+		ReturnCode = true;
+		break;
+	}
+	}
+
+	return ReturnCode;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // ConcatStreams
 // Caller is responsible for 'delete'ing the return stream.
 /////////////////////////////////////////////////////////////////////////////
@@ -111,16 +159,55 @@ BYTE* ConcatStreams(BYTE* firstStream, DWORD firstStreamLength,
 }
 
 /////////////////////////////////////////////////////////////////////////////
+// ConcatStrings
+// Caller is responsible for 'deleting the string.
+/////////////////////////////////////////////////////////////////////////////
+TCHAR* ConcatStrings(LPCTSTR FirstString, LPCTSTR SecondString)
+{
+	TCHAR*	ConcatString = NULL;
+
+	if ((NULL != FirstString) || (NULL != SecondString))
+	{
+		try
+		{
+			if (NULL == FirstString)
+			{
+				ConcatString = GetStringCopy(SecondString);
+			}
+			else if (NULL == SecondString)
+			{
+				ConcatString = GetStringCopy(FirstString);
+			}
+			else
+			{
+				UINT	ConcatStringLength = (UINT)_tcslen(FirstString) +
+					(UINT)_tcslen(SecondString) +
+					1;
+
+				ConcatString = new TCHAR[ConcatStringLength];
+
+				_tcscpy_s(ConcatString, ConcatStringLength, FirstString);
+				_tcscat_s(ConcatString, ConcatStringLength, SecondString);
+			}
+		}
+		catch (TCHAR* Exception)
+		{
+			// log
+			OutputDebugString(Exception);
+			throw;
+		}
+	}
+	return ConcatString;
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // ConcatStringsA
 //
 // Ascii version
 //
-// Caller is responsible for 'delete'ing the string.
+// Caller is responsible for deleting the string.
 /////////////////////////////////////////////////////////////////////////////
-char*
-	ConcatStringsA(
-	const char*	FirstString,
-	const char*	SecondString)
+char* ConcatStringsA(const char* FirstString, const char* SecondString)
 {
 	char*	ConcatString		= NULL;
 
@@ -162,15 +249,46 @@ char*
 /////////////////////////////////////////////////////////////////////////////
 // ConcatStringsVA
 //
-// Ascii version
+// The last parameter passed needs to be NULL
 //
-// Caller is responsible for 'delete'ing the string.
+// Caller is responsible for deleting the string.
 /////////////////////////////////////////////////////////////////////////////
-char* __cdecl
-	ConcatStringsVA(
-	const char*	FirstString,
-	const char*	SecondString,
-	...)
+TCHAR* __cdecl ConcatStringsV(LPCTSTR firstString, LPCTSTR secondString, ...)
+{
+	TCHAR* newString = NULL;
+	va_list	arguments;
+
+	va_start(arguments, secondString);
+
+	TCHAR* oldString = newString = ConcatStrings(firstString, secondString);
+
+	TCHAR* nextArg = va_arg(arguments, TCHAR*);
+
+	while (NULL != nextArg)
+	{
+		newString = ConcatStrings(oldString, nextArg);
+
+		delete oldString;
+		oldString = newString;
+
+		nextArg = va_arg(arguments, TCHAR*);
+	}
+
+	va_end(arguments);
+
+	return newString;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// ConcatStringsVA
+//
+// Ascii version
+// The last parameter passed needs to be NULL
+//
+// Caller is responsible for deleting the string.
+/////////////////////////////////////////////////////////////////////////////
+char* __cdecl ConcatStringsVA(const char* FirstString,
+	const char* SecondString, ...)
 {
 	char*	NewString	= NULL;
 	va_list	Arguments;
@@ -199,63 +317,6 @@ char* __cdecl
 WORD GetLanguageId()
 {
 	return g_LanguageId;
-}
-
-void
-	SetLanguageId(
-	WORD	LangId,
-	HMODULE ResourceModule )
-{
-	g_LanguageId = LangId;
-	g_ResourceModule = ResourceModule;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// AllowConversionFlags
-//
-// Some code pages don't support the converion flags
-/////////////////////////////////////////////////////////////////////////////
-bool
-	AllowConversionFlags(
-	ULONG CodePage)
-{
-	bool ReturnCode = true;
-
-	switch(CodePage)
-	{
-	case 50220:
-	case 50221:
-	case 50222:
-	case 50225:
-	case 50227:
-	case 50229:
-	case 52936:
-	case 54936:
-	case 57002:
-	case 57003:
-	case 57004:
-	case 57005:
-	case 57006:
-	case 57007:
-	case 57008:
-	case 57009:
-	case 57010:
-	case 57011:
-	case 65000:
-	case 65001:
-	case 42:
-		{
-			ReturnCode = false;
-			break;
-		}
-	default:
-		{
-			ReturnCode = true;
-			break;
-		}
-	}
-
-	return ReturnCode;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -373,27 +434,6 @@ char*
 }
 
 char*
-	GetUtfMultiByteString(
-	LPCTSTR UnicodeString)
-{
-	// if this is not a Unicode build, just use the string itself.
-	// this function is then essentially a NOP, but its stamped all over the place.
-#ifndef UNICODE
-	return UnicodeString;
-#else
-	char* MultiByteString	= NULL;
-
-	if (NULL != UnicodeString)
-	{
-		MultiByteString = GetMultiByteStringFromUnicodeString(	UnicodeString,
-			CP_UTF8);
-	}
-
-	return MultiByteString;
-#endif
-}
-
-char*
 	GetMultiByteString(
 	ULONG	CodePage,
 	LPCTSTR UnicodeString)
@@ -412,158 +452,6 @@ char*
 
 	return MultiByteString;
 #endif
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// GetUnicodeStringFromMultiByteString
-//
-// Returns:		int			num. of chars written (0 means error)
-// Parameters:
-//	char *		szMultiByteString	(IN)		Multi-byte input string
-//	wchar_t*	szUnicodeString		(OUT)		Unicode outputstring
-//	int			nUnicodeBufferSize	(IN)		Size of Unicode output buffer in chars(IN)
-//	ULONG		nCodePage			(IN)		Code page used to perform conversion
-//												Default = -1 (Get local code page).
-//
-// Purpose:		Gets a Unicode string from a MultiByte string.
-/////////////////////////////////////////////////////////////////////////////
-int
-	GetUnicodeStringFromMultiByteString(
-	LPCSTR		szMultiByteString,
-	wchar_t*	szUnicodeString,
-	int			nUnicodeBufferSize,
-	ULONG		nCodePage)
-{
-	bool	bOK = true;
-	int		nCharsWritten = 0;
-
-	if (szUnicodeString && szMultiByteString)
-	{
-		// If no code page specified, take default for system
-		if (nCodePage == -1)
-		{
-			nCodePage = GetACP();
-		}
-
-		DWORD Flags	= MB_PRECOMPOSED;
-
-		bool UseFlags	= AllowConversionFlags(nCodePage);
-
-		if (false == UseFlags)
-		{
-			Flags = 0;
-		}
-
-		try
-		{
-			// Zero out buffer first. NB: nUnicodeBufferSize is NUMBER OF CHARS, NOT BYTES!
-			memset((void*)szUnicodeString, '\0', sizeof(wchar_t) *
-				nUnicodeBufferSize);
-
-			// When converting to UTF8, don't set any flags (see Q175392).
-			for (int codePageIndex = 0;;) {
-				nCharsWritten = MultiByteToWideChar(nCodePage,
-					Flags,
-					szMultiByteString,
-					-1,
-					szUnicodeString,
-					nUnicodeBufferSize+1);
-
-				if (nCharsWritten > 0 || alternativeCodePages[codePageIndex] == 0)
-					break;
-
-				//If there a problem converting to a wide char with the given code page.
-				nCodePage = alternativeCodePages[codePageIndex++];
-			}
-		}
-		catch(CException *ex)
-		{
-			CString cError;
-			LPTSTR pszError = cError.GetBuffer();
-			ex->GetErrorMessage(pszError, 3);
-			_tprintf(_T("Exception: %s\r\n"), pszError);
-			cError.ReleaseBuffer();
-			TRACE(_T("Controlled exception in MultiByteToWideChar!\n"));
-		}
-	}
-
-	ASSERT(nCharsWritten > 0);
-
-	// Now fix nCharsWritten
-	if (nCharsWritten > 0)
-	{
-		nCharsWritten--;
-	}
-	else
-	{
-		GetLastErrorInfo(NULL);
-	}
-
-	return nCharsWritten;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// GetUnicodeString
-/////////////////////////////////////////////////////////////////////////////
-wchar_t*
-	GetUnicodeString(
-	LPCSTR	MultiByteString)
-{
-	wchar_t*	UnicodeString	= NULL;
-
-	if (NULL != MultiByteString)
-	{
-		size_t	StringLength = strlen(MultiByteString) + 1;
-		UnicodeString = new wchar_t[StringLength];
-		GetUnicodeStringFromMultiByteString(MultiByteString, UnicodeString, (int)StringLength, -1);
-	}
-
-	return UnicodeString;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// GetUnicodeString
-/////////////////////////////////////////////////////////////////////////////
-wchar_t*
-	GetUnicodeString(
-	ULONG	CodePage,
-	LPCSTR	MultiByteString)
-{
-	wchar_t*	UnicodeString	= NULL;
-
-	if (NULL != MultiByteString)
-	{
-		size_t	StringLength = strlen(MultiByteString) + 1;
-		UnicodeString = new wchar_t[StringLength];
-		GetUnicodeStringFromMultiByteString(MultiByteString, UnicodeString, (int)StringLength, CodePage);
-	}
-
-	return UnicodeString;
-}
-
-char*
-	GetStringCopyA(
-	const char*	SourceString)
-{
-	char* StringCopy = NULL;
-
-	if (NULL != SourceString)
-	{
-		BOOL BadString	= IsBadStringPtrA(SourceString,(UINT_PTR)-1);
-
-		if (FALSE == BadString)
-		{
-			size_t	SourceStringLength = strlen(SourceString) + 1;
-
-			StringCopy = new char[SourceStringLength];
-
-			if (NULL != StringCopy)
-			{
-				strcpy_s(StringCopy, SourceStringLength, SourceString);
-			}
-		}
-	}
-	return StringCopy;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -787,6 +675,176 @@ LPCTSTR	GetFileNameTempPath(
 	return FileNameTempPath;
 }
 
+char*
+GetStringCopyA(
+	const char*	SourceString)
+{
+	char* StringCopy = NULL;
+
+	if (NULL != SourceString)
+	{
+		BOOL BadString = IsBadStringPtrA(SourceString, (UINT_PTR)-1);
+
+		if (FALSE == BadString)
+		{
+			size_t	SourceStringLength = strlen(SourceString) + 1;
+
+			StringCopy = new char[SourceStringLength];
+
+			if (NULL != StringCopy)
+			{
+				strcpy_s(StringCopy, SourceStringLength, SourceString);
+			}
+		}
+	}
+	return StringCopy;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// GetUnicodeString
+/////////////////////////////////////////////////////////////////////////////
+wchar_t*
+GetUnicodeString(
+	LPCSTR	MultiByteString)
+{
+	wchar_t*	UnicodeString = NULL;
+
+	if (NULL != MultiByteString)
+	{
+		size_t	StringLength = strlen(MultiByteString) + 1;
+		UnicodeString = new wchar_t[StringLength];
+		GetUnicodeStringFromMultiByteString(MultiByteString, UnicodeString, (int)StringLength, -1);
+	}
+
+	return UnicodeString;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// GetUnicodeString
+/////////////////////////////////////////////////////////////////////////////
+wchar_t*
+GetUnicodeString(
+	ULONG	CodePage,
+	LPCSTR	MultiByteString)
+{
+	wchar_t*	UnicodeString = NULL;
+
+	if (NULL != MultiByteString)
+	{
+		size_t	StringLength = strlen(MultiByteString) + 1;
+		UnicodeString = new wchar_t[StringLength];
+		GetUnicodeStringFromMultiByteString(MultiByteString, UnicodeString, (int)StringLength, CodePage);
+	}
+
+	return UnicodeString;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// GetUnicodeStringFromMultiByteString
+//
+// Returns:		int			num. of chars written (0 means error)
+// Parameters:
+//	char *		szMultiByteString	(IN)		Multi-byte input string
+//	wchar_t*	szUnicodeString		(OUT)		Unicode outputstring
+//	int			nUnicodeBufferSize	(IN)		Size of Unicode output buffer in chars(IN)
+//	ULONG		nCodePage			(IN)		Code page used to perform conversion
+//												Default = -1 (Get local code page).
+//
+// Purpose:		Gets a Unicode string from a MultiByte string.
+/////////////////////////////////////////////////////////////////////////////
+int GetUnicodeStringFromMultiByteString(
+	LPCSTR		szMultiByteString,
+	wchar_t*	szUnicodeString,
+	int			nUnicodeBufferSize,
+	ULONG		nCodePage)
+{
+	bool	bOK = true;
+	int		nCharsWritten = 0;
+
+	if (szUnicodeString && szMultiByteString)
+	{
+		// If no code page specified, take default for system
+		if (nCodePage == -1)
+		{
+			nCodePage = GetACP();
+		}
+
+		DWORD Flags = MB_PRECOMPOSED;
+
+		bool UseFlags = AllowConversionFlags(nCodePage);
+
+		if (false == UseFlags)
+		{
+			Flags = 0;
+		}
+
+		try
+		{
+			// Zero out buffer first. NB: nUnicodeBufferSize is NUMBER OF CHARS, NOT BYTES!
+			memset((void*)szUnicodeString, '\0', sizeof(wchar_t) *
+				nUnicodeBufferSize);
+
+			// When converting to UTF8, don't set any flags (see Q175392).
+			for (int codePageIndex = 0;;) {
+				nCharsWritten = MultiByteToWideChar(nCodePage,
+					Flags,
+					szMultiByteString,
+					-1,
+					szUnicodeString,
+					nUnicodeBufferSize + 1);
+
+				if (nCharsWritten > 0 || alternativeCodePages[codePageIndex] == 0)
+					break;
+
+				//If there a problem converting to a wide char with the given code page.
+				nCodePage = alternativeCodePages[codePageIndex++];
+			}
+		}
+		catch (CException *ex)
+		{
+			CString cError;
+			LPTSTR pszError = cError.GetBuffer();
+			ex->GetErrorMessage(pszError, 3);
+			_tprintf(_T("Exception: %s\r\n"), pszError);
+			cError.ReleaseBuffer();
+			TRACE(_T("Controlled exception in MultiByteToWideChar!\n"));
+		}
+	}
+
+	ASSERT(nCharsWritten > 0);
+
+	// Now fix nCharsWritten
+	if (nCharsWritten > 0)
+	{
+		nCharsWritten--;
+	}
+	else
+	{
+		GetLastErrorInfo(NULL);
+	}
+
+	return nCharsWritten;
+}
+
+char* GetUtfMultiByteString(LPCTSTR UnicodeString)
+{
+	// if this is not a Unicode build, just use the string itself.
+	// this function is then essentially a NOP, but its stamped all over the place.
+#ifndef UNICODE
+	return UnicodeString;
+#else
+	char* MultiByteString = NULL;
+
+	if (NULL != UnicodeString)
+	{
+		MultiByteString = GetMultiByteStringFromUnicodeString(UnicodeString,
+			CP_UTF8);
+	}
+
+	return MultiByteString;
+#endif
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // ShowMessageString
 /////////////////////////////////////////////////////////////////////////////
@@ -966,51 +1024,6 @@ void
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// ConcatStrings
-// Caller is responsible for 'delete'ing the string.
-/////////////////////////////////////////////////////////////////////////////
-TCHAR*
-	ConcatStrings(
-	LPCTSTR	FirstString,
-	LPCTSTR	SecondString)
-{
-	TCHAR*	ConcatString		= NULL;
-
-	if ((NULL != FirstString) || (NULL != SecondString))
-	{
-		try
-		{
-			if (NULL == FirstString)
-			{
-				ConcatString = GetStringCopy(SecondString);
-			}
-			else if (NULL == SecondString)
-			{
-				ConcatString = GetStringCopy(FirstString);
-			}
-			else
-			{
-				UINT	ConcatStringLength = (UINT)_tcslen(FirstString) +
-					(UINT)_tcslen(SecondString) +
-					1;
-
-				ConcatString = new TCHAR[ConcatStringLength];
-
-				_tcscpy_s(ConcatString, ConcatStringLength, FirstString);
-				_tcscat_s(ConcatString, ConcatStringLength, SecondString);
-			}
-		}
-		catch(TCHAR* Exception)
-		{
-			// log
-			OutputDebugString(Exception);
-			throw;
-		}
-	}
-	return ConcatString;
-}
-
-/////////////////////////////////////////////////////////////////////////////
 // GetStringCopy
 //
 // delete after use.
@@ -1039,33 +1052,6 @@ TCHAR*
 	}
 
 	return StringCopy;
-}
-
-// The last parameter passed needs to be NULL
-TCHAR* __cdecl ConcatStringsV(LPCTSTR firstString, LPCTSTR secondString, ...)
-{
-	TCHAR* newString = NULL;
-	va_list	arguments;
-
-	va_start(arguments, secondString);
-
-	TCHAR* oldString = newString = ConcatStrings(firstString, secondString);
-
-	TCHAR* nextArg = va_arg(arguments, TCHAR*);
-
-	while (NULL != nextArg)
-	{
-		newString = ConcatStrings(oldString, nextArg);
-
-		delete oldString;
-		oldString = newString;
-
-		nextArg = va_arg(arguments, TCHAR*);
-	}
-
-	va_end(arguments);
-
-	return newString;
 }
 
 bool
@@ -1141,6 +1127,13 @@ bool
 
 	return true;
 }
+
+void SetLanguageId(WORD	LangId, HMODULE ResourceModule)
+{
+	g_LanguageId = LangId;
+	g_ResourceModule = ResourceModule;
+}
+
 #ifndef INSTALLHELPER_EXPORTS
 
 int GetDigitsFromString(char *str, int index)
