@@ -206,12 +206,14 @@
     <ClCompile Include="FileWrapper.cpp" />
     <ClCompile Include="Registry.cpp" />
     <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="SrcFile.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="StripStrings.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -219,7 +221,9 @@
     <ClInclude Include="FileWrapper.h" />
     <ClInclude Include="Registry.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SrcFile.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="StripStrings.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
