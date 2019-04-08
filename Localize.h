@@ -10,8 +10,8 @@ int	GetNextCharacterState(
 	TCHAR	cNextNonSpaceChar,
 	CString	csNextCharStream);
 int		GetNextNonWhiteSpaceChar(CString& cszBuffer);
-bool	IsHelp(int nCntParams, TCHAR** asParameters);
-int		LocalizeIt(TCHAR* pszPath);
+DllExport bool	IsHelp(int nCntParams, TCHAR** asParameters);
+DllExport int		LocalizeIt(TCHAR* pszPath);
 int		MainInit(void);
 bool	ProcessFile(LPCTSTR pszFileName);
 ULONGLONG	ReadFileIntoBuffer(LPCTSTR pszFileName, CString& cszBuffer);
