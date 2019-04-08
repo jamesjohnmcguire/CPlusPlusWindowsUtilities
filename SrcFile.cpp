@@ -109,6 +109,20 @@ bool CSrcFile::SetSrcFileName( LPCTSTR pszName /* = NULL */)
 		SetFilePath( pszName );	
 		bRet	= true;
 	}
+	else
+	{
+		if (m_cszPath.IsEmpty())
+			SetDefaultPath();
+
+		int intDelimiterIndex = m_cszPathName.GetLength() - m_cszPathName.ReverseFind(_TEXT('\\'));
+
+		m_cszPathName.Right(intDelimiterIndex);
+
+		intDelimiterIndex = m_cszPathName.ReverseFind(_TEXT('.'));
+
+		m_cszPathName.Left(intDelimiterIndex);
+		m_cszPathName += _T(".log");
+	}
 
 	return bRet;
 }
