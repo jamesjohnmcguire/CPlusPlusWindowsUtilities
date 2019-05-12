@@ -202,9 +202,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Base64.cpp" />
     <ClCompile Include="FileWrapper.cpp" />
+    <ClCompile Include="Localize.cpp" />
     <ClCompile Include="Registry.cpp" />
     <ClCompile Include="Resource.cpp" />
+    <ClCompile Include="SrcFile.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -214,9 +217,12 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Base64.h" />
     <ClInclude Include="FileWrapper.h" />
+    <ClInclude Include="Localize.h" />
     <ClInclude Include="Registry.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SrcFile.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
