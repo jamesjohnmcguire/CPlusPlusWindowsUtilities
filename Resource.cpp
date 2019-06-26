@@ -3,7 +3,7 @@
 //
 // Represents a resource module.
 //
-// Copyright © 2010 - 2016 by James John McGuire
+// Copyright © 2010 - 2019 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 #include "StdAfx.h"
