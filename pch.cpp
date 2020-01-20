@@ -1,12 +1,5 @@
-﻿/////////////////////////////////////////////////////////////////////////////
-// Copyright © 2009 - 2019 by James John McGuire
-// All rights reserved.
-/////////////////////////////////////////////////////////////////////////////
-// stdafx.cpp : source file that includes just the standard includes
-// Utils.pch will be the pre-compiled header
-// stdafx.obj will contain the pre-compiled type information
+// pch.cpp: source file corresponding to the pre-compiled header
 
-#include "stdafx.h"
+#include "pch.h"
 
-// TODO: reference any additional headers you need in STDAFX.H
-// and not in this file
+// When you are using pre-compiled headers, this source file is necessary for compilation to succeed.

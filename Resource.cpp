@@ -6,7 +6,7 @@
 // Copyright © 2010 - 2019 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
-#include "StdAfx.h"
+#include "pch.h"
 #include "Resource.h"
 #include "Utils.h"
 

@@ -1,7 +1,7 @@
 // Base64.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
+#include "pch.h"
 #include "Base64.h"
 
 #ifdef _DEBUG
