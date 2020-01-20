@@ -1060,7 +1060,7 @@ bool
 	int				Count = 0;
 	const TCHAR*	c;
 	const TCHAR*	Domain;
-	static TCHAR*	Rfc822Specials = _T("()<>@,;:\\\"[]");
+	const wchar_t*	Rfc822Specials = L"()<>@,;:\\\"[]";
 
 	// first we validate the length of the name and domain (name@domain)
 	// name must be no longer than 64 chars and domain must be no longer than 255 chars
