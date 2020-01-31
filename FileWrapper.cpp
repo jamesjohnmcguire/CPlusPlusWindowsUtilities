@@ -3,7 +3,7 @@
 //
 // Encapsulation class for reading and writing files.
 //
-// Copyright © 2008 - 2019 by James John McGuire
+// Copyright © 2007 - 2020 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 

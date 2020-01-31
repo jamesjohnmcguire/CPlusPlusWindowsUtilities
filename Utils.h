@@ -4,7 +4,7 @@
 // Public header file for the Utils DLL
 // Utils contains commonly used functions.
 //
-// Copyright © 2007 - 2019 by James John McGuire
+// Copyright © 2007 - 2020 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 #pragma once
