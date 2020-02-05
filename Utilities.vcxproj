@@ -110,7 +110,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\$(ProjectName).dll"</Command>
+      <Command>IF EXIST "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\NUL" copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\$(ProjectName).dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -140,7 +140,7 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\$(ProjectName).dll"</Command>
+      <Command>IF EXIST "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\NUL" copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\$(ProjectName).dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -162,7 +162,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\$(ProjectName).dll"</Command>
+      <Command>IF EXIST "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\NUL" copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\$(ProjectName).dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -184,7 +184,7 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\$(ProjectName).dll"</Command>
+      <Command>IF EXIST "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\NUL" copy /Y "$(TargetDir)$(ProjectName).dll" "$(SolutionDir)bin\$(Configuration)\$(Platform)\netcoreapp3.1\$(ProjectName).dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
