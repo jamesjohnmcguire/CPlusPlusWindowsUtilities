@@ -3,7 +3,7 @@
 //
 // Represents a resource module.
 //
-// Copyright © 2007 - 2020 by James John McGuire
+// Copyright © 2007 - 2021 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 #include "pch.h"

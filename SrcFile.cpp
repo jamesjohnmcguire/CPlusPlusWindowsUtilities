@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Copyright © 2007 - 2020 by James John McGuire
+// Copyright © 2007 - 2021 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
@@ -451,7 +451,7 @@ void CSrcFile::SetCodePage(IN const UINT nCodePage)
 
 void CSrcFile::SetClassName(LPCTSTR pszClassName)
 {
-    cszClassName  = pszClassName;
+	cszClassName  = pszClassName;
 }
 
 bool CSrcFile::SetLogPath(LPCTSTR pszPath)
