@@ -3,7 +3,7 @@
 //
 // Represents a resource module.
 //
-// Copyright © 2007 - 2022 by James John McGuire
+// Copyright © 2007 - 2023 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 #pragma once
