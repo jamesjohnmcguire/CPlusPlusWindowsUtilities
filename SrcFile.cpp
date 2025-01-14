@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////
-// Copyright © 2007 - 2024 by James John McGuire
+// Copyright ¬© 2007 - 2025 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
@@ -603,7 +603,7 @@ unsigned long CSrcFile::GetCharCount()
 	return nCharCount;
 }
 
-// Get the current userÅLs code page
+// Get the current user¬ÅLs code page
 UINT CSrcFile::GetCurrentLocaleCodePage()
 {
 	_TCHAR	szLocalCodePage[10];
