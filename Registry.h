@@ -38,7 +38,7 @@ class DllExport Registry
 				LPCTSTR	KeyVariable);
 			TCHAR** GetSubKeyNames(
 				HKEY KeyRoot,
-				TCHAR* RegKey,
+				const TCHAR* RegKey,
 				DWORD*	KeyCount);
 			DWORD GetSubKeysCount(
 				HKEY KeyRoot,

@@ -90,7 +90,8 @@ DWORD Registry::GetDwordValue(HKEY KeyRoot, LPCTSTR KeyPath,
 /////////////////////////////////////////////////////////////////////////////
 // GetSubKeyNames
 /////////////////////////////////////////////////////////////////////////////
-TCHAR** Registry::GetSubKeyNames(HKEY KeyRoot, TCHAR* RegKey, DWORD* KeyCount)
+TCHAR** Registry::GetSubKeyNames(
+	HKEY KeyRoot, const TCHAR* RegKey, DWORD* KeyCount)
 {
 	LONG	lRet = -1;
 	HKEY	hKey;
