@@ -22,7 +22,7 @@
     <CharacterSet>Unicode</CharacterSet>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <Keyword>Win32Proj</Keyword>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <ProjectGuid>{F2CC2CFA-F806-4022-9A85-1C5C86E733BB}</ProjectGuid>
     <RootNamespace>Utilities</RootNamespace>
     <UseOfMfc>Dynamic</UseOfMfc>
@@ -62,12 +62,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-
-	<PropertyGroup>
-		<IncludePath>$(SolutionDir)\include;$(IncludePath);$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-		<OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
-	</PropertyGroup>
-
+  <PropertyGroup>
+    <IncludePath>$(SolutionDir)\include;$(IncludePath);$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
+  </PropertyGroup>
   <PropertyGroup>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
