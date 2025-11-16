@@ -96,24 +96,20 @@
 		<ClInclude Include="Base64.h" />
 		<ClInclude Include="FileWrapper.h" />
 		<ClInclude Include="framework.h" />
-		<ClInclude Include="Localize.h" />
 		<ClInclude Include="pch.h" />
 		<ClInclude Include="Registry.h" />
 		<ClInclude Include="Resource.h" />
-		<ClInclude Include="SrcFile.h" />
 		<ClInclude Include="Utils.h" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ClCompile Include="Base64.cpp" />
 		<ClCompile Include="FileWrapper.cpp" />
-		<ClCompile Include="Localize.cpp" />
 		<ClCompile Include="pch.cpp">
 			<PrecompiledHeader>Create</PrecompiledHeader>
 		</ClCompile>
 		<ClCompile Include="Registry.cpp" />
 		<ClCompile Include="Resource.cpp" />
-		<ClCompile Include="SrcFile.cpp" />
 		<ClCompile Include="Utils.cpp" />
 	</ItemGroup>
 
