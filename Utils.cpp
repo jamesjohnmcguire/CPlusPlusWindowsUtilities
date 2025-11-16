@@ -20,6 +20,7 @@
 #include <shlobj.h>
 #include "Utils.h"
 #include "Registry.h"
+#include <time.h>
 
 #if defined _DEBUG
 #define new new(_NORMAL_BLOCK,__FILE__, __LINE__)
@@ -42,16 +43,7 @@ static WORD g_LanguageId = LANG_ENGLISH;
 
 static HMODULE g_ResourceModule	= NULL;
 
-CWinApp theApp;
-
 static ULONG alternativeCodePages[] = {CodePageUtf8, CodePageUsAscii, 0};
-
-BOOL CWinApp::InitInstance()
-{
-	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-
-	return TRUE;
-}
 
 /////////////////////////////////////////////////////////////////////////////
 // AllowConversionFlags
@@ -389,7 +381,7 @@ DllExport char *
 			{
 				TCHAR	ErrorMessage[256];
 				_stprintf_s(ErrorMessage, _T("\r\nError in WideCharToMultiByte: %d\r\n"), GetLastError());
-				ATLTRACE(ErrorMessage);
+				OutputDebugString(ErrorMessage);
 				MultiByteString[0]	= '\0';
 			}
 		}
@@ -406,7 +398,7 @@ DllExport char *
 	}
 	catch(...)
 	{
-		ATLTRACE(_T("Controlled exception in WideCharToMultiByte!\n"));
+		OutputDebugString(_T("Controlled exception in WideCharToMultiByte!\n"));
 	}
 
 	return MultiByteString;
@@ -800,18 +792,17 @@ int GetUnicodeStringFromMultiByteString(
 				nCodePage = alternativeCodePages[codePageIndex++];
 			}
 		}
-		catch (CException *ex)
+		catch (const std::exception& ex)
 		{
-			CString cError;
-			LPTSTR pszError = cError.GetBuffer();
-			ex->GetErrorMessage(pszError, 3);
-			_tprintf(_T("Exception: %s\r\n"), pszError);
-			cError.ReleaseBuffer();
-			TRACE(_T("Controlled exception in MultiByteToWideChar!\n"));
+			std::string errorMsg = ex.what();
+			std::wstring wErrorMsg(errorMsg.begin(), errorMsg.end());
+			OutputDebugString(wErrorMsg.c_str());
+		}
+		catch (...)
+		{
+			OutputDebugString(L"Unknown exception occurred\n");
 		}
 	}
-
-	ASSERT(nCharsWritten > 0);
 
 	// Now fix nCharsWritten
 	if (nCharsWritten > 0)
@@ -1172,4 +1163,15 @@ void GetDateFromTime_t(time_t* time_t, TCHAR* formattedDate, size_t len)
 	swprintf_s(formattedDate, len, DATE_FORMAT, tm.tm_mon + 1, tm.tm_mday, tm.tm_year + 1900, tm.tm_hour, tm.tm_min);
 }
 
+#endif
+
+#if !defined(_MSC_VER) && !defined(gmtime_s)
+// Fallback for non-MSVC compilers (e.g., MinGW, GCC, Clang)
+inline int gmtime_s(struct tm* _Tm, const time_t* _Time)
+{
+    struct tm* tmp = gmtime(_Time);
+    if (!tmp) return 1;
+    *_Tm = *tmp;
+    return 0;
+}
 #endif

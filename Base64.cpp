@@ -25,77 +25,68 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 {
 	int result = -1;
 
-	// initialize MFC and print and error on failure
-	if (!AfxWinInit(::GetModuleHandle(NULL), NULL, ::GetCommandLine(), 0))
+	HANDLE	hInputFile;
+	hInputFile = CreateFile(source,
+		GENERIC_READ,
+		FILE_SHARE_READ,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+
+	if (hInputFile == INVALID_HANDLE_VALUE)
 	{
-		// TODO: change error code to suit your needs
-		_tprintf(_T("Fatal Error: MFC initialization failed\n"));
+		_tprintf(_T("Could not open file (error %d)\n"), GetLastError());
 	}
 	else
 	{
-		HANDLE	hInputFile;
-		hInputFile = CreateFile(source,
-			GENERIC_READ,
-			FILE_SHARE_READ,
+		HANDLE	hOutputFile;
+		hOutputFile = CreateFile(destination,
+			GENERIC_WRITE,
+			0,
 			NULL,
-			OPEN_EXISTING,
+			OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL,
 			NULL);
 
-		if (hInputFile == INVALID_HANDLE_VALUE)
+		if (hOutputFile == INVALID_HANDLE_VALUE)
 		{
 			_tprintf(_T("Could not open file (error %d)\n"), GetLastError());
 		}
 		else
 		{
-			HANDLE	hOutputFile;
-			hOutputFile = CreateFile(destination,
-				GENERIC_WRITE,
-				0,
-				NULL,
-				OPEN_ALWAYS,
-				FILE_ATTRIBUTE_NORMAL,
+			LPVOID	pInputBuffer;
+			LPVOID	pOutputBuffer;
+			DWORD	dwBytesRead;
+
+			DWORD	dwFileSize = GetFileSize(hInputFile, NULL);
+
+			pInputBuffer = malloc(dwFileSize + 1);
+			pOutputBuffer = malloc(dwFileSize + 1);
+
+			int returnCode = ReadFile(hInputFile,
+				pInputBuffer,
+				dwFileSize,
+				&dwBytesRead,
 				NULL);
 
-			if (hOutputFile == INVALID_HANDLE_VALUE)
+			if (returnCode != 0)
 			{
-				_tprintf(_T("Could not open file (error %d)\n"), GetLastError());
-			}
-			else
-			{
-				LPVOID	pInputBuffer;
-				LPVOID	pOutputBuffer;
-				DWORD	dwBytesRead;
+				returnCode = ZenBase64Decode(
+					(char*)pInputBuffer,
+					(PBYTE)pOutputBuffer,
+					&dwBytesRead);
 
-				DWORD	dwFileSize = GetFileSize(hInputFile, NULL);
-
-				pInputBuffer = malloc(dwFileSize + 1);
-				pOutputBuffer = malloc(dwFileSize + 1);
-
-				int returnCode = ReadFile(hInputFile,
-					pInputBuffer,
-					dwFileSize,
-					&dwBytesRead,
-					NULL);
-
-				if (returnCode != 0)
+				if (returnCode == TRUE)
 				{
-					returnCode = ZenBase64Decode(
-						(char*)pInputBuffer,
-						(PBYTE)pOutputBuffer,
-						&dwBytesRead);
-
+					returnCode = WriteFile(hOutputFile,
+						pOutputBuffer,
+						dwBytesRead,
+						&dwBytesRead,
+						NULL);
 					if (returnCode == TRUE)
 					{
-						returnCode = WriteFile(hOutputFile,
-							pOutputBuffer,
-							dwBytesRead,
-							&dwBytesRead,
-							NULL);
-						if (returnCode == TRUE)
-						{
-							result = 1;
-						}
+						result = 1;
 					}
 				}
 			}

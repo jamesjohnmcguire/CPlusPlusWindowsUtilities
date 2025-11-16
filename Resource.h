@@ -12,6 +12,7 @@
 // Includes
 /////////////////////////////////////////////////////////////////////////////
 #include "Common.h"
+#include <string>
 
 class DllExport Resource
 {
@@ -21,8 +22,11 @@ class DllExport Resource
 		~Resource(void);
 
 		HMODULE GetResourceModule();
-		TCHAR* GetString(
+		std::wstring GetString(
 			UINT	ResourceId);
+		std::wstring LoadStringResource(
+			HINSTANCE hInstance,
+			UINT resourceId);
 		int ShowMessageString(
 			LPCTSTR Message,
 			UINT uType = MB_OK);

@@ -28,18 +28,9 @@ Resource::GetResourceModule()
 {
 	if (NULL == m_ResourceModule)
 	{
-		TCHAR*	ModuleName		= NULL;
-
 		if (NULL != m_ModulePath)
 		{
 			m_ResourceModule = LoadLibrary( m_ModulePath );
-
-			if (NULL != m_ResourceModule)
-			{
-				AfxSetResourceHandle(m_ResourceModule);
-
-				delete ModuleName;
-			}
 		}
 	}
 
@@ -53,12 +44,11 @@ Resource::GetResourceModule()
 //
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
-TCHAR*
+std::wstring
 Resource::GetString(
 	UINT	ResourceId)
 {
-	CString ResourceCstring;
-	TCHAR*	ResourceString = NULL;
+	std::wstring resourceString;
 
 	if (NULL == m_ResourceModule)
 	{
@@ -67,16 +57,21 @@ Resource::GetString(
 
 	if (NULL != m_ResourceModule)
 	{
-		//BOOL ResultCode = ResourceCstring.LoadString(Module, ResourceId, m_LanguageId);
-		BOOL ResultCode = ResourceCstring.LoadString(m_ResourceModule, ResourceId);
-
-		if (TRUE == ResultCode)
-		{
-			ResourceString	= GetStringCopy(ResourceCstring);
-		}
+		resourceString = LoadStringResource(m_ResourceModule, ResourceId);
 	}
 
-	return ResourceString;
+	return resourceString;
+}
+
+std::wstring Resource::LoadStringResource(HINSTANCE hInstance, UINT resourceId)
+{
+	wchar_t buffer[256];
+	int len = ::LoadString(hInstance, resourceId, buffer, _countof(buffer));
+
+	if (len > 0) {
+		return std::wstring(buffer);
+	}
+	return L"";  // or throw an exception
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -87,11 +82,11 @@ Resource::ShowMessage(
 	int TitleId,
 	int	StringId)
 {
-	TCHAR*	Title	= GetString(TitleId);
-	TCHAR*	Message	= GetString(StringId);
-	int ReturnCode	= MessageBox(GetActiveWindow(), Message, Title, MB_OK);
-	delete Title;
-	delete Message;
+	std::wstring Title = GetString(TitleId);
+	std::wstring Message = GetString(StringId);
+	LPCWSTR pTitle = Title.c_str();
+	LPCWSTR pMessage = Message.c_str();
+	int ReturnCode = MessageBox(GetActiveWindow(), pMessage, pTitle, MB_OK);
 
 	return ReturnCode;
 }
@@ -105,13 +100,14 @@ Resource::ShowMessageError(
 	LPCTSTR	Message,
 	int		StringId)
 {
-	TCHAR*	Title			= GetString(TitleId);
-	TCHAR*	ErrorMessage	= GetString(StringId);
-	CString CompleteMessage = Message;
-	int ReturnCode = MessageBox(GetActiveWindow(),
-		CompleteMessage + _T(": ") + ErrorMessage, Title, MB_OK);
-	delete Title;
-	delete ErrorMessage;
+	std::wstring Title = GetString(TitleId);
+	std::wstring ErrorMessage = GetString(StringId);
+	LPCWSTR pTitle = Title.c_str();
+
+	std::wstring CompleteMessage = std::wstring(Message) + L": " + ErrorMessage;
+	LPCWSTR pMessage = CompleteMessage.c_str();
+
+	int ReturnCode = MessageBox(GetActiveWindow(), pMessage, pTitle, MB_OK);
 
 	return ReturnCode;
 }
@@ -124,11 +120,12 @@ Resource::ShowMessageYesNo(
 	int TitleId,
 	int	StringId)
 {
-	TCHAR*	Title	= GetString(TitleId);
-	TCHAR*	Message	= GetString(StringId);
-	int ReturnCode	= MessageBox(GetActiveWindow(), Message, Title, MB_YESNO);
-	delete Title;
-	delete Message;
+	std::wstring Title = GetString(TitleId);
+	std::wstring Message = GetString(StringId);
+	LPCWSTR pTitle = Title.c_str();
+	LPCWSTR pMessage = Message.c_str();
+
+	int ReturnCode	= MessageBox(GetActiveWindow(), pMessage, pTitle, MB_YESNO);
 
 	return ReturnCode;
 }
