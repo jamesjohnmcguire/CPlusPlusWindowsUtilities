@@ -22,12 +22,6 @@
 		<ClCompile Include="Base64.cpp">
 			<Filter>Source Files</Filter>
 		</ClCompile>
-		<ClCompile Include="FileWrapper.cpp">
-			<Filter>Source Files</Filter>
-		</ClCompile>
-		<ClCompile Include="Localize.cpp">
-			<Filter>Source Files</Filter>
-		</ClCompile>
 		<ClCompile Include="pch.cpp">
 			<Filter>Source Files</Filter>
 		</ClCompile>
@@ -50,9 +44,6 @@
 			<Filter>Header Files</Filter>
 		</ClInclude>
 		<ClInclude Include="framework.h">
-			<Filter>Header Files</Filter>
-		</ClInclude>
-		<ClInclude Include="Localize.h">
 			<Filter>Header Files</Filter>
 		</ClInclude>
 		<ClInclude Include="pch.h">
