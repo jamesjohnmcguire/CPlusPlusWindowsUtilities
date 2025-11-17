@@ -449,10 +449,11 @@ bool	ProcessFile(LPCTSTR pszFileName)
 		PTSTR		pVarBuf = NULL;
 
 		bErrorCheck = cConfFile.Open();
+		const CString& projectPath = cConfFile.GetProjectPath();
 
 		if (bRet == FALSE)
 		{
-			_tprintf(_T("error opening file: %s\r\n"), cConfFile.cszPathName);
+			_tprintf(_T("error opening file: %s\r\n"), projectPath);
 		}
 		else
 		{
@@ -460,7 +461,7 @@ bool	ProcessFile(LPCTSTR pszFileName)
 
 			if (bRet == FALSE)
 			{
-				_tprintf(_T("error opening file: %s\r\n"), cSqlFile.cszPathName);
+				_tprintf(_T("error opening file: %s\r\n"), projectPath);
 			}
 			else
 			{

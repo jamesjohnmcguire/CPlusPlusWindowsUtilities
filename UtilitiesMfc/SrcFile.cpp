@@ -11,15 +11,13 @@ static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
-/*static*/ const UINT CSrcFile::modeWriteUnicode = 0x20000; // Add this flag to write in Unicode
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
 CSrcFile::CSrcFile()
 {
-	bIsUnicodeText = false;
+	isUnicodeText = false;
 	nFileCodePage = -1;
 
 	CStdioFile::CStdioFile( );
@@ -42,7 +40,7 @@ BOOL CSrcFile::Open()
 {
 	BOOL	bReturn = FALSE;
 
-	if (!cszPathName.IsEmpty())
+	if (!projectPath.IsEmpty())
 	{
 		//		UINT nOpenFlags =	CFile::typeText |
 		UINT nOpenFlags = CFile::typeBinary |
@@ -52,9 +50,9 @@ BOOL CSrcFile::Open()
 			CFile::shareDenyNone;
 
 		// Process any Unicode stuff
-		ProcessFlags(cszPathName, nOpenFlags);
+		ProcessFlags(projectPath, nOpenFlags);
 
-		bReturn = CStdioFile::Open(cszPathName,
+		bReturn = CStdioFile::Open(projectPath,
 			nOpenFlags);
 	}
 	return bReturn;
@@ -71,40 +69,36 @@ BOOL CSrcFile::Open(
 	return CStdioFile::Open(lpszFileName, nOpenFlags, pError);
 }
 
-UINT CSrcFile::ProcessFlags(const CString& sFilePath, UINT& nOpenFlags)
+UINT CSrcFile::ProcessFlags(const CString& filePath, UINT& openFlags)
 {
-	bIsUnicodeText = false;
+	isUnicodeText = false;
 
-	// If we have writeUnicode we must have write or writeRead as well
 #ifdef _DEBUG
-	if (nOpenFlags & CSrcFile::modeWriteUnicode)
+	// If we have writeUnicode we must have write or writeRead as well
+	if (openFlags & modeWriteUnicode)
 	{
-		ASSERT(nOpenFlags & CFile::modeWrite || nOpenFlags & CFile::modeReadWrite);
+		ASSERT(openFlags & CFile::modeWrite || openFlags & CFile::modeReadWrite);
 	}
 #endif
 
-	// If reading in text mode and not creating... ; fixed by Dennis Jeryd 6/8/03
-//	BOOL bTypeText =  nOpenFlags & CFile::typeText;
-	BOOL bCreate = nOpenFlags & CFile::modeCreate;
-	BOOL bNoTruncate = nOpenFlags & CFile::modeNoTruncate;
-	BOOL bModeWrite = nOpenFlags & CFile::modeWrite;
+	BOOL bCreate = openFlags & CFile::modeCreate;
+	BOOL bNoTruncate = openFlags & CFile::modeNoTruncate;
+	BOOL bModeWrite = openFlags & CFile::modeWrite;
 
-	//	if (bTypeText && (!bCreate || bNoTruncate) && !bModeWrite)
 	if ((!bCreate || bNoTruncate) && !bModeWrite)
 	{
-		bIsUnicodeText = IsFileUnicode(sFilePath);
+		isUnicodeText = IsFileUnicode(filePath);
 
 		// If it's Unicode, switch to binary mode
-		if (bIsUnicodeText)
+		if (isUnicodeText)
 		{
-			//nOpenFlags ^= CFile::typeText;
-			nOpenFlags |= CFile::typeBinary;
+			openFlags |= CFile::typeBinary;
 		}
 	}
 
-	nFlags = nOpenFlags;
+	fileOpenFlags = openFlags;
 
-	return nOpenFlags;
+	return openFlags;
 }
 
 size_t	CSrcFile::Read(LPCTSTR rString, UINT nCount)
@@ -129,16 +123,14 @@ size_t CSrcFile::Read(CString& rString, UINT nCount)
 	try
 	{
 		// If at position 0, discard byte-order mark before reading
-		if (!m_pStream || (GetPosition() == 0 && bIsUnicodeText))
+		if (!m_pStream || (GetPosition() == 0 && isUnicodeText))
 		{
 			wchar_t	cDummy;
 			//		Read(&cDummy, sizeof(_TCHAR));
 			CFile::Read(&cDummy, sizeof(wchar_t));
 		}
 
-		// If compiled for Unicode
-#ifdef _UNICODE
-		if (bIsUnicodeText)
+		if (isUnicodeText)
 		{
 			// Do standard stuff - Unicode to Unicode. Seems to work OK.
 			LPTSTR	pszBuffer = rString.GetBufferSetLength(nCount);
@@ -171,78 +163,6 @@ size_t CSrcFile::Read(CString& rString, UINT nCount)
 				}
 			}
 		}
-#else
-
-		if (!bIsUnicodeText)
-		{
-			// Do standard stuff -- read ANSI in ANSI
-			bReadData = CStdioFile::ReadString(rString);
-
-			// Get the current code page
-			UINT nLocaleCodePage = GetCurrentLocaleCodePage();
-
-			// If we got it OK...
-			if (nLocaleCodePage > 0)
-			{
-				// if file code page does not match the system code page, we need to do a double conversion!
-				if (nLocaleCodePage != (UINT)nFileCodePage)
-				{
-					int nStringBufferChars = rString.GetLength() + 1;
-
-					pszUnicodeString = new wchar_t[nStringBufferChars];
-
-					// Initialise to something safe
-					memset(pszUnicodeString, 0, sizeof(wchar_t) * nStringBufferChars);
-
-					// Convert to Unicode using the file code page
-					nChars = GetUnicodeStringFromMultiByteString(rString, pszUnicodeString, nStringBufferChars, nFileCodePage);
-
-					// Convert back to multibyte using the system code page
-					// (This doesn't really confer huge advantages except to avoid "mangling" of non-convertible special
-					// characters. So, if a file in the E.European code page is displayed on a system using the 
-					// western European code page, special accented characters which the system cannot display will be
-					// replaced by the default character (a hash or something), rather than being incorrectly mapped to
-					// other, western European accented characters).
-					if (nChars > 0)
-					{
-						// Calculate how much we need for the MB buffer (it might be larger)
-						nStringBufferChars = GetRequiredMultiByteLengthForUnicodeString(pszUnicodeString, nLocaleCodePage);
-						pszMultiByteString = new char[nStringBufferChars];
-
-						nChars = GetMultiByteStringFromUnicodeString(pszUnicodeString, pszMultiByteString, nStringBufferChars, nLocaleCodePage);
-						rString = (CString)pszMultiByteString;
-					}
-				}
-			}
-		}
-		else
-		{
-			pszUnicodeString = new wchar_t[nMAX_LINE_CHARS];
-
-			// Initialise to something safe
-			memset(pszUnicodeString, 0, sizeof(wchar_t) * nMAX_LINE_CHARS);
-
-			// Read as Unicode, convert to ANSI
-
-			// Bug fix by Dennis Jeryd 06/07/2003: initialise bReadData
-			bReadData = (NULL != fgetws(pszUnicodeString, nMAX_LINE_CHARS, m_pStream));
-
-			if (bReadData)
-			{
-				// Calculate how much we need for the multibyte string
-				int nRequiredMBBuffer = GetRequiredMultiByteLengthForUnicodeString(pszUnicodeString, nFileCodePage);
-				pszMultiByteString = new char[nRequiredMBBuffer];
-
-				nChars = GetMultiByteStringFromUnicodeString(pszUnicodeString, pszMultiByteString, nRequiredMBBuffer, nFileCodePage);
-
-				if (nChars > 0)
-				{
-					rString = (CString)pszMultiByteString;
-				}
-			}
-
-		}
-#endif
 
 		// Then remove end-of-line character if in Unicode text mode
 		if (bReadData)
@@ -298,16 +218,14 @@ BOOL CSrcFile::ReadString(CString& rString)
 	try
 	{
 		// If at position 0, discard byte-order mark before reading
-		if (!m_pStream || (GetPosition() == 0 && bIsUnicodeText))
+		if (!m_pStream || (GetPosition() == 0 && isUnicodeText))
 		{
 			wchar_t	cDummy;
 			//		Read(&cDummy, sizeof(_TCHAR));
 			CFile::Read(&cDummy, sizeof(wchar_t));
 		}
 
-		// If compiled for Unicode
-#ifdef _UNICODE
-		if (bIsUnicodeText)
+		if (isUnicodeText)
 		{
 			// Do standard stuff - Unicode to Unicode. Seems to work OK.
 			bReadData = CStdioFile::ReadString(rString);
@@ -335,78 +253,6 @@ BOOL CSrcFile::ReadString(CString& rString)
 				}
 			}
 		}
-#else
-
-		if (!bIsUnicodeText)
-		{
-			// Do standard stuff -- read ANSI in ANSI
-			bReadData = CStdioFile::ReadString(rString);
-
-			// Get the current code page
-			UINT nLocaleCodePage = GetCurrentLocaleCodePage();
-
-			// If we got it OK...
-			if (nLocaleCodePage > 0)
-			{
-				// if file code page does not match the system code page, we need to do a double conversion!
-				if (nLocaleCodePage != (UINT)nFileCodePage)
-				{
-					int nStringBufferChars = rString.GetLength() + 1;
-
-					pszUnicodeString = new wchar_t[nStringBufferChars];
-
-					// Initialise to something safe
-					memset(pszUnicodeString, 0, sizeof(wchar_t) * nStringBufferChars);
-
-					// Convert to Unicode using the file code page
-					nChars = GetUnicodeStringFromMultiByteString(rString, pszUnicodeString, nStringBufferChars, nFileCodePage);
-
-					// Convert back to multibyte using the system code page
-					// (This doesn't really confer huge advantages except to avoid "mangling" of non-convertible special
-					// characters. So, if a file in the E.European code page is displayed on a system using the 
-					// western European code page, special accented characters which the system cannot display will be
-					// replaced by the default character (a hash or something), rather than being incorrectly mapped to
-					// other, western European accented characters).
-					if (nChars > 0)
-					{
-						// Calculate how much we need for the MB buffer (it might be larger)
-						nStringBufferChars = GetRequiredMultiByteLengthForUnicodeString(pszUnicodeString, nLocaleCodePage);
-						pszMultiByteString = new char[nStringBufferChars];
-
-						nChars = GetMultiByteStringFromUnicodeString(pszUnicodeString, pszMultiByteString, nStringBufferChars, nLocaleCodePage);
-						rString = (CString)pszMultiByteString;
-					}
-				}
-			}
-		}
-		else
-		{
-			pszUnicodeString = new wchar_t[nMAX_LINE_CHARS];
-
-			// Initialise to something safe
-			memset(pszUnicodeString, 0, sizeof(wchar_t) * nMAX_LINE_CHARS);
-
-			// Read as Unicode, convert to ANSI
-
-			// Bug fix by Dennis Jeryd 06/07/2003: initialise bReadData
-			bReadData = (NULL != fgetws(pszUnicodeString, nMAX_LINE_CHARS, m_pStream));
-
-			if (bReadData)
-			{
-				// Calculate how much we need for the multibyte string
-				int nRequiredMBBuffer = GetRequiredMultiByteLengthForUnicodeString(pszUnicodeString, nFileCodePage);
-				pszMultiByteString = new char[nRequiredMBBuffer];
-
-				nChars = GetMultiByteStringFromUnicodeString(pszUnicodeString, pszMultiByteString, nRequiredMBBuffer, nFileCodePage);
-
-				if (nChars > 0)
-				{
-					rString = (CString)pszMultiByteString;
-				}
-			}
-
-		}
-#endif
 
 		// Then remove end-of-line character if in Unicode text mode
 		if (bReadData)
@@ -460,12 +306,17 @@ bool CSrcFile::SetLogPath(LPCTSTR pszPath)
 
 	if (pszPath && *pszPath != '\0')
 	{
-		cszPath   = pszPath;
+		projectPath = pszPath;
 
 		bRet	= true;
 	}
 
 	return bRet;
+}
+
+void CSrcFile::SetProjectPath(const CString& path)
+{
+	projectPath = path;
 }
 
 bool CSrcFile::SetSrcFileName( LPCTSTR pszName /* = NULL */)
@@ -474,23 +325,25 @@ bool CSrcFile::SetSrcFileName( LPCTSTR pszName /* = NULL */)
 
 	if (NULL != pszName)
 	{
-		cszPathName = pszName;
+		projectPath = pszName;
 		SetFilePath( pszName );	
 		bRet	= true;
 	}
 	else
 	{
-		if (cszPath.IsEmpty())
+		if (projectPath.IsEmpty())
+		{
 			SetDefaultPath();
+		}
 
-		int intDelimiterIndex = cszPathName.GetLength() - cszPathName.ReverseFind(_TEXT('\\'));
+		int intDelimiterIndex = projectPath.GetLength() - projectPath.ReverseFind(_TEXT('\\'));
 
-		cszPathName.Right(intDelimiterIndex);
+		projectPath.Right(intDelimiterIndex);
 
-		intDelimiterIndex = cszPathName.ReverseFind(_TEXT('.'));
+		intDelimiterIndex = projectPath.ReverseFind(_TEXT('.'));
 
-		cszPathName.Left(intDelimiterIndex);
-		cszPathName += _T(".log");
+		projectPath.Left(intDelimiterIndex);
+		projectPath += _T(".log");
 	}
 
 	return bRet;
@@ -500,15 +353,15 @@ void	CSrcFile::SetUnicode(bool bUnicode)
 {
 	if (bUnicode == true)
 	{
-		bIsUnicodeText = true;
+		isUnicodeText = true;
 
-		nFlags = nFlags | CSrcFile::modeWriteUnicode;
+		fileOpenFlags = fileOpenFlags | CSrcFile::modeWriteUnicode;
 	}
 	else
 	{
-		bIsUnicodeText = false;
+		isUnicodeText = false;
 
-		nFlags = nFlags ^ CSrcFile::modeWriteUnicode;
+		fileOpenFlags = fileOpenFlags ^ CSrcFile::modeWriteUnicode;
 	}
 }
 
@@ -586,12 +439,12 @@ unsigned long CSrcFile::GetCharCount()
 	if (m_pStream)
 	{
 		// Get size of chars in file
-		nCharSize = bIsUnicodeText ? sizeof(wchar_t) : sizeof(char);
+		nCharSize = isUnicodeText ? sizeof(wchar_t) : sizeof(char);
 
 		// If Unicode, remove byte order mark from count
 		nByteCount = GetLength();
 
-		if (bIsUnicodeText)
+		if (isUnicodeText)
 		{
 			nByteCount = nByteCount - sizeof(wchar_t);
 		}
@@ -642,7 +495,11 @@ UINT CSrcFile::GetCurrentLocaleCodePage()
 // Notes:		None.
 // Exceptions:	None.
 //
-int CSrcFile::GetUnicodeStringFromMultiByteString(IN LPCSTR szMultiByteString, OUT wchar_t* szUnicodeString, IN int nUnicodeBufferSize, IN int nCodePage)
+int CSrcFile::GetUnicodeStringFromMultiByteString(
+	LPCSTR szMultiByteString,
+	wchar_t* szUnicodeString,
+	int nUnicodeBufferSize,
+	int nCodePage)
 {
 	bool		bOK = true;
 	int		nCharsWritten = 0;
@@ -816,7 +673,7 @@ int	CSrcFile::Write(LPCTSTR pszString, int nCharsToWrite)
 	try
 	{
 		// If writing Unicode and at the start of the file, need to write byte mark
-		if (nFlags & CSrcFile::modeWriteUnicode)
+		if (fileOpenFlags & CSrcFile::modeWriteUnicode)
 		{
 			// If at position 0, write byte-order mark before writing anything else
 			if (!m_pStream || GetPosition() == 0)
@@ -827,11 +684,8 @@ int	CSrcFile::Write(LPCTSTR pszString, int nCharsToWrite)
 			}
 		}
 
-		// If compiled in Unicode...
-#ifdef _UNICODE
-
 		// If writing Unicode, no conversion needed
-		if (nFlags & CSrcFile::modeWriteUnicode)
+		if (fileOpenFlags & CSrcFile::modeWriteUnicode)
 		{
 			// Write in byte mode
 			CFile::Write(pszString, nCharsToWrite * sizeof(wchar_t));
@@ -865,83 +719,6 @@ int	CSrcFile::Write(LPCTSTR pszString, int nCharsToWrite)
 					nCharsWritten * sizeof(char));
 			}
 		}
-		// Else if *not* compiled in Unicode
-#else
-		// If writing Unicode, need to convert
-		if (nFlags & CSrcFile::modeWriteUnicode)
-		{
-			int		nChars = lstrlen(lpsz) + 1;	 // Why plus 1? Because yes
-			int		nBufferSize = nChars * sizeof(wchar_t);
-			int		nCharsWritten = 0;
-
-			pszUnicodeString = new wchar_t[nChars];
-			pszMultiByteString = new char[nChars];
-
-			// Copy string to multibyte buffer
-			lstrcpy(pszMultiByteString, lpsz);
-
-			nCharsWritten = GetUnicodeStringFromMultiByteString(pszMultiByteString, pszUnicodeString, nChars, nFileCodePage);
-
-			if (nCharsWritten > 0)
-			{
-				// Do byte-mode write using actual chars written (fix by Howard J Oh)
-	//			CFile::Write(pszUnicodeString, lstrlen(lpsz) * sizeof(wchar_t));
-				CFile::Write(pszUnicodeString, nCharsWritten * sizeof(wchar_t));
-			}
-			else
-			{
-				ASSERT(false);
-			}
-
-		}
-		// Else if we don't want to write Unicode, no conversion needed, unless the code page differs
-		else
-		{
-			//		// Do standard stuff
-			//		CStdioFile::WriteString(lpsz);
-
-					// Get the current code page
-			UINT nLocaleCodePage = GetCurrentLocaleCodePage();
-
-			// If we got it OK, and if file code page does not match the system code page, we need to do a double conversion!
-			if (nLocaleCodePage > 0 && nLocaleCodePage != (UINT)nFileCodePage)
-			{
-				int	nChars = lstrlen(lpsz) + 1;	 // Why plus 1? Because yes
-
-				pszUnicodeString = new wchar_t[nChars];
-
-				// Initialise to something safe
-				memset(pszUnicodeString, 0, sizeof(wchar_t) * nChars);
-
-				// Convert to Unicode using the locale code page (the code page we are using in memory)
-				nChars = GetUnicodeStringFromMultiByteString((LPCSTR)(const char*)lpsz, pszUnicodeString, nChars, nLocaleCodePage);
-
-				// Convert back to multibyte using the file code page
-				// (Note that you can't reliably read a non-Unicode file written in code page A on a system using a code page B,
-				// modify the file and write it back using code page A, unless you disable all this double-conversion code.
-				// In effect, you have to choose between a mangled character display and mangled file writing).
-				if (nChars > 0)
-				{
-					// Calculate how much we need for the MB buffer (it might be larger)
-					nChars = GetRequiredMultiByteLengthForUnicodeString(pszUnicodeString, nFileCodePage);
-
-					pszMultiByteString = new char[nChars];
-					memset(pszMultiByteString, 0, sizeof(char) * nChars);
-
-					nChars = GetMultiByteStringFromUnicodeString(pszUnicodeString, pszMultiByteString, nChars, nFileCodePage);
-
-					// Do byte-mode write. This avoids annoying "interpretation" of \n's as \r\n
-					CFile::Write((const void*)pszMultiByteString, nChars * sizeof(char));
-				}
-			}
-			else
-			{
-				// Do byte-mode write. This avoids annoying "interpretation" of \n's as \r\n
-				CFile::Write((const void*)lpsz, lstrlen(lpsz) * sizeof(char));
-			}
-		}
-
-#endif
 	}
 	// Ensure we always clean up
 	catch (...)
@@ -1020,7 +797,7 @@ void CSrcFile::WriteString(LPCTSTR lpsz)
 	try
 	{
 		// If writing Unicode and at the start of the file, need to write byte mark
-		if (nFlags & CSrcFile::modeWriteUnicode)
+		if (fileOpenFlags & CSrcFile::modeWriteUnicode)
 		{
 			// If at position 0, write byte-order mark before writing anything else
 			if (!m_pStream || GetPosition() == 0)
@@ -1030,11 +807,8 @@ void CSrcFile::WriteString(LPCTSTR lpsz)
 			}
 		}
 
-		// If compiled in Unicode...
-#ifdef _UNICODE
-
 		// If writing Unicode, no conversion needed
-		if (nFlags & CSrcFile::modeWriteUnicode)
+		if (fileOpenFlags & CSrcFile::modeWriteUnicode)
 		{
 			// Write in byte mode
 			CFile::Write(lpsz, lstrlen(lpsz) * sizeof(wchar_t));
@@ -1067,83 +841,6 @@ void CSrcFile::WriteString(LPCTSTR lpsz)
 					nCharsWritten * sizeof(char));
 			}
 		}
-		// Else if *not* compiled in Unicode
-#else
-		// If writing Unicode, need to convert
-		if (nFlags & CSrcFile::modeWriteUnicode)
-		{
-			int		nChars = lstrlen(lpsz) + 1;	 // Why plus 1? Because yes
-			int		nBufferSize = nChars * sizeof(wchar_t);
-			int		nCharsWritten = 0;
-
-			pszUnicodeString = new wchar_t[nChars];
-			pszMultiByteString = new char[nChars];
-
-			// Copy string to multibyte buffer
-			lstrcpy(pszMultiByteString, lpsz);
-
-			nCharsWritten = GetUnicodeStringFromMultiByteString(pszMultiByteString, pszUnicodeString, nChars, nFileCodePage);
-
-			if (nCharsWritten > 0)
-			{
-				// Do byte-mode write using actual chars written (fix by Howard J Oh)
-	//			CFile::Write(pszUnicodeString, lstrlen(lpsz) * sizeof(wchar_t));
-				CFile::Write(pszUnicodeString, nCharsWritten * sizeof(wchar_t));
-			}
-			else
-			{
-				ASSERT(false);
-			}
-
-		}
-		// Else if we don't want to write Unicode, no conversion needed, unless the code page differs
-		else
-		{
-			//		// Do standard stuff
-			//		CStdioFile::WriteString(lpsz);
-
-					// Get the current code page
-			UINT nLocaleCodePage = GetCurrentLocaleCodePage();
-
-			// If we got it OK, and if file code page does not match the system code page, we need to do a double conversion!
-			if (nLocaleCodePage > 0 && nLocaleCodePage != (UINT)nFileCodePage)
-			{
-				int	nChars = lstrlen(lpsz) + 1;	 // Why plus 1? Because yes
-
-				pszUnicodeString = new wchar_t[nChars];
-
-				// Initialise to something safe
-				memset(pszUnicodeString, 0, sizeof(wchar_t) * nChars);
-
-				// Convert to Unicode using the locale code page (the code page we are using in memory)
-				nChars = GetUnicodeStringFromMultiByteString((LPCSTR)(const char*)lpsz, pszUnicodeString, nChars, nLocaleCodePage);
-
-				// Convert back to multibyte using the file code page
-				// (Note that you can't reliably read a non-Unicode file written in code page A on a system using a code page B,
-				// modify the file and write it back using code page A, unless you disable all this double-conversion code.
-				// In effect, you have to choose between a mangled character display and mangled file writing).
-				if (nChars > 0)
-				{
-					// Calculate how much we need for the MB buffer (it might be larger)
-					nChars = GetRequiredMultiByteLengthForUnicodeString(pszUnicodeString, nFileCodePage);
-
-					pszMultiByteString = new char[nChars];
-					memset(pszMultiByteString, 0, sizeof(char) * nChars);
-
-					nChars = GetMultiByteStringFromUnicodeString(pszUnicodeString, pszMultiByteString, nChars, nFileCodePage);
-
-					// Do byte-mode write. This avoids annoying "interpretation" of \n's as \r\n
-					CFile::Write((const void*)pszMultiByteString, nChars * sizeof(char));
-				}
-			}
-			else
-			{
-				// Do byte-mode write. This avoids annoying "interpretation" of \n's as \r\n
-				CFile::Write((const void*)lpsz, lstrlen(lpsz) * sizeof(char));
-			}
-		}
-
-#endif
 	}
 	// Ensure we always clean up
 	catch (...)
@@ -1159,14 +856,12 @@ void CSrcFile::WriteString(LPCTSTR lpsz)
 
 bool CSrcFile::SetDefaultPath()
 {
-	bool	bRet = true;
+	const bool result = true;
 
-	int		intDelimiterIndex;
+	projectPath = AfxGetAppName();
 
-	cszPath = AfxGetAppName();
+	int delimiterIndex = projectPath.ReverseFind(_TEXT('\\'));
+	projectPath.Left(delimiterIndex);
 
-	intDelimiterIndex = cszPath.ReverseFind(_TEXT('\\'));
-	cszPath.Left(intDelimiterIndex);
-
-	return bRet;
+	return result;
 }
