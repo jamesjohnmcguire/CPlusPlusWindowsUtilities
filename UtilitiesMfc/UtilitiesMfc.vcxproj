@@ -46,7 +46,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Utilities;$(SolutionDir)\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp23</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -91,5 +91,12 @@
     </ClCompile>
     <ClCompile Include="SrcFile.cpp" />
   </ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Utilities\Utilities.vcxproj">
+		<Project>{F2CC2CFA-F806-4022-9A85-1C5C86E733BB}</Project>
+	  </ProjectReference>
+	</ItemGroup>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
