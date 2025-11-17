@@ -31,6 +31,9 @@
 		<ClCompile Include="Resource.cpp">
 			<Filter>Source Files</Filter>
 		</ClCompile>
+		<ClCompile Include="TextEncoding.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
 		<ClCompile Include="Utils.cpp">
 			<Filter>Source Files</Filter>
 		</ClCompile>
@@ -53,6 +56,9 @@
 			<Filter>Header Files</Filter>
 		</ClInclude>
 		<ClInclude Include="Resource.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="TextEncoding.h">
 			<Filter>Header Files</Filter>
 		</ClInclude>
 		<ClInclude Include="Utils.h">
