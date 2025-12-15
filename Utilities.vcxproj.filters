@@ -34,6 +34,9 @@
 		<ClCompile Include="TextEncoding.cpp">
 			<Filter>Source Files</Filter>
 		</ClCompile>
+		<ClCompile Include="TimeHelpers.cpp">
+			<Filter>Source Files</Filter>
+		</ClCompile>
 		<ClCompile Include="Utils.cpp">
 			<Filter>Source Files</Filter>
 		</ClCompile>
@@ -59,6 +62,9 @@
 			<Filter>Header Files</Filter>
 		</ClInclude>
 		<ClInclude Include="TextEncoding.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
+		<ClInclude Include="TimeHelpers.h">
 			<Filter>Header Files</Filter>
 		</ClInclude>
 		<ClInclude Include="Utils.h">

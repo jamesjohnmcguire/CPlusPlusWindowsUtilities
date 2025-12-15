@@ -99,6 +99,7 @@
 		<ClInclude Include="Registry.h" />
 		<ClInclude Include="Resource.h" />
 		<ClInclude Include="TextEncoding.h" />
+		<ClInclude Include="TimeHelpers.h" />
 		<ClInclude Include="Utils.h" />
 	</ItemGroup>
 
@@ -111,6 +112,7 @@
 		<ClCompile Include="Registry.cpp" />
 		<ClCompile Include="Resource.cpp" />
 		<ClCompile Include="TextEncoding.cpp" />
+		<ClCompile Include="TimeHelpers.cpp" />
 		<ClCompile Include="Utils.cpp" />
 	</ItemGroup>
 

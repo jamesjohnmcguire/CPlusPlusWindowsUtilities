@@ -157,3 +157,18 @@ int TextEncoding::GetCodePageFromName(const std::string& encoding) noexcept
 
 	return codePage;
 }
+#include <cstdint>  // for uint8_t or BYTE if defined
+
+// Returns true if the data starts with the UTF-8 BOM (EF BB BF)
+// Assumes data has at least 3 bytes available; otherwise returns false.
+bool HasUtf8Bom(const uint8_t* data, size_t length)
+{
+	bool result = false;
+
+	if (length > 2 && data[0] == 0xEF && data[1] == 0xBB && data[2] == 0xBF)
+	{
+		result = true;
+	}
+
+	return result;
+}

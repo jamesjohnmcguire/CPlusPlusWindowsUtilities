@@ -39,8 +39,6 @@ static WORD g_LanguageId = LANG_JAPANESE;
 static WORD g_LanguageId = LANG_ENGLISH;
 #endif
 
-#define DATE_FORMAT _T("%02d/%02d %d %02d:%02d")
-
 static HMODULE g_ResourceModule	= NULL;
 
 static ULONG alternativeCodePages[] = {CodePageUtf8, CodePageUsAscii, 0};
@@ -519,13 +517,11 @@ char*
 /////////////////////////////////////////////////////////////////////////////
 // IsUtf8BomMark
 /////////////////////////////////////////////////////////////////////////////
-bool
-	IsUtf8BomMark(
-	BYTE ByteInQuestion)
+bool IsUtf8BomMark(BYTE byteInQuestion)
 {
 	bool	Utf8BomMark	= false;
 
-	if (0xEF == ByteInQuestion)
+	if (0xEF == byteInQuestion)
 	{
 		Utf8BomMark	= true;
 	}
@@ -1125,53 +1121,8 @@ void SetLanguageId(WORD	LangId, HMODULE ResourceModule)
 	g_ResourceModule = ResourceModule;
 }
 
-#ifndef INSTALLHELPER_EXPORTS
 
 int GetDigitsFromString(char *str, int index)
 {
 	return (str[index] - '0') * 10 + (str[index + 1] - '0');
 }
-
-void GetDateFromYYMMDDHHMMSS(char *str, TCHAR* formattedDate, size_t len)
-{
-	struct tm tm;
-	int year = GetDigitsFromString(str, 0);
-	if (year < 50)
-	{
-		year += 100;
-	}
-
-	tm.tm_year	= year;
-	tm.tm_mon	= GetDigitsFromString(str, 2) - 1;
-	tm.tm_mday	= GetDigitsFromString(str, 4);
-	tm.tm_hour	= GetDigitsFromString(str, 6);
-	tm.tm_min	= GetDigitsFromString(str, 8);
-	tm.tm_sec	= 0;
-
-	time_t t = str[strlen(str) - 1] == 'Z' ? _mkgmtime(&tm) : mktime(&tm);
-	localtime_s(&tm, &t);
-
-	swprintf_s(formattedDate, len, DATE_FORMAT, tm.tm_mon + 1, tm.tm_mday, tm.tm_year + 1900, tm.tm_hour, tm.tm_min);
-}
-
-void GetDateFromTime_t(time_t* time_t, TCHAR* formattedDate, size_t len)
-{
-	struct tm tm;
-	gmtime_s(&tm, time_t);
-
-	//wcsftime(formattedDate, len, _T("%m/%d %Y %H:%M"), &tm);
-	swprintf_s(formattedDate, len, DATE_FORMAT, tm.tm_mon + 1, tm.tm_mday, tm.tm_year + 1900, tm.tm_hour, tm.tm_min);
-}
-
-#endif
-
-#if !defined(_MSC_VER) && !defined(gmtime_s)
-// Fallback for non-MSVC compilers (e.g., MinGW, GCC, Clang)
-inline int gmtime_s(struct tm* _Tm, const time_t* _Time)
-{
-    struct tm* tmp = gmtime(_Time);
-    if (!tmp) return 1;
-    *_Tm = *tmp;
-    return 0;
-}
-#endif

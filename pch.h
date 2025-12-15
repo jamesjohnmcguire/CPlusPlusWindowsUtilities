@@ -15,6 +15,8 @@
 
 #include <optional>
 #include <string>
+#include <vector>
+#include <span>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>

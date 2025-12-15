@@ -84,18 +84,6 @@ ConcatStreams(
 	DWORD	FirstStreamLength,
 	BYTE*	SecondStream,
 	DWORD	SecondStreamLength);
-
-DllExport void
-GetDateFromYYMMDDHHMMSS(
-	char *str,
-	TCHAR* formattedDate,
-	size_t len);
-
-DllExport void
-GetDateFromTime_t(
-	time_t* time_t,
-	TCHAR* formattedDate,
-	size_t len);
 #endif
 // allow InstallHelper to use
 
@@ -224,3 +212,5 @@ DllExport bool
 GetLastErrorInfo(
 	HMODULE	ModuleHandle);
 #endif
+
+int GetDigitsFromString(char* str, int index);
