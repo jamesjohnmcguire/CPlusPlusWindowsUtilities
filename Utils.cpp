@@ -108,7 +108,7 @@ BYTE* ConcatStreams(BYTE* firstStream, DWORD firstStreamLength,
 			// even though we shouldn't assume these are strings, we want to insure
 			// the buffer is zero-terminated.
 			// there are some situations, where a memory blob is cast as a string.
-			DWORD	ConcatStreamLength =
+			const DWORD	ConcatStreamLength =
 				firstStreamLength + SecondStreamLength + 2;
 
 			ConcatStream = new BYTE[ConcatStreamLength];
@@ -137,7 +137,7 @@ BYTE* ConcatStreams(BYTE* firstStream, DWORD firstStreamLength,
 				throw;
 			}
 		}
-		catch(TCHAR* Exception)
+		catch(const TCHAR* Exception)
 		{
 			// log
 			OutputDebugString(Exception);
@@ -170,7 +170,7 @@ TCHAR* ConcatStrings(LPCTSTR FirstString, LPCTSTR SecondString)
 			}
 			else
 			{
-				UINT	ConcatStringLength = (UINT)_tcslen(FirstString) +
+				const UINT	ConcatStringLength = (UINT)_tcslen(FirstString) +
 					(UINT)_tcslen(SecondString) +
 					1;
 
@@ -180,7 +180,7 @@ TCHAR* ConcatStrings(LPCTSTR FirstString, LPCTSTR SecondString)
 				_tcscat_s(ConcatString, ConcatStringLength, SecondString);
 			}
 		}
-		catch (TCHAR* Exception)
+		catch (const TCHAR* Exception)
 		{
 			// log
 			OutputDebugString(Exception);
@@ -215,7 +215,7 @@ char* ConcatStringsA(const char* FirstString, const char* SecondString)
 			}
 			else
 			{
-				UINT	ConcatStringLength = (UINT)strlen(FirstString) +
+				const UINT	ConcatStringLength = (UINT)strlen(FirstString) +
 					(UINT)strlen(SecondString) +
 					1;
 
@@ -225,7 +225,7 @@ char* ConcatStringsA(const char* FirstString, const char* SecondString)
 				strcat_s(ConcatString, ConcatStringLength, SecondString);
 			}
 		}
-		catch(TCHAR* Exception)
+		catch(const TCHAR* Exception)
 		{
 			// log
 			OutputDebugString(Exception);
@@ -328,7 +328,7 @@ DllExport char *
 	LPCWSTR	UnicodeString,
 	ULONG	CodePage)
 {
-	BOOL	bUsedDefChar	= FALSE;
+	const BOOL	bUsedDefChar	= FALSE;
 	int		nCharsWritten = 0;
 	char*	MultiByteString = NULL;
 	try
@@ -341,7 +341,7 @@ DllExport char *
 				CodePage = GetACP();
 			}
 
-			int MultiByteBufferSize = WideCharToMultiByte( CodePage,
+			const int MultiByteBufferSize = WideCharToMultiByte( CodePage,
 				0,
 				UnicodeString,
 				-1,
@@ -357,7 +357,7 @@ DllExport char *
 
 			DWORD Flags	= WC_COMPOSITECHECK | WC_SEPCHARS;
 
-			bool UseFlags	= AllowConversionFlags(CodePage);
+			const bool UseFlags	= AllowConversionFlags(CodePage);
 
 			if (false == UseFlags)
 			{
@@ -458,11 +458,11 @@ TCHAR*
 
 	if (NULL != SourceString)
 	{
-		BOOL BadString	= IsBadStringPtr(SourceString,(UINT_PTR)-1);
+		const BOOL BadString	= IsBadStringPtr(SourceString,(UINT_PTR)-1);
 
 		if (FALSE == BadString)
 		{
-			size_t	SourceStringLength = (_tcslen(SourceString) + 1) * sizeof(TCHAR);
+			const size_t	SourceStringLength = (_tcslen(SourceString) + 1) * sizeof(TCHAR);
 
 			StringCopy = new TCHAR[Amount+1];
 
@@ -491,23 +491,18 @@ char*
 {
 	char* StringCopy = NULL;
 
-	if (NULL != SourceString)
+	if (SourceString != nullptr)
 	{
-		BOOL BadString	= IsBadStringPtrA(SourceString,(UINT_PTR)-1);
+		const size_t	SourceStringLength = (strlen(SourceString) + 1);
 
-		if (FALSE == BadString)
+		StringCopy = new char[Amount+1];
+
+		if (NULL != StringCopy)
 		{
-			size_t	SourceStringLength = (strlen(SourceString) + 1);
-
-			StringCopy = new char[Amount+1];
-
-			if (NULL != StringCopy)
-			{
-				strncpy_s(	StringCopy,
-					Amount+1,
-					SourceString,
-					Amount);
-			}
+			strncpy_s(	StringCopy,
+				Amount+1,
+				SourceString,
+				Amount);
 		}
 	}
 
@@ -517,7 +512,7 @@ char*
 /////////////////////////////////////////////////////////////////////////////
 // IsUtf8BomMark
 /////////////////////////////////////////////////////////////////////////////
-bool IsUtf8BomMark(BYTE byteInQuestion)
+constexpr bool IsUtf8BomMark(BYTE byteInQuestion) noexcept
 {
 	bool	Utf8BomMark	= false;
 
@@ -572,7 +567,7 @@ TCHAR*
 	TCHAR*	DataFilePath	= NULL;
 	TCHAR*	UserDataPath	= new TCHAR[MAX_PATH];
 
-	HRESULT	ResultCode	= SHGetFolderPath(	NULL,
+	const HRESULT	ResultCode	= SHGetFolderPath(	NULL,
 		CSIDL_PERSONAL|CSIDL_FLAG_CREATE,
 		NULL,
 		SHGFP_TYPE_CURRENT,
@@ -613,7 +608,7 @@ LPCTSTR
 	TCHAR*	DataFilePath	= NULL;
 	TCHAR*	UserDataPath	= new TCHAR[MAX_PATH];
 
-	HRESULT	ResultCode	= SHGetFolderPath(	NULL,
+	const HRESULT	ResultCode	= SHGetFolderPath(	NULL,
 		CSIDL_WINDOWS|CSIDL_FLAG_CREATE,
 		NULL,
 		SHGFP_TYPE_CURRENT,
@@ -649,7 +644,7 @@ LPCTSTR	GetFileNameTempPath(
 	LPCTSTR	FileName)
 {
 	TCHAR*	FileNameTempPath		= NULL;
-	TCHAR*	FriendlyFileNameBase	= GetBaseFileName(FileName);
+	const TCHAR*	FriendlyFileNameBase	= GetBaseFileName(FileName);
 
 	if (NULL != FriendlyFileNameBase)
 	{
@@ -669,22 +664,18 @@ GetStringCopyA(
 {
 	char* StringCopy = NULL;
 
-	if (NULL != SourceString)
+	if (SourceString != nullptr)
 	{
-		BOOL BadString = IsBadStringPtrA(SourceString, (UINT_PTR)-1);
+		const size_t	SourceStringLength = strlen(SourceString) + 1;
 
-		if (FALSE == BadString)
+		StringCopy = new char[SourceStringLength];
+
+		if (NULL != StringCopy)
 		{
-			size_t	SourceStringLength = strlen(SourceString) + 1;
-
-			StringCopy = new char[SourceStringLength];
-
-			if (NULL != StringCopy)
-			{
-				strcpy_s(StringCopy, SourceStringLength, SourceString);
-			}
+			strcpy_s(StringCopy, SourceStringLength, SourceString);
 		}
 	}
+
 	return StringCopy;
 }
 
@@ -699,7 +690,7 @@ GetUnicodeString(
 
 	if (NULL != MultiByteString)
 	{
-		size_t	StringLength = strlen(MultiByteString) + 1;
+		const size_t	StringLength = strlen(MultiByteString) + 1;
 		UnicodeString = new wchar_t[StringLength];
 		GetUnicodeStringFromMultiByteString(MultiByteString, UnicodeString, (int)StringLength, -1);
 	}
@@ -719,7 +710,7 @@ GetUnicodeString(
 
 	if (NULL != MultiByteString)
 	{
-		size_t	StringLength = strlen(MultiByteString) + 1;
+		const size_t	StringLength = strlen(MultiByteString) + 1;
 		UnicodeString = new wchar_t[StringLength];
 		GetUnicodeStringFromMultiByteString(MultiByteString, UnicodeString, (int)StringLength, CodePage);
 	}
@@ -746,7 +737,7 @@ int GetUnicodeStringFromMultiByteString(
 	int			nUnicodeBufferSize,
 	ULONG		nCodePage)
 {
-	bool	bOK = true;
+	const bool	bOK = true;
 	int		nCharsWritten = 0;
 
 	if (szUnicodeString && szMultiByteString)
@@ -759,7 +750,7 @@ int GetUnicodeStringFromMultiByteString(
 
 		DWORD Flags = MB_PRECOMPOSED;
 
-		bool UseFlags = AllowConversionFlags(nCodePage);
+		const bool UseFlags = AllowConversionFlags(nCodePage);
 
 		if (false == UseFlags)
 		{
@@ -841,7 +832,7 @@ int
 	LPCTSTR Message,
 	UINT uType)
 {
-	int ReturnCode	= MessageBox(GetActiveWindow(), Message, Title, uType);
+	const int ReturnCode	= MessageBox(GetActiveWindow(), Message, Title, uType);
 
 	return ReturnCode;
 }
@@ -852,20 +843,15 @@ TCHAR*	StringSprintfInt(
 {
 	TCHAR* StringCopy = NULL;
 
-	if (NULL != OriginalString)
+	if (OriginalString != nullptr)
 	{
-		BOOL BadString	= IsBadStringPtr(OriginalString,(UINT_PTR)-1);
+		const size_t	SourceStringLength = (_tcslen(OriginalString) + 1) * sizeof(TCHAR) + 16;
 
-		if (FALSE == BadString)
+		StringCopy = new TCHAR[SourceStringLength];
+
+		if (NULL != StringCopy)
 		{
-			size_t	SourceStringLength = (_tcslen(OriginalString) + 1) * sizeof(TCHAR) + 16;
-
-			StringCopy = new TCHAR[SourceStringLength];
-
-			if (NULL != StringCopy)
-			{
-				_stprintf_s(StringCopy, SourceStringLength, OriginalString, Number);
-			}
+			_stprintf_s(StringCopy, SourceStringLength, OriginalString, Number);
 		}
 	}
 
@@ -900,10 +886,10 @@ bool
 	GetLastErrorInfo(
 	HMODULE	ModuleHandle)
 {
-	bool	bRet		= false;
+	const bool	bRet		= false;
 
 	LPVOID	pMsgBuffer = NULL;
-	DWORD	dwErr		= GetLastError();
+	const DWORD	dwErr		= GetLastError();
 	DWORD	dwRet;
 	DWORD	FormatFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
 //	LPTSTR buffer = reinterpret_cast<LPTSTR>(&pMsgBuffer);
@@ -1021,20 +1007,15 @@ TCHAR*
 {
 	TCHAR* StringCopy = NULL;
 
-	if (NULL != SourceString)
+	if (SourceString != nullptr)
 	{
-		BOOL BadString	= IsBadStringPtr(SourceString,(UINT_PTR)-1);
+		const size_t	SourceStringLength = (_tcslen(SourceString) + 1) * sizeof(TCHAR);
 
-		if (FALSE == BadString)
+		StringCopy = new TCHAR[SourceStringLength];
+
+		if (NULL != StringCopy)
 		{
-			size_t	SourceStringLength = (_tcslen(SourceString) + 1) * sizeof(TCHAR);
-
-			StringCopy = new TCHAR[SourceStringLength];
-
-			if (NULL != StringCopy)
-			{
-				_tcscpy_s(StringCopy, SourceStringLength, SourceString);
-			}
+			_tcscpy_s(StringCopy, SourceStringLength, SourceString);
 		}
 	}
 

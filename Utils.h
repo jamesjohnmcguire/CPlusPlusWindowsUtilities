@@ -173,9 +173,8 @@ StringSprintfInt(
 	TCHAR*	OriginalString,
 	int	Number);
 
-DllExport bool
-IsUtf8BomMark(
-	BYTE ByteInQuestion);
+constexpr DllExport bool IsUtf8BomMark(
+	BYTE ByteInQuestion) noexcept;
 
 /////////////////////////////////////////////////////////////////////////////
 // Test related utils
