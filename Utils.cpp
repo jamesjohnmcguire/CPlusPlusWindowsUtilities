@@ -14,13 +14,11 @@
 #ifndef INSTALLHELPER_EXPORTS
 #define _CRTDBG_MAP_ALLOC
 #endif
-#include <string>
 #include <crtdbg.h>
 #include <stdlib.h>
 #include <shlobj.h>
 #include "Utils.h"
 #include "Registry.h"
-#include <time.h>
 
 #if defined _DEBUG
 #define new new(_NORMAL_BLOCK,__FILE__, __LINE__)
@@ -302,11 +300,6 @@ char* __cdecl ConcatStringsVA(const char* FirstString,
 	va_end( Arguments );
 
 	return	NewString;
-}
-
-WORD GetLanguageId()
-{
-	return g_LanguageId;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1001,9 +994,7 @@ void
 //
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
-TCHAR*
-	GetStringCopy(
-	LPCTSTR	SourceString)
+TCHAR* GetStringCopy(LPCTSTR SourceString)
 {
 	TCHAR* StringCopy = NULL;
 
@@ -1022,23 +1013,23 @@ TCHAR*
 	return StringCopy;
 }
 
-bool
-	IsEmailValid(const TCHAR* Address)
+bool IsEmailValid(const char* Address)
 {
 	int				Count = 0;
-	const TCHAR*	c;
-	const TCHAR*	Domain;
-	const wchar_t*	Rfc822Specials = L"()<>@,;:\\\"[]";
+	const char* c;
+	const char* Domain;
+	const char*	Rfc822Specials = "()<>@,;:\\\"[]";
 
 	// first we validate the length of the name and domain (name@domain)
 	// name must be no longer than 64 chars and domain must be no longer than 255 chars
-	const TCHAR* t = wcschr(Address, '@');
+	const char* t = strchr(Address, '@');
+
 	if (!t)
 		return false;
 	size_t len = (size_t)(t - Address);
 	if (len > 64)
 		return false;
-	len = wcslen(t);
+	len = strlen(t);
 	if (len > 256)
 		return false;
 
@@ -1069,7 +1060,7 @@ bool
 			break;
 		if (*c <= ' ' || *c >= 127)
 			return false;
-		if (_tcschr(Rfc822Specials, *c))
+		if (strchr(Rfc822Specials, *c))
 			return false;
 	}
 	if (c == Address || *(c - 1) == '.')
@@ -1088,20 +1079,13 @@ bool
 		}
 		if (*c <= ' ' || *c >= 127)
 			return false;
-		if (_tcschr(Rfc822Specials, *c))
+		if (strchr(Rfc822Specials, *c))
 			return false;
 	}
 	while (*++c);
 
 	return true;
 }
-
-void SetLanguageId(WORD	LangId, HMODULE ResourceModule)
-{
-	g_LanguageId = LangId;
-	g_ResourceModule = ResourceModule;
-}
-
 
 int GetDigitsFromString(char *str, int index)
 {

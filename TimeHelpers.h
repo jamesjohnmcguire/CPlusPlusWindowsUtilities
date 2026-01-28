@@ -2,14 +2,18 @@
 
 #include "Common.h"
 
-#define DATE_FORMAT _T("%02d/%02d %d %02d:%02d")
+#define DATE_FORMAT "%02d/%02d %d %02d:%02d"
 
 DllExport void GetDateFromYYMMDDHHMMSS(
 	char* str,
-	TCHAR* formattedDate,
+	char* formattedDate,
 	size_t len);
 
-DllExport void GetDateFromTime_t(
-	time_t* time_t,
-	TCHAR* formattedDate,
+extern "C" DllExport bool GetDateFromTimeLocal(
+	std::time_t value,
+	char* buffer,
+	size_t len);
+extern "C" DllExport bool GetDateFromTimeUtc(
+	std::time_t value,
+	char* buffer,
 	size_t len);

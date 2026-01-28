@@ -4,11 +4,13 @@
 /////////////////////////////////////////////////////////////////////////////
 
 #include "pch.h"
-#include <time.h>
 #include "TimeHelpers.h"
 #include "Utils.h"
 
-void GetDateFromYYMMDDHHMMSS(char* str, TCHAR* formattedDate, size_t len)
+std::string GetDateFromTimeLocalInternal(std::time_t value);
+std::string GetDateFromTimeUtcInternal(std::time_t value);
+
+void GetDateFromYYMMDDHHMMSS(char* str, char* formattedDate, size_t len)
 {
 	struct tm tm;
 	int year = GetDigitsFromString(str, 0);
@@ -27,25 +29,80 @@ void GetDateFromYYMMDDHHMMSS(char* str, TCHAR* formattedDate, size_t len)
 	time_t t = str[strlen(str) - 1] == 'Z' ? _mkgmtime(&tm) : mktime(&tm);
 	localtime_s(&tm, &t);
 
-	swprintf_s(formattedDate, len, DATE_FORMAT, tm.tm_mon + 1, tm.tm_mday, tm.tm_year + 1900, tm.tm_hour, tm.tm_min);
+	sprintf_s(
+		formattedDate,
+		len,
+		DATE_FORMAT,
+		tm.tm_mon + 1,
+		tm.tm_mday,
+		tm.tm_year + 1900,
+		tm.tm_hour,
+		tm.tm_min);
 }
 
-void GetDateFromTime_t(time_t* time_t, TCHAR* formattedDate, size_t len)
+bool GetDateFromTimeLocal(
+	std::time_t value,
+	char* buffer,
+	size_t len)
 {
-	struct tm tm;
-	gmtime_s(&tm, time_t);
+	try
+	{
+		auto s = GetDateFromTimeLocalInternal(value);
 
-	//wcsftime(formattedDate, len, _T("%m/%d %Y %H:%M"), &tm);
-	swprintf_s(formattedDate, len, DATE_FORMAT, tm.tm_mon + 1, tm.tm_mday, tm.tm_year + 1900, tm.tm_hour, tm.tm_min);
+		if (s.size() + 1 > len)
+			return false;
+
+		std::memcpy(buffer, s.c_str(), s.size() + 1);
+		return true;
+	}
+	catch (...)
+	{
+		return false;
+	}
 }
 
-#if !defined(_MSC_VER) && !defined(gmtime_s)
-// Fallback for non-MSVC compilers (e.g., MinGW, GCC, Clang)
-inline int gmtime_s(struct tm* _Tm, const time_t* _Time)
+bool GetDateFromTimeUtc(
+	std::time_t value,
+	char* buffer,
+	size_t len)
 {
-	struct tm* tmp = gmtime(_Time);
-	if (!tmp) return 1;
-	*_Tm = *tmp;
-	return 0;
+	try
+	{
+		auto s = GetDateFromTimeUtcInternal(value);
+
+		if (s.size() + 1 > len)
+			return false;
+
+		std::memcpy(buffer, s.c_str(), s.size() + 1);
+		return true;
+	}
+	catch (...)
+	{
+		return false;
+	}
 }
-#endif
+
+std::string GetDateFromTimeLocalInternal(std::time_t value)
+{
+	using namespace std::chrono;
+
+	const auto tp = system_clock::from_time_t(value);
+	auto timeRaw = floor<minutes>(tp);
+
+	std::string formattedTime = std::format("{:%m/%d %Y %H:%M}", timeRaw);
+
+	return formattedTime;
+}
+
+std::string GetDateFromTimeUtcInternal(std::time_t value)
+{
+	using namespace std::chrono;
+
+	const auto tp = system_clock::from_time_t(value);
+	auto utc = utc_clock::from_sys(tp);
+	auto timeRaw = floor<minutes>(utc);
+
+	std::string formattedTime = std::format("{:%m/%d %Y %H:%M}", timeRaw);
+
+	return formattedTime;
+}

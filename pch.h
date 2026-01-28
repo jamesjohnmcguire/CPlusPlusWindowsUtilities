@@ -13,10 +13,14 @@
 #define _WIN32_WINNT 0x0501
 #endif
 
+#include <chrono>
+#include <format>
 #include <optional>
+#include <span>
 #include <string>
 #include <vector>
-#include <span>
+
+#include <time.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
