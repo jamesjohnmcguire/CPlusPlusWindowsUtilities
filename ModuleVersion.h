@@ -16,14 +16,14 @@
 #ifndef DLLVERSIONINFO
 // following is from shlwapi.h, in November 1997 release of the Windows SDK
 
-//typedef struct _DllVersionInfo
-//{
-//        DWORD cbSize;
-//        DWORD dwMajorVersion;                   // Major version
-//        DWORD dwMinorVersion;                   // Minor version
-//        DWORD dwBuildNumber;                    // Build number
-//        DWORD dwPlatformID;                     // DLLVER_PLATFORM_*
-//} DLLVERSIONINFO;
+typedef struct _DllVersionInfo
+{
+	DWORD cbSize;
+	DWORD dwMajorVersion;                   // Major version
+	DWORD dwMinorVersion;                   // Minor version
+	DWORD dwBuildNumber;                    // Build number
+	DWORD dwPlatformID;                     // DLLVER_PLATFORM_*
+} DLLVERSIONINFO;
 
 // Platform IDs for DLLVERSIONINFO
 #define DLLVER_PLATFORM_WINDOWS         0x00000001      // Windows 95
@@ -61,6 +61,6 @@ public:
 	virtual ~CModuleVersion();
 
 	BOOL		GetFileVersionInfo(LPCTSTR modulename);
-	CString	GetValue(LPCTSTR lpKeyName);
+	std::wstring GetValue(LPCTSTR lpKeyName);
 	static BOOL DllGetVersion(LPCTSTR modulename, DLLVERSIONINFO& dvi);
 };

@@ -6,7 +6,7 @@
 // CModuleVersion provides an easy way to get version info
 // for a module.(DLL or EXE).
 //
-#include "StdAfx.h"
+#include "pch.h"
 #include "ModuleVersion.h"
 
 CModuleVersion::CModuleVersion()
@@ -66,7 +66,6 @@ BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR modulename)
 	if (VerQueryValue(m_pVersionInfo,
 		_T("\\VarFileInfo\\Translation"), &lpvi, &iLen) && iLen >= 4) {
 		m_translation = *(TRANSLATION*)lpvi;
-		TRACE("code page = %d\n", m_translation.charset);
 	}
 
 	return dwSignature == VS_FFI_SIGNATURE;
@@ -77,33 +76,43 @@ BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR modulename)
 // Key name is something like "CompanyName".
 // returns the value as a CString.
 //
-CString CModuleVersion::GetValue(LPCTSTR lpKeyName)
+std::wstring CModuleVersion::GetValue(LPCTSTR lpKeyName)
 {
-	CString sVal;
-	if (m_pVersionInfo) {
+	std::wstring result;
 
+	if (m_pVersionInfo)
+	{
 		// To get a string value must pass query in the form
 		//
 		//    "\StringFileInfo\<langID><codepage>\keyname"
 		//
 		// where <lang-codepage> is the languageID concatenated with the
 		// code page, in hex. Wow.
-		//
-		CString query;
-		query.Format(_T("\\StringFileInfo\\%04x%04x\\%s"),
+		std::wstring langCodePage = std::format(L"{:04x}{:04x}",
 			m_translation.langID,
-			m_translation.charset,
+			m_translation.charset);
+
+		std::wstring query = std::format(L"\\StringFileInfo\\{}\\{}",
+			langCodePage,
 			lpKeyName);
 
 		LPCTSTR pVal;
 		UINT iLenVal;
-		if (VerQueryValue(m_pVersionInfo, (LPTSTR)(LPCTSTR)query,
-				(LPVOID*)&pVal, &iLenVal)) {
 
-			sVal = pVal;
+		bool returnCode = VerQueryValue(
+			m_pVersionInfo,
+			query.c_str(),
+			(LPVOID*)&pVal,
+			&iLenVal);
+
+		if (returnCode == true)
+		{
+
+			result = pVal;
 		}
 	}
-	return sVal;
+
+	return result;
 }
 
 // typedef for DllGetVersion proc
