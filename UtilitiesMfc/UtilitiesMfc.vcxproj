@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <CharacterSet>Unicode</CharacterSet>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
+		<OutDir>$(SolutionDir)\Bin\$(Configuration)\$(Platform)\</OutDir>
     <PlatformToolset>v145</PlatformToolset>
     <ProjectGuid>{96FD94A6-9F17-44C1-A7BE-4EDDE37D471D}</ProjectGuid>
     <UseOfMfc>Dynamic</UseOfMfc>
