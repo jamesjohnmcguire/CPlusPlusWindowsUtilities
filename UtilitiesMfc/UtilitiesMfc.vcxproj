@@ -93,7 +93,7 @@
   </ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Utilities\Utilities.vcxproj">
+	  <ProjectReference Include="..\Utilities.vcxproj">
 		<Project>{F2CC2CFA-F806-4022-9A85-1C5C86E733BB}</Project>
 	  </ProjectReference>
 	</ItemGroup>
