@@ -126,7 +126,9 @@ size_t CSrcFile::Read(CString& rString, UINT nCount)
 		if (!m_pStream || (GetPosition() == 0 && isUnicodeText))
 		{
 			wchar_t	cDummy;
-			//		Read(&cDummy, sizeof(_TCHAR));
+#if SRC_FILE_BOM_READ_ALTERNATIVE
+			Read(&cDummy, sizeof(_TCHAR));
+#endif
 			CFile::Read(&cDummy, sizeof(wchar_t));
 		}
 
@@ -158,7 +160,9 @@ size_t CSrcFile::Read(CString& rString, UINT nCount)
 
 				if (nChars > 0)
 				{
-					//					rString = (CString)pszUnicodeString;
+#if SRC_FILE_UNICODE_STRING_CAST
+					rString = (CString)pszUnicodeString;
+#endif
 					rString = pszMultiByteString;
 				}
 			}
@@ -186,7 +190,9 @@ size_t CSrcFile::Read(CString& rString, UINT nCount)
 	// Ensure we always delete in case of exception
 	catch (CException *ex)
 	{
-		//int nCount;
+#if SRC_FILE_UNUSED_COUNT
+		int nCount;
+#endif
 		CString cError;
 		LPTSTR pszError = cError.GetBuffer();
 		_tprintf(_T("Exception: %s\r\n"), ex->GetErrorMessage(pszError, 3));
@@ -221,7 +227,9 @@ BOOL CSrcFile::ReadString(CString& rString)
 		if (!m_pStream || (GetPosition() == 0 && isUnicodeText))
 		{
 			wchar_t	cDummy;
-			//		Read(&cDummy, sizeof(_TCHAR));
+#if SRC_FILE_BOM_READ_ALTERNATIVE
+			Read(&cDummy, sizeof(_TCHAR));
+#endif
 			CFile::Read(&cDummy, sizeof(wchar_t));
 		}
 
@@ -525,7 +533,9 @@ int CSrcFile::GetUnicodeStringFromMultiByteString(
 				-1,
 				szUnicodeString,
 				0);
-			//													nUnicodeBufferSize+1);
+#if SRC_FILE_OUTPUT_SIZE_ARGUMENT
+			nUnicodeBufferSize+1);
+#endif
 
 			if (nCharsWritten < 1)
 				GetLastErrorInfo();
@@ -535,7 +545,9 @@ int CSrcFile::GetUnicodeStringFromMultiByteString(
 		{
 			GetLastErrorInfo();
 
-			//int nCount;
+#if SRC_FILE_UNUSED_COUNT
+			int nCount;
+#endif
 			CString cError;
 			LPTSTR pszError = cError.GetBuffer();
 			_tprintf(_T("Exception: %s\r\n"), ex->GetErrorMessage(pszError, 3));
@@ -695,7 +707,9 @@ int	CSrcFile::Write(LPCTSTR pszString, int nCharsToWrite)
 		else
 		{
 			int		nChars = nCharsToWrite + 1;				// Why plus 1? Because yes
-//			int		nBufferSize = nChars * sizeof(char);	// leave space for multi-byte chars
+#if SRC_FILE_BUFFER_SIZE_ALTERNATIVE
+int		nBufferSize = nChars * sizeof(char);	// leave space for multi-byte chars
+#endif
 			int		nCharsWritten = 0;
 			int		nBufferSize = 0;
 
@@ -714,7 +728,9 @@ int	CSrcFile::Write(LPCTSTR pszString, int nCharsToWrite)
 			if (nCharsWritten > 0)
 			{
 				// Do byte-mode write using actual chars written (fix by Howard J Oh)
-	//			CFile::Write((const void*)pszMultiByteString, lstrlen(lpsz));
+#if SRC_FILE_MULTIBYTE_WRITE_ALTERNATIVE
+	CFile::Write((const void*)pszMultiByteString, lstrlen(lpsz));
+#endif
 				CFile::Write((const void*)pszMultiByteString,
 					nCharsWritten * sizeof(char));
 			}
@@ -738,8 +754,8 @@ int	CSrcFile::Write(LPCTSTR pszString, int nCharsToWrite)
 	return nCharsWritten;
 }
 
-/*
-HRESULT CSrcFile::Write(CString &cszString, bool bIgnore /*= FALSE *)
+#if LEGACY_SRC_FILE_WRITE
+HRESULT CSrcFile::Write(CString &cszString, bool bIgnore /* = FALSE */)
 {
 	if (!bIgnore)
 	{
@@ -762,13 +778,13 @@ HRESULT CSrcFile::Write(CString &cszString, bool bIgnore /*= FALSE *)
 	return TRUE;
 }
 
-HRESULT CSrcFile::Write(LPCTSTR pszString, bool bIgnore /* = FALSE *)
+HRESULT CSrcFile::Write(LPCTSTR pszString, bool bIgnore /* = FALSE */)
 {
 	CString cszString   = pszString;
 
 	return Write( cszString, bIgnore );
 }
-*/
+#endif
 
 // --------------------------------------------------------------------------------------------
 //
@@ -817,7 +833,9 @@ void CSrcFile::WriteString(LPCTSTR lpsz)
 		else
 		{
 			int		nChars = lstrlen(lpsz) + 1;				// Why plus 1? Because yes
-//			int		nBufferSize = nChars * sizeof(char);	// leave space for multi-byte chars
+#if SRC_FILE_BUFFER_SIZE_ALTERNATIVE
+int		nBufferSize = nChars * sizeof(char);	// leave space for multi-byte chars
+#endif
 			int		nCharsWritten = 0;
 			int		nBufferSize = 0;
 
@@ -836,7 +854,9 @@ void CSrcFile::WriteString(LPCTSTR lpsz)
 			if (nCharsWritten > 0)
 			{
 				// Do byte-mode write using actual chars written (fix by Howard J Oh)
-	//			CFile::Write((const void*)pszMultiByteString, lstrlen(lpsz));
+#if SRC_FILE_MULTIBYTE_WRITE_ALTERNATIVE
+	CFile::Write((const void*)pszMultiByteString, lstrlen(lpsz));
+#endif
 				CFile::Write((const void*)pszMultiByteString,
 					nCharsWritten * sizeof(char));
 			}

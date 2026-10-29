@@ -384,7 +384,9 @@ DllExport char *
 		}
 		else
 		{
-			//MultiByteString[0]	= '\0';
+#if EMPTY_MULTIBYTE_STRING_TERMINATOR
+			MultiByteString[0]	= '\0';
+#endif
 		}
 	}
 	catch(...)
@@ -885,7 +887,9 @@ bool
 	const DWORD	dwErr		= GetLastError();
 	DWORD	dwRet;
 	DWORD	FormatFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
-//	LPTSTR buffer = reinterpret_cast<LPTSTR>(&pMsgBuffer);
+#if FORMAT_MESSAGE_BUFFER_CAST
+	LPTSTR buffer = reinterpret_cast<LPTSTR>(&pMsgBuffer);
+#endif
 	LPTSTR buffer = NULL;
 
 	if (NULL != ModuleHandle)
@@ -904,7 +908,9 @@ bool
 	if (NULL != buffer)
 	{
 		OutputDebugString(buffer);
-		//TRACE(_T("Error: %s\r\n"), buffer);
+#if MFC_TRACE_LOGGING
+		TRACE(_T("Error: %s\r\n"), buffer);
+#endif
 		_tprintf(_T("\tError: %s"), buffer);
 		LocalFree(pMsgBuffer);
 	}

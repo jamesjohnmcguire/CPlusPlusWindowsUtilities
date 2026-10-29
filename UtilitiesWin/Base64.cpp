@@ -130,7 +130,9 @@ bool ZenBase64Decode(
 
 	if ((sEncodedBuffer != NULL) && (sEncodedBuffer != NULL))
 	{
-		//nLenEncodedBuffer = (int)_tcslen( sEncodedBuffer );
+#if BASE64_TCHAR_INPUT
+		nLenEncodedBuffer = (int)_tcslen( sEncodedBuffer );
+#endif
 		nLenEncodedBuffer = (int)strlen( sEncodedBuffer );
 
 		for (int i=0;i<nLenEncodedBuffer;i+=4)

@@ -279,16 +279,15 @@ LONG
 			&hKey,
 			&dwKeyOut);
 
-		/*
+#if REGISTRY_OPEN_EXISTING_KEY_ALTERNATIVE
 		lRet = RegOpenKeyEx(	hKeyRoot,
 		pszRegKeyPath,
 		0,
 		KEY_READ | KEY_SET_VALUE,
 		&hKey);
-		*/
+#endif
 		if (ERROR_SUCCESS == lRet)
 		{
-			//ShowDebug( _T("SetRegKeyValue-RegCreateKeyEx = ERROR_SUCCESS") );
 			lRet	= RegSetValueEx(	hKey,
 				pszRegKeyVar,
 				0,
@@ -296,14 +295,28 @@ LONG
 				(LPBYTE)pszValue,
 				(DWORD)(_tcslen(pszValue) + 1) * sizeof(TCHAR));
 
-			//if (ERROR_SUCCESS == lRet)
-			//	ShowDebug( _T("SetRegKeyValue-RegSetValueEx = ERROR_SUCCESS") );
-			//else
-			//	ShowDebug( _T("SetRegKeyValue-RegSetValueEx != ERROR_SUCCESS") );
+#ifdef _DEBUG
+			if (ERROR_SUCCESS != lRet)
+			{
+				TCHAR message[128];
+				_stprintf_s(message,
+					_T("Registry::SetValue: RegSetValueEx failed (%ld)\n"),
+					lRet);
+				OutputDebugString(message);
+			}
+#endif
 			RegCloseKey( hKey );
 		}
-		//else
-		//	ShowDebug( _T("SetRegKeyValue-RegCreateKeyEx != ERROR_SUCCESS") );
+#ifdef _DEBUG
+		else
+		{
+			TCHAR message[128];
+			_stprintf_s(message,
+				_T("Registry::SetValue: RegCreateKeyEx failed (%ld)\n"),
+				lRet);
+			OutputDebugString(message);
+		}
+#endif
 	}
 
 	return lRet;

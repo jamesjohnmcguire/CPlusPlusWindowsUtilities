@@ -2,7 +2,9 @@
 // Copyright © 2007 - 2026 by James John McGuire
 // All rights reserved.
 /////////////////////////////////////////////////////////////////////////////
-// using namespace std;
+#if LEGACY_STD_NAMESPACE
+using namespace std;
+#endif
 
 //#define _CRT_SECURE_CPP_OVERLOAD_STANDARD_NAMES 1
 
@@ -34,7 +36,9 @@ const int	STATE_TEXT = 2;
 ///////////////////////////////////////////////////////////////////////
 // hack until oo
 bool	g_bIsUnicodeFile = false;
-//TCHAR*	g_psTestArgv1;
+#if LOCALIZE_TEST_ARGUMENT
+TCHAR*	g_psTestArgv1;
+#endif
 TCHAR	g_szDebug[128];
 TCHAR	g_szBufferTmp[128];
 TCHAR	g_szVarNumber[10];
@@ -271,8 +275,10 @@ int LocalizeIt(TCHAR* pszPath)
 	int nRetCode = EXIT_FAILURE;
 
 	CStringArray	afilePaths;
-	//		CString	cszFileTypes	= cszDir + _T("\\*.tpl");
-	//		CString	cszFileTypes	= _T("\\");
+#if LOCALIZE_FILE_PATTERN_ALTERNATIVES
+		CString	cszFileTypes	= cszDir + _T("\\*.tpl");
+		CString	cszFileTypes	= _T("\\");
+#endif
 	CString	cszFileTypes = pszPath;
 	UINT	uFileCount = 0;
 	CFileFind finder;
@@ -310,9 +316,11 @@ PTSTR	MakeNewVarName(LPCTSTR pszOrigVarName, int nIndex)
 
 	_tcscpy_s(g_szBufferTmp, pszOrigVarName);
 	_tcscat_s(g_szBufferTmp, g_szVarNumber);
-	//	cTmp =+ &g_szVarNumber;
-	//	PTSTR	pszTmp	= cTmp.GetBuffer( 64 );
-	//	cTmp.ReleaseBuffer
+#if LOCALIZE_VAR_NAME_BUFFER_INCOMPLETE
+	cTmp =+ &g_szVarNumber;
+	PTSTR	pszTmp	= cTmp.GetBuffer( 64 );
+	cTmp.ReleaseBuffer
+#endif
 	return g_szBufferTmp;
 }
 
@@ -350,7 +358,7 @@ UINT	NewLineCount(LPCTSTR pBuffer)
 ///////////////////////////////////////////////////////////////////////
 // ProcessDefaultState
 ///////////////////////////////////////////////////////////////////////
-/*
+#if LOCALIZE_DEFAULT_STATE_INCOMPLETE
 bool	ProcessDefaultState( LPCTSTR sInputStream, LPCTSTR sOutputStream)
 {
 	bool	bRet	= false;
@@ -399,7 +407,7 @@ bool	ProcessDefaultState( LPCTSTR sInputStream, LPCTSTR sOutputStream)
 
 	return bRet;
 }
-*/
+#endif
 
 ///////////////////////////////////////////////////////////////////////
 // ProcessFile
@@ -431,7 +439,9 @@ bool	ProcessFile(LPCTSTR pszFileName)
 
 	CString	cszSectionName = GetBaseFileName(pszFileName, cBaseFileName);
 
-	//	cOrigVarName	+= _T(":::Var");
+#if LOCALIZE_ORIGINAL_VARIABLE_SUFFIX
+	cOrigVarName	+= _T(":::Var");
+#endif
 	cOrigVarName = _T("Var");
 
 	CString	cConfFileName = cszFilePath + _T(".conf");
@@ -477,10 +487,12 @@ bool	ProcessFile(LPCTSTR pszFileName)
 				UINT	uNewLines = NewLineCount(cOriginalFileBuffer);
 
 				nLength = nLength - uNewLines;
-				//	int nFind	= cszSectionName.Find( _T("va_") );
+#if LOCALIZE_SECTION_PREFIX
+				int nFind	= cszSectionName.Find( _T("va_") );
 
-				//	if (nFind != -1)
-				//		cszSectionName = cszSectionName.Right( cszSectionName.GetLength( ) - 3);
+				if (nFind != -1)
+					cszSectionName = cszSectionName.Right( cszSectionName.GetLength( ) - 3);
+#endif
 
 				WriteSqlSection(cSqlFile, cszSectionName);
 
@@ -511,8 +523,10 @@ bool	ProcessFile(LPCTSTR pszFileName)
 					cNextChar = cOriginalFileBuffer.GetAt(i + 1);
 					cNextNonSpaceChar = cOriginalFileBuffer.GetAt(i + nNextNonSpaceChar);
 
-					//_tcsncpy( g_szDebug, &pFileBufOld[i], 120 );
-					//g_szDebug[121] = '\0';
+#if LOCALIZE_DEBUG_BUFFER
+					_tcsncpy( g_szDebug, &pFileBufOld[i], 120 );
+					g_szDebug[121] = '\0';
+#endif
 					switch (nState)
 					{
 						// in a html tag
@@ -581,7 +595,9 @@ bool	ProcessFile(LPCTSTR pszFileName)
 							if (true == bOk)
 							{
 								// write the string into the conf file
-			//						CString cszLine	= cVarName + _T(":::") + pVarBuf;
+#if LOCALIZE_VARIABLE_LINE
+						CString cszLine	= cVarName + _T(":::") + pVarBuf;
+#endif
 								CString cszLine = cVarName + _T(":::") + cVarValue;
 
 								cszLine += _T("\n");
@@ -660,7 +676,9 @@ bool	ProcessFile(LPCTSTR pszFileName)
 				pFileBufNew[k] = '\0';
 
 				nLength = _tcsclen(pFileBufNew);
-				//		cSrcFile.Close( );
+#if LOCALIZE_SOURCE_FILE_CLOSE
+				cSrcFile.Close( );
+#endif
 				cSqlFile.Close();
 
 				CSrcFile	cNewFile;

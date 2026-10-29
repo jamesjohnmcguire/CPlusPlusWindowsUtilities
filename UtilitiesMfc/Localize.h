@@ -17,7 +17,9 @@ DllExport int		LocalizeIt(TCHAR* pszPath);
 int		MainInit(void);
 bool	ProcessFile(LPCTSTR pszFileName);
 ULONGLONG	ReadFileIntoBuffer(LPCTSTR pszFileName, CString& cszBuffer);
-//bool	IsUnicodeFile(CSrcFile& cSrcFile);
+#if LOCALIZE_UNICODE_DETECTION_UNIMPLEMENTED
+bool	IsUnicodeFile(CSrcFile& cSrcFile);
+#endif
 
 extern TCHAR*	g_psTestArgv1;
 extern ULONG	g_uSectionCount;
