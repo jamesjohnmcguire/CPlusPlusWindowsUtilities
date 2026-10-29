@@ -11,7 +11,8 @@
 #include "Utils.h"
 
 Resource::Resource(
-	LPCTSTR ModulePath)
+	LPCTSTR ModulePath) :
+	m_ResourceModule(NULL)
 {
 	m_ModulePath = ModulePath;
 }
