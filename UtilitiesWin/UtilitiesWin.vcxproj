@@ -55,7 +55,7 @@
 	<ItemDefinitionGroup>
 		<ClCompile>
 			<AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
-			<AdditionalIncludeDirectories>$(SolutionDir)\Include;</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>$(SolutionDir)\Utilities\Utilities;$(SolutionDir)\Include;</AdditionalIncludeDirectories>
 			<ConformanceMode>true</ConformanceMode>
 			<LanguageStandard>stdcpp23</LanguageStandard>
 			<LanguageStandard_C>stdc17</LanguageStandard_C>
@@ -116,6 +116,12 @@
 		<ClCompile Include="TextEncoding.cpp" />
 		<ClCompile Include="TimeHelpers.cpp" />
 		<ClCompile Include="Utils.cpp" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Utilities\Utilities.vcxproj">
+			<Project>{7E733A03-874A-4663-B34F-83E8D87977D8}</Project>
+		</ProjectReference>
 	</ItemGroup>
 
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
