@@ -33,20 +33,20 @@ class DllExport Registry
 				LPCTSTR	pszSubKey,
 				bool	bOnlyIfEmpty);
 			DWORD GetDwordValue(
-				HKEY	KeyRoot,
-				LPCTSTR	KeyPath,
-				LPCTSTR	KeyVariable);
+				HKEY	keyRoot,
+				LPCTSTR	keyPath,
+				LPCTSTR	keyVariable);
 			TCHAR** GetSubKeyNames(
-				HKEY KeyRoot,
-				const TCHAR* RegKey,
-				DWORD*	KeyCount);
+				HKEY keyRoot,
+				const TCHAR* regKey,
+				DWORD*	keyCount);
 			DWORD GetSubKeysCount(
-				HKEY KeyRoot,
-				LPCTSTR RegKey);
+				HKEY keyRoot,
+				LPCTSTR regKey);
 			TCHAR* GetValue(
-				HKEY	KeyRoot,
-				LPCTSTR	RegKeyPath,
-				LPCTSTR	RegKeyVar);
+				HKEY	keyRoot,
+				LPCTSTR	regKeyPath,
+				LPCTSTR	regKeyVar);
 			LONG GetValue(
 				HKEY	hKeyRoot,
 				LPCTSTR	pszRegKeyPath,
@@ -59,8 +59,8 @@ class DllExport Registry
 				LPCTSTR	pszRegKeyVar,
 				LPCTSTR	pszValue);
 			LONG SetValue(
-				HKEY	KeyRoot,
-				LPCTSTR	RegKeyPath,
-				LPCTSTR	RegKeyVar,
-				DWORD	Value);
+				HKEY	keyRoot,
+				LPCTSTR	regKeyPath,
+				LPCTSTR	regKeyVar,
+				DWORD	value);
 };

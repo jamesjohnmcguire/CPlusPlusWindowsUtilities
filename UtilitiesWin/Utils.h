@@ -38,7 +38,7 @@ const ULONG CodePageUtf8			= 65001;	// Unicode UTF-8
 /////////////////////////////////////////////////////////////////////////////
 DllExport TCHAR*
 GetBaseFileName(
-	LPCTSTR	FileName);
+	LPCTSTR	fileName);
 
 /////////////////////////////////////////////////////////////////////////////
 // GetFileNameTempPath
@@ -47,22 +47,22 @@ GetBaseFileName(
 /////////////////////////////////////////////////////////////////////////////
 DllExport LPCTSTR
 GetFileNameTempPath(
-	LPCTSTR	FileName);
+	LPCTSTR	fileName);
 
 DllExport TCHAR*
 GetInstallPath(void);
 
 DllExport TCHAR*
 GetUserDataPath(
-	TCHAR*	FileName);
+	TCHAR*	fileName);
 
 DllExport TCHAR*
 GetTempFilePathName(
-	LPCTSTR	ApplicationName);
+	LPCTSTR	applicationName);
 
 DllExport LPCTSTR
 GetWindowsDllPath(
-	TCHAR*	FileName);
+	TCHAR*	fileName);
 
 /////////////////////////////////////////////////////////////////////////////
 // Language related utils
@@ -72,42 +72,42 @@ GetLanguageId();
 
 DllExport void
 SetLanguageId(
-	WORD	LangId,
-	HMODULE ResourceModule);
+	WORD	langId,
+	HMODULE resourceModule);
 
 /////////////////////////////////////////////////////////////////////////////
 // String related utils
 /////////////////////////////////////////////////////////////////////////////
 DllExport BYTE*
 ConcatStreams(
-	BYTE*	FirstStream,
-	DWORD	FirstStreamLength,
-	BYTE*	SecondStream,
-	DWORD	SecondStreamLength);
+	BYTE*	firstStream,
+	DWORD	firstStreamLength,
+	BYTE*	secondStream,
+	DWORD	secondStreamLength);
 #endif
 // allow InstallHelper to use
 
 DllExport TCHAR*
 ConcatStrings(
-	LPCTSTR	FirstString,
-	LPCTSTR	SecondString);
+	LPCTSTR	firstString,
+	LPCTSTR	secondString);
 
 // hide from InstallHelper
 #ifndef INSTALLHELPER_EXPORTS
 
 DllExport char*
 ConcatStringsA(
-	const char*	FirstString,
-	const char*	SecondString);
+	const char*	firstString,
+	const char*	secondString);
 DllExport TCHAR* __cdecl
 ConcatStringsV(
-	LPCTSTR	FirstString,
-	LPCTSTR	SecondString,
+	LPCTSTR	firstString,
+	LPCTSTR	secondString,
 	...);
 DllExport char* __cdecl
 ConcatStringsVA(
-	const char*	FirstString,
-	const char*	SecondString,
+	const char*	firstString,
+	const char*	secondString,
 	...);
 
 /////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ GetMultiByteString(
 	LPCWSTR szUnicodeString);
 DllExport char*
 GetMultiByteString(
-	ULONG	CodePage,
+	ULONG	codePage,
 	LPCWSTR szUnicodeString);
 DllExport char*
 GetMultiByteStringFromUnicodeString(
@@ -127,11 +127,11 @@ GetMultiByteStringFromUnicodeString(
 
 DllExport wchar_t*
 GetUnicodeString(
-	LPCSTR	MultiByteString);
+	LPCSTR	multiByteString);
 DllExport wchar_t*
 GetUnicodeString(
-	ULONG	CodePage,
-	LPCSTR	MultiByteString);
+	ULONG	codePage,
+	LPCSTR	multiByteString);
 DllExport int
 GetUnicodeStringFromMultiByteString(
 	LPCSTR		szMultiByteString,
@@ -149,67 +149,67 @@ GetUnicodeStringFromMultiByteString(
 /////////////////////////////////////////////////////////////////////////////
 DllExport TCHAR*
 GetStringCopy(
-	LPCTSTR	SourceString);
+	LPCTSTR	sourceString);
 
 // hide from InstallHelper
 #ifndef INSTALLHELPER_EXPORTS
 
 DllExport char*
 GetStringCopyA(
-	const char*	SourceString);
+	const char*	sourceString);
 
 DllExport TCHAR*
 GetStringCopyAmount(
-	LPCTSTR	SourceString,
-	size_t	Amount);
+	LPCTSTR	sourceString,
+	size_t	amount);
 
 DllExport char*
 GetStringCopyAmountA(
-	const char*	SourceString,
-	size_t		Amount);
+	const char*	sourceString,
+	size_t		amount);
 
 DllExport TCHAR*
 StringSprintfInt(
-	TCHAR*	OriginalString,
-	int	Number);
+	TCHAR*	originalString,
+	int	number);
 
 constexpr DllExport bool IsUtf8BomMark(
-	BYTE ByteInQuestion) noexcept;
+	BYTE byteInQuestion) noexcept;
 
 /////////////////////////////////////////////////////////////////////////////
 // Test related utils
 /////////////////////////////////////////////////////////////////////////////
 DllExport void
 ShowTestResult(
-	TCHAR * TestName,
-	long TestResult);
+	TCHAR * testName,
+	long testResult);
 
 DllExport void
 ShowConditionResult(
-	TCHAR * TestName,
-	long TestResult,
-	long ExpectedResult);
+	TCHAR * testName,
+	long testResult,
+	long expectedResult);
 DllExport void
 ShowConditionResultNot(
-	TCHAR * TestName,
-	long TestResult,
-	long ExpectedResult);
+	TCHAR * testName,
+	long testResult,
+	long expectedResult);
 DllExport void
 ShowConditionResultNot(
-	TCHAR*	TestName,
-	void*	TestResult,
-	void*	ExpectedResult);
+	TCHAR*	testName,
+	void*	testResult,
+	void*	expectedResult);
 
 /////////////////////////////////////////////////////////////////////////////
 // Misc functions
 /////////////////////////////////////////////////////////////////////////////
 DllExport bool
 IsEmailValid(
-	const TCHAR* Address);
+	const TCHAR* address);
 
 DllExport bool
 GetLastErrorInfo(
-	HMODULE	ModuleHandle);
+	HMODULE	moduleHandle);
 #endif
 
 int GetDigitsFromString(char* str, int index);

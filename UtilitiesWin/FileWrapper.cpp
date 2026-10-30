@@ -28,18 +28,18 @@
 // Store an owned filename so the caller's buffer can change or be released.
 /////////////////////////////////////////////////////////////////////////////
 FileWrapper::FileWrapper(
-	LPCTSTR FileName)
+	LPCTSTR sourceFileName)
 {
-	if (FileName != nullptr)
+	if (sourceFileName != nullptr)
 	{
-		fileName = FileName;
+		fileName = sourceFileName;
 	}
 }
 
 FileWrapper::FileWrapper(
-	LPCSTR FileName)
+	LPCSTR sourceFileName)
 {
-	std::unique_ptr<wchar_t[]> converted(GetUnicodeString(FileName));
+	std::unique_ptr<wchar_t[]> converted(GetUnicodeString(sourceFileName));
 	if (converted != nullptr)
 	{
 		fileName = converted.get();
@@ -53,14 +53,14 @@ FileWrapper::~FileWrapper(void) = default;
 /////////////////////////////////////////////////////////////////////////////
 bool
 	FileWrapper::Append(
-	BYTE*	Contents,
-	DWORD	ContentsLength)
+	BYTE*	contents,
+	DWORD	contentsLength)
 {
-	bool	ReturnCode	= false;
+	bool	returnCode	= false;
 
-	if (!fileName.empty() && (NULL != Contents))
+	if (!fileName.empty() && (NULL != contents))
 	{
-		HANDLE	FileHandle	= CreateFile(fileName.c_str(),
+		HANDLE	fileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -68,24 +68,24 @@ bool
 			0,
 			0);
 
-		if (INVALID_HANDLE_VALUE != FileHandle)
+		if (INVALID_HANDLE_VALUE != fileHandle)
 		{
-			DWORD	BytesRead	= 0;
+			DWORD	bytesRead	= 0;
 
-			SetFilePointer(FileHandle, 0, NULL, FILE_END);
+			SetFilePointer(fileHandle, 0, NULL, FILE_END);
 
-			BOOL	ResultCode	= WriteFile(FileHandle, Contents, ContentsLength, &BytesRead, NULL);
+			BOOL	resultCode	= WriteFile(fileHandle, contents, contentsLength, &bytesRead, NULL);
 
-			CloseHandle(FileHandle);
+			CloseHandle(fileHandle);
 
-			if (FALSE != ResultCode)
+			if (FALSE != resultCode)
 			{
-				ReturnCode	= true;
+				returnCode	= true;
 			}
 		}
 	}
 
-	return ReturnCode;
+	return returnCode;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -93,14 +93,14 @@ bool
 /////////////////////////////////////////////////////////////////////////////
 bool
 	FileWrapper::Create(
-	BYTE*	Contents,
-	DWORD	ContentsLength)
+	BYTE*	contents,
+	DWORD	contentsLength)
 {
-	bool	ReturnCode	= false;
+	bool	returnCode	= false;
 
-	if (!fileName.empty() && (NULL != Contents))
+	if (!fileName.empty() && (NULL != contents))
 	{
-		HANDLE	FileHandle	= CreateFile(fileName.c_str(),
+		HANDLE	fileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -108,22 +108,22 @@ bool
 			0,
 			0);
 
-		if (INVALID_HANDLE_VALUE != FileHandle)
+		if (INVALID_HANDLE_VALUE != fileHandle)
 		{
-			DWORD	BytesRead	= 0;
+			DWORD	bytesRead	= 0;
 
-			BOOL	ResultCode	= WriteFile(FileHandle, Contents, ContentsLength, &BytesRead, NULL);
+			BOOL	resultCode	= WriteFile(fileHandle, contents, contentsLength, &bytesRead, NULL);
 
-			CloseHandle(FileHandle);
+			CloseHandle(fileHandle);
 
-			if (FALSE != ResultCode)
+			if (FALSE != resultCode)
 			{
-				ReturnCode	= true;
+				returnCode	= true;
 			}
 		}
 	}
 
-	return ReturnCode;
+	return returnCode;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -131,13 +131,13 @@ bool
 /////////////////////////////////////////////////////////////////////////////
 BYTE*
 	FileWrapper::Read(
-	DWORD*	ContentsLength)
+	DWORD*	contentsLength)
 {
-	BYTE*	InputContents = NULL;
+	BYTE*	inputContents = NULL;
 
 	if (!fileName.empty())
 	{
-		HANDLE	FileHandle	= CreateFile(fileName.c_str(),
+		HANDLE	fileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -145,34 +145,34 @@ BYTE*
 			0,
 			0);
 
-		if (INVALID_HANDLE_VALUE != FileHandle)
+		if (INVALID_HANDLE_VALUE != fileHandle)
 		{
-			DWORD	ContentsSize	= GetFileSize(FileHandle, NULL) + 2;
+			DWORD	contentsSize	= GetFileSize(fileHandle, NULL) + 2;
 
-			if (0 < ContentsSize )
+			if (0 < contentsSize )
 			{
-				InputContents = new BYTE[ContentsSize];
+				inputContents = new BYTE[contentsSize];
 
-				if (NULL != InputContents)
+				if (NULL != inputContents)
 				{
-					DWORD	BytesRead	= 0;
+					DWORD	bytesRead	= 0;
 
-					SecureZeroMemory(InputContents, ContentsSize);
+					SecureZeroMemory(inputContents, contentsSize);
 
-					BOOL	ResultCode	= ReadFile(FileHandle, InputContents, ContentsSize, &BytesRead, NULL) ;
+					BOOL	resultCode	= ReadFile(fileHandle, inputContents, contentsSize, &bytesRead, NULL) ;
 
-					CloseHandle(FileHandle);
+					CloseHandle(fileHandle);
 
-					if (FALSE != ResultCode)
+					if (FALSE != resultCode)
 					{
-						*ContentsLength	= ContentsSize;
+						*contentsLength	= contentsSize;
 					}
 				}
 			}
 		}
 	}
 
-	return InputContents;
+	return inputContents;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -181,11 +181,11 @@ BYTE*
 char*
 	FileWrapper::ReadText(void)
 {
-	char*	InputContents = NULL;
+	char*	inputContents = NULL;
 
 	if (!fileName.empty())
 	{
-		HANDLE	FileHandle	= CreateFile(fileName.c_str(),
+		HANDLE	fileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -193,33 +193,33 @@ char*
 			0,
 			0);
 
-		if (INVALID_HANDLE_VALUE != FileHandle)
+		if (INVALID_HANDLE_VALUE != fileHandle)
 		{
-			DWORD	ContentsSize	= GetFileSize(FileHandle, NULL) + 1;
+			DWORD	contentsSize	= GetFileSize(fileHandle, NULL) + 1;
 
-			if (0 < ContentsSize )
+			if (0 < contentsSize )
 			{
-				InputContents = new char[ContentsSize];
+				inputContents = new char[contentsSize];
 
-				if (NULL != InputContents)
+				if (NULL != inputContents)
 				{
-					DWORD	BytesRead	= 0;
+					DWORD	bytesRead	= 0;
 
-					SecureZeroMemory(InputContents, ContentsSize);
+					SecureZeroMemory(inputContents, contentsSize);
 
-					BOOL result = ReadFile(FileHandle, InputContents, ContentsSize, &BytesRead, NULL) ;
+					BOOL result = ReadFile(fileHandle, inputContents, contentsSize, &bytesRead, NULL) ;
 
 					if (result == FALSE)
 					{
 					}
 
-					CloseHandle(FileHandle);
+					CloseHandle(fileHandle);
 				}
 			}
 		}
 	}
 
-	return InputContents;
+	return inputContents;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -228,11 +228,11 @@ char*
 TCHAR*
 	FileWrapper::ReadUnicodeText(void)
 {
-	TCHAR*	InputContents = NULL;
+	TCHAR*	inputContents = NULL;
 
 	if (!fileName.empty())
 	{
-		HANDLE	FileHandle	= CreateFile(fileName.c_str(),
+		HANDLE	fileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -240,31 +240,31 @@ TCHAR*
 			0,
 			0);
 
-		if (INVALID_HANDLE_VALUE != FileHandle)
+		if (INVALID_HANDLE_VALUE != fileHandle)
 		{
-			DWORD	ContentsSize	= GetFileSize(FileHandle, NULL) / sizeof(TCHAR) + 2;
+			DWORD	contentsSize	= GetFileSize(fileHandle, NULL) / sizeof(TCHAR) + 2;
 
-			if (0 < ContentsSize )
+			if (0 < contentsSize )
 			{
-				InputContents = new TCHAR[ContentsSize];
+				inputContents = new TCHAR[contentsSize];
 
-				if (NULL != InputContents)
+				if (NULL != inputContents)
 				{
-					DWORD	BytesRead	= 0;
+					DWORD	bytesRead	= 0;
 
-					SecureZeroMemory(InputContents, ContentsSize);
+					SecureZeroMemory(inputContents, contentsSize);
 
-					BOOL result = ReadFile(FileHandle, InputContents, ContentsSize, &BytesRead, NULL) ;
+					BOOL result = ReadFile(fileHandle, inputContents, contentsSize, &bytesRead, NULL) ;
 
 					if (result == FALSE)
 					{
 					}
 
-					CloseHandle(FileHandle);
+					CloseHandle(fileHandle);
 				}
 			}
 		}
 	}
 
-	return InputContents;
+	return inputContents;
 }

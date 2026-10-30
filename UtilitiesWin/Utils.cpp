@@ -48,11 +48,11 @@ static ULONG alternativeCodePages[] = {CodePageUtf8, CodePageUsAscii, 0};
 /////////////////////////////////////////////////////////////////////////////
 bool
 AllowConversionFlags(
-	ULONG CodePage)
+	ULONG codePage)
 {
-	bool ReturnCode = true;
+	bool returnCode = true;
 
-	switch (CodePage)
+	switch (codePage)
 	{
 	case 50220:
 	case 50221:
@@ -76,17 +76,17 @@ AllowConversionFlags(
 	case 65001:
 	case 42:
 	{
-		ReturnCode = false;
+		returnCode = false;
 		break;
 	}
 	default:
 	{
-		ReturnCode = true;
+		returnCode = true;
 		break;
 	}
 	}
 
-	return ReturnCode;
+	return returnCode;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -94,98 +94,98 @@ AllowConversionFlags(
 // Caller is responsible for 'delete'ing the return stream.
 /////////////////////////////////////////////////////////////////////////////
 BYTE* ConcatStreams(BYTE* firstStream, DWORD firstStreamLength,
-	BYTE* SecondStream, DWORD SecondStreamLength)
+	BYTE* secondStream, DWORD secondStreamLength)
 {
-	BYTE* ConcatStream	= NULL;
+	BYTE* concatStream	= NULL;
 
 	// if both null, nothing to do
-	if ((NULL != firstStream) || (NULL != SecondStream))
+	if ((NULL != firstStream) || (NULL != secondStream))
 	{
 		try
 		{
 			// even though we shouldn't assume these are strings, we want to insure
 			// the buffer is zero-terminated.
 			// there are some situations, where a memory blob is cast as a string.
-			const DWORD	ConcatStreamLength =
-				firstStreamLength + SecondStreamLength + 2;
+			const DWORD	concatStreamLength =
+				firstStreamLength + secondStreamLength + 2;
 
-			ConcatStream = new BYTE[ConcatStreamLength];
+			concatStream = new BYTE[concatStreamLength];
 
-			SecureZeroMemory(ConcatStream, ConcatStreamLength);
-			errno_t ErrorCode = memcpy_s(ConcatStream, ConcatStreamLength,
+			SecureZeroMemory(concatStream, concatStreamLength);
+			errno_t errorCode = memcpy_s(concatStream, concatStreamLength,
 				firstStream, firstStreamLength);
-			if ((ErrorCode == 0) || (ErrorCode == EINVAL))
+			if ((errorCode == 0) || (errorCode == EINVAL))
 			{
-				BYTE* SecondPart = ConcatStream + firstStreamLength;
+				BYTE* secondPart = concatStream + firstStreamLength;
 
-				ErrorCode = memcpy_s(SecondPart,
-					ConcatStreamLength - firstStreamLength,
-					SecondStream,
-					SecondStreamLength);
+				errorCode = memcpy_s(secondPart,
+					concatStreamLength - firstStreamLength,
+					secondStream,
+					secondStreamLength);
 
-				if ((ErrorCode != 0) && (ErrorCode != EINVAL))
+				if ((errorCode != 0) && (errorCode != EINVAL))
 				{
-					SetLastError(ErrorCode);
+					SetLastError(errorCode);
 					throw;
 				}
 			}
 			else
 			{
-				SetLastError(ErrorCode);
+				SetLastError(errorCode);
 				throw;
 			}
 		}
-		catch(const TCHAR* Exception)
+		catch(const TCHAR* caughtException)
 		{
 			// log
-			OutputDebugString(Exception);
+			OutputDebugString(caughtException);
 			throw;
 		}
 	}
 
-	return ConcatStream;
+	return concatStream;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // ConcatStrings
 // Caller is responsible for 'deleting the string.
 /////////////////////////////////////////////////////////////////////////////
-TCHAR* ConcatStrings(LPCTSTR FirstString, LPCTSTR SecondString)
+TCHAR* ConcatStrings(LPCTSTR firstString, LPCTSTR secondString)
 {
-	TCHAR*	ConcatString = NULL;
+	TCHAR*	concatString = NULL;
 
-	if ((NULL != FirstString) || (NULL != SecondString))
+	if ((NULL != firstString) || (NULL != secondString))
 	{
 		try
 		{
-			if (NULL == FirstString)
+			if (NULL == firstString)
 			{
-				ConcatString = GetStringCopy(SecondString);
+				concatString = GetStringCopy(secondString);
 			}
-			else if (NULL == SecondString)
+			else if (NULL == secondString)
 			{
-				ConcatString = GetStringCopy(FirstString);
+				concatString = GetStringCopy(firstString);
 			}
 			else
 			{
-				const UINT	ConcatStringLength = (UINT)_tcslen(FirstString) +
-					(UINT)_tcslen(SecondString) +
+				const UINT	concatStringLength = (UINT)_tcslen(firstString) +
+					(UINT)_tcslen(secondString) +
 					1;
 
-				ConcatString = new TCHAR[ConcatStringLength];
+				concatString = new TCHAR[concatStringLength];
 
-				_tcscpy_s(ConcatString, ConcatStringLength, FirstString);
-				_tcscat_s(ConcatString, ConcatStringLength, SecondString);
+				_tcscpy_s(concatString, concatStringLength, firstString);
+				_tcscat_s(concatString, concatStringLength, secondString);
 			}
 		}
-		catch (const TCHAR* Exception)
+		catch (const TCHAR* caughtException)
 		{
 			// log
-			OutputDebugString(Exception);
+			OutputDebugString(caughtException);
 			throw;
 		}
 	}
-	return ConcatString;
+	return concatString;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -195,43 +195,43 @@ TCHAR* ConcatStrings(LPCTSTR FirstString, LPCTSTR SecondString)
 //
 // Caller is responsible for deleting the string.
 /////////////////////////////////////////////////////////////////////////////
-char* ConcatStringsA(const char* FirstString, const char* SecondString)
+char* ConcatStringsA(const char* firstString, const char* secondString)
 {
-	char*	ConcatString		= NULL;
+	char*	concatString		= NULL;
 
-	if ((NULL != FirstString) || (NULL != SecondString))
+	if ((NULL != firstString) || (NULL != secondString))
 	{
 		try
 		{
-			if (NULL == FirstString)
+			if (NULL == firstString)
 			{
-				ConcatString = GetStringCopyA(SecondString);
+				concatString = GetStringCopyA(secondString);
 			}
-			else if (NULL == SecondString)
+			else if (NULL == secondString)
 			{
-				ConcatString = GetStringCopyA(FirstString);
+				concatString = GetStringCopyA(firstString);
 			}
 			else
 			{
-				const UINT	ConcatStringLength = (UINT)strlen(FirstString) +
-					(UINT)strlen(SecondString) +
+				const UINT	concatStringLength = (UINT)strlen(firstString) +
+					(UINT)strlen(secondString) +
 					1;
 
-				ConcatString = new char[ConcatStringLength];
+				concatString = new char[concatStringLength];
 
-				strcpy_s(ConcatString, ConcatStringLength, FirstString);
-				strcat_s(ConcatString, ConcatStringLength, SecondString);
+				strcpy_s(concatString, concatStringLength, firstString);
+				strcat_s(concatString, concatStringLength, secondString);
 			}
 		}
-		catch(const TCHAR* Exception)
+		catch(const TCHAR* caughtException)
 		{
 			// log
-			OutputDebugString(Exception);
+			OutputDebugString(caughtException);
 			throw;
 		}
 	}
 
-	return ConcatString;
+	return concatString;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -275,31 +275,31 @@ TCHAR* __cdecl ConcatStringsV(LPCTSTR firstString, LPCTSTR secondString, ...)
 //
 // Caller is responsible for deleting the string.
 /////////////////////////////////////////////////////////////////////////////
-char* __cdecl ConcatStringsVA(const char* FirstString,
-	const char* SecondString, ...)
+char* __cdecl ConcatStringsVA(const char* firstString,
+	const char* secondString, ...)
 {
-	char*	NewString	= NULL;
-	va_list	Arguments;
+	char*	newString	= NULL;
+	va_list	arguments;
 
-	va_start( Arguments, SecondString );
+	va_start( arguments, secondString );
 
-	const char*	OldString	= NewString = ConcatStringsA(FirstString, SecondString);
+	const char*	oldString	= newString = ConcatStringsA(firstString, secondString);
 
-	const char*	NextArg	= va_arg( Arguments, const char*);
+	const char*	nextArg	= va_arg( arguments, const char*);
 
-	while (NULL != NextArg)
+	while (NULL != nextArg)
 	{
-		NewString	= ConcatStringsA(OldString, NextArg);
+		newString	= ConcatStringsA(oldString, nextArg);
 
-		delete OldString;
-		OldString	= NewString;
+		delete oldString;
+		oldString	= newString;
 
-		NextArg	= va_arg( Arguments, const char*);
+		nextArg	= va_arg( arguments, const char*);
 	}
 
-	va_end( Arguments );
+	va_end( arguments );
 
-	return	NewString;
+	return	newString;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -318,62 +318,62 @@ char* __cdecl ConcatStringsVA(const char* FirstString,
 /////////////////////////////////////////////////////////////////////////////
 DllExport char *
 	GetMultiByteStringFromUnicodeString(
-	LPCWSTR	UnicodeString,
-	ULONG	CodePage)
+	LPCWSTR	unicodeString,
+	ULONG	codePage)
 {
 	const BOOL	bUsedDefChar	= FALSE;
 	int		nCharsWritten = 0;
-	char*	MultiByteString = NULL;
+	char*	multiByteString = NULL;
 	try
 	{
-		if (UnicodeString)
+		if (unicodeString)
 		{
 			// If no code page specified, take default for system
-			if (-1 == CodePage)
+			if (-1 == codePage)
 			{
-				CodePage = GetACP();
+				codePage = GetACP();
 			}
 
-			const int MultiByteBufferSize = WideCharToMultiByte( CodePage,
+			const int multiByteBufferSize = WideCharToMultiByte( codePage,
 				0,
-				UnicodeString,
+				unicodeString,
 				-1,
 				NULL,
 				0,
 				NULL,
 				NULL);
 
-			MultiByteString = new char[MultiByteBufferSize];
+			multiByteString = new char[multiByteBufferSize];
 
 			// Zero out buffer first
-			memset((void*)MultiByteString, '\0', MultiByteBufferSize);
+			memset((void*)multiByteString, '\0', multiByteBufferSize);
 
-			DWORD Flags	= WC_COMPOSITECHECK | WC_SEPCHARS;
+			DWORD flags	= WC_COMPOSITECHECK | WC_SEPCHARS;
 
-			const bool UseFlags	= AllowConversionFlags(CodePage);
+			const bool useFlags	= AllowConversionFlags(codePage);
 
-			if (false == UseFlags)
+			if (false == useFlags)
 			{
-				Flags	= 0;
+				flags	= 0;
 			}
 
 			// If writing to UTF8, flags, default char and boolean flag must be NULL
-			nCharsWritten = WideCharToMultiByte(CodePage,
-				Flags,
-				UnicodeString,
+			nCharsWritten = WideCharToMultiByte(codePage,
+				flags,
+				unicodeString,
 				-1,
-				MultiByteString,
-				MultiByteBufferSize,
+				multiByteString,
+				multiByteBufferSize,
 				NULL,
 				NULL);
 
 			// If no chars were written and the buffer is not 0, error!
-			if (nCharsWritten == 0 && MultiByteBufferSize > 0)
+			if (nCharsWritten == 0 && multiByteBufferSize > 0)
 			{
-				TCHAR	ErrorMessage[256];
-				_stprintf_s(ErrorMessage, _T("\r\nError in WideCharToMultiByte: %d\r\n"), GetLastError());
-				OutputDebugString(ErrorMessage);
-				MultiByteString[0]	= '\0';
+				TCHAR	errorMessage[256];
+				_stprintf_s(errorMessage, _T("\r\nError in WideCharToMultiByte: %d\r\n"), GetLastError());
+				OutputDebugString(errorMessage);
+				multiByteString[0]	= '\0';
 			}
 		}
 
@@ -385,7 +385,7 @@ DllExport char *
 		else
 		{
 #if EMPTY_MULTIBYTE_STRING_TERMINATOR
-			MultiByteString[0]	= '\0';
+			multiByteString[0]	= '\0';
 #endif
 		}
 	}
@@ -394,48 +394,48 @@ DllExport char *
 		OutputDebugString(_T("Controlled exception in WideCharToMultiByte!\n"));
 	}
 
-	return MultiByteString;
+	return multiByteString;
 }
 
 char*
 	GetMultiByteString(
-	LPCTSTR UnicodeString)
+	LPCTSTR unicodeString)
 {
 	// if this is not a Unicode build, just use the string itself.
 	// this function is then essentially a NOP, but its stamped all over the place.
 #ifndef UNICODE
-	return UnicodeString;
+	return unicodeString;
 #else
-	char* MultiByteString	= NULL;
+	char* multiByteString	= NULL;
 
-	if (NULL != UnicodeString)
+	if (NULL != unicodeString)
 	{
-		MultiByteString = GetMultiByteStringFromUnicodeString(	UnicodeString,
+		multiByteString = GetMultiByteStringFromUnicodeString(	unicodeString,
 			-1);
 	}
 
-	return MultiByteString;
+	return multiByteString;
 #endif
 }
 
 char*
 	GetMultiByteString(
-	ULONG	CodePage,
-	LPCTSTR UnicodeString)
+	ULONG	codePage,
+	LPCTSTR unicodeString)
 {
 	// if this is not a Unicode build, just use the string itself.
 	// this function is then essentially a NOP, but its stamped all over the place.
 #ifndef UNICODE
-	return UnicodeString;
+	return unicodeString;
 #else
-	char* MultiByteString	= NULL;
+	char* multiByteString	= NULL;
 
-	if (NULL != UnicodeString) {
-		MultiByteString = GetMultiByteStringFromUnicodeString(	UnicodeString,
-			CodePage);
+	if (NULL != unicodeString) {
+		multiByteString = GetMultiByteStringFromUnicodeString(	unicodeString,
+			codePage);
 	}
 
-	return MultiByteString;
+	return multiByteString;
 #endif
 }
 
@@ -446,32 +446,32 @@ char*
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
 	GetStringCopyAmount(
-	LPCTSTR	SourceString,
-	size_t	Amount)
+	LPCTSTR	sourceString,
+	size_t	amount)
 {
-	TCHAR* StringCopy = NULL;
+	TCHAR* stringCopy = NULL;
 
-	if (NULL != SourceString)
+	if (NULL != sourceString)
 	{
-		const BOOL BadString	= IsBadStringPtr(SourceString,(UINT_PTR)-1);
+		const BOOL badString	= IsBadStringPtr(sourceString,(UINT_PTR)-1);
 
-		if (FALSE == BadString)
+		if (FALSE == badString)
 		{
-			const size_t	SourceStringLength = (_tcslen(SourceString) + 1) * sizeof(TCHAR);
+			const size_t	sourceStringLength = (_tcslen(sourceString) + 1) * sizeof(TCHAR);
 
-			StringCopy = new TCHAR[Amount+1];
+			stringCopy = new TCHAR[amount+1];
 
-			if (NULL != StringCopy)
+			if (NULL != stringCopy)
 			{
-				_tcsncpy_s(	StringCopy,
-					Amount+1,
-					SourceString,
-					Amount);
+				_tcsncpy_s(	stringCopy,
+					amount+1,
+					sourceString,
+					amount);
 			}
 		}
 	}
 
-	return StringCopy;
+	return stringCopy;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -481,27 +481,27 @@ TCHAR*
 /////////////////////////////////////////////////////////////////////////////
 char*
 	GetStringCopyAmountA(
-	const char*	SourceString,
-	size_t		Amount)
+	const char*	sourceString,
+	size_t		amount)
 {
-	char* StringCopy = NULL;
+	char* stringCopy = NULL;
 
-	if (SourceString != nullptr)
+	if (sourceString != nullptr)
 	{
-		const size_t	SourceStringLength = (strlen(SourceString) + 1);
+		const size_t	sourceStringLength = (strlen(sourceString) + 1);
 
-		StringCopy = new char[Amount+1];
+		stringCopy = new char[amount+1];
 
-		if (NULL != StringCopy)
+		if (NULL != stringCopy)
 		{
-			strncpy_s(	StringCopy,
-				Amount+1,
-				SourceString,
-				Amount);
+			strncpy_s(	stringCopy,
+				amount+1,
+				sourceString,
+				amount);
 		}
 	}
 
-	return StringCopy;
+	return stringCopy;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -509,14 +509,14 @@ char*
 /////////////////////////////////////////////////////////////////////////////
 constexpr bool IsUtf8BomMark(BYTE byteInQuestion) noexcept
 {
-	bool	Utf8BomMark	= false;
+	bool	utf8BomMark	= false;
 
 	if (0xEF == byteInQuestion)
 	{
-		Utf8BomMark	= true;
+		utf8BomMark	= true;
 	}
 
-	return Utf8BomMark;
+	return utf8BomMark;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -526,28 +526,28 @@ constexpr bool IsUtf8BomMark(BYTE byteInQuestion) noexcept
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
 	GetBaseFileName(
-	LPCTSTR	FileName)
+	LPCTSTR	fileName)
 {
-	TCHAR*	BaseFileName	= NULL;
+	TCHAR*	baseFileName	= NULL;
 
-	if (NULL != FileName)
+	if (NULL != fileName)
 	{
-		LPCTSTR	Found	= _tcsrchr(FileName, _T('\\'));
+		LPCTSTR	found	= _tcsrchr(fileName, _T('\\'));
 
-		if (NULL != Found)
+		if (NULL != found)
 		{
 			// get past the slash
-			Found++;
+			found++;
 
-			BaseFileName	= GetStringCopy(Found);
+			baseFileName	= GetStringCopy(found);
 		}
 		else
 		{
-			BaseFileName	= GetStringCopy(FileName);
+			baseFileName	= GetStringCopy(fileName);
 		}
 	}
 
-	return BaseFileName;
+	return baseFileName;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -557,38 +557,38 @@ TCHAR*
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
 	GetUserDataPath(
-	TCHAR*	FileName)
+	TCHAR*	fileName)
 {
-	TCHAR*	DataFilePath	= NULL;
-	TCHAR*	UserDataPath	= new TCHAR[MAX_PATH];
+	TCHAR*	dataFilePath	= NULL;
+	TCHAR*	userDataPath	= new TCHAR[MAX_PATH];
 
-	const HRESULT	ResultCode	= SHGetFolderPath(	NULL,
+	const HRESULT	resultCode	= SHGetFolderPath(	NULL,
 		CSIDL_PERSONAL|CSIDL_FLAG_CREATE,
 		NULL,
 		SHGFP_TYPE_CURRENT,
-		UserDataPath);
+		userDataPath);
 
-	if(FAILED(ResultCode))
+	if(FAILED(resultCode))
 	{
 	}
 	else
 	{
-		if (FileName[0] != '\\')
+		if (fileName[0] != '\\')
 		{
-			TCHAR*	TempUserDataPath = ConcatStrings(UserDataPath, _T("\\"));
-			delete[] UserDataPath;
-			UserDataPath	= TempUserDataPath;
+			TCHAR*	tempUserDataPath = ConcatStrings(userDataPath, _T("\\"));
+			delete[] userDataPath;
+			userDataPath	= tempUserDataPath;
 		}
 
-		DataFilePath	= ConcatStrings(UserDataPath, FileName);
+		dataFilePath	= ConcatStrings(userDataPath, fileName);
 
-		if (NULL != UserDataPath)
+		if (NULL != userDataPath)
 		{
-			delete[] UserDataPath;
+			delete[] userDataPath;
 		}
 	}
 
-	return DataFilePath;
+	return dataFilePath;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -598,80 +598,80 @@ TCHAR*
 /////////////////////////////////////////////////////////////////////////////
 LPCTSTR
 	GetWindowsDllPath(
-	TCHAR*	FileName)
+	TCHAR*	fileName)
 {
-	TCHAR*	DataFilePath	= NULL;
-	TCHAR*	UserDataPath	= new TCHAR[MAX_PATH];
+	TCHAR*	dataFilePath	= NULL;
+	TCHAR*	userDataPath	= new TCHAR[MAX_PATH];
 
-	const HRESULT	ResultCode	= SHGetFolderPath(	NULL,
+	const HRESULT	resultCode	= SHGetFolderPath(	NULL,
 		CSIDL_WINDOWS|CSIDL_FLAG_CREATE,
 		NULL,
 		SHGFP_TYPE_CURRENT,
-		UserDataPath);
+		userDataPath);
 
-	if(FAILED(ResultCode))
+	if(FAILED(resultCode))
 	{
 	}
 	else
 	{
-		if (FileName[0] != '\\')
+		if (fileName[0] != '\\')
 		{
-			TCHAR*	TempUserDataPath = ConcatStrings(UserDataPath, _T("\\"));
-			delete[] UserDataPath;
-			UserDataPath	= TempUserDataPath;
+			TCHAR*	tempUserDataPath = ConcatStrings(userDataPath, _T("\\"));
+			delete[] userDataPath;
+			userDataPath	= tempUserDataPath;
 		}
 
-		DataFilePath	= ConcatStrings(UserDataPath, FileName);
+		dataFilePath	= ConcatStrings(userDataPath, fileName);
 
-		if (NULL != UserDataPath)
+		if (NULL != userDataPath)
 		{
-			delete[] UserDataPath;
+			delete[] userDataPath;
 		}
 	}
 
-	return DataFilePath;
+	return dataFilePath;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // GetFileNameTempPath
 /////////////////////////////////////////////////////////////////////////////
 LPCTSTR	GetFileNameTempPath(
-	LPCTSTR	FileName)
+	LPCTSTR	fileName)
 {
-	TCHAR*	FileNameTempPath		= NULL;
-	const TCHAR*	FriendlyFileNameBase	= GetBaseFileName(FileName);
+	TCHAR*	fileNameTempPath		= NULL;
+	const TCHAR*	friendlyFileNameBase	= GetBaseFileName(fileName);
 
-	if (NULL != FriendlyFileNameBase)
+	if (NULL != friendlyFileNameBase)
 	{
-		TCHAR	TempPath[MAX_PATH]	= {0};
+		TCHAR	tempPath[MAX_PATH]	= {0};
 
-		GetTempPath(MAX_PATH, TempPath);
+		GetTempPath(MAX_PATH, tempPath);
 
-		FileNameTempPath = ConcatStrings(TempPath, FriendlyFileNameBase);
+		fileNameTempPath = ConcatStrings(tempPath, friendlyFileNameBase);
 	}
 
-	return FileNameTempPath;
+	return fileNameTempPath;
 }
 
 char*
 GetStringCopyA(
-	const char*	SourceString)
+	const char*	sourceString)
 {
-	char* StringCopy = NULL;
+	char* stringCopy = NULL;
 
-	if (SourceString != nullptr)
+	if (sourceString != nullptr)
 	{
-		const size_t	SourceStringLength = strlen(SourceString) + 1;
+		const size_t	sourceStringLength = strlen(sourceString) + 1;
 
-		StringCopy = new char[SourceStringLength];
+		stringCopy = new char[sourceStringLength];
 
-		if (NULL != StringCopy)
+		if (NULL != stringCopy)
 		{
-			strcpy_s(StringCopy, SourceStringLength, SourceString);
+			strcpy_s(stringCopy, sourceStringLength, sourceString);
 		}
 	}
 
-	return StringCopy;
+	return stringCopy;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -679,18 +679,18 @@ GetStringCopyA(
 /////////////////////////////////////////////////////////////////////////////
 wchar_t*
 GetUnicodeString(
-	LPCSTR	MultiByteString)
+	LPCSTR	multiByteString)
 {
-	wchar_t*	UnicodeString = NULL;
+	wchar_t*	unicodeString = NULL;
 
-	if (NULL != MultiByteString)
+	if (NULL != multiByteString)
 	{
-		const size_t	StringLength = strlen(MultiByteString) + 1;
-		UnicodeString = new wchar_t[StringLength];
-		GetUnicodeStringFromMultiByteString(MultiByteString, UnicodeString, (int)StringLength, -1);
+		const size_t	stringLength = strlen(multiByteString) + 1;
+		unicodeString = new wchar_t[stringLength];
+		GetUnicodeStringFromMultiByteString(multiByteString, unicodeString, (int)stringLength, -1);
 	}
 
-	return UnicodeString;
+	return unicodeString;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -698,19 +698,19 @@ GetUnicodeString(
 /////////////////////////////////////////////////////////////////////////////
 wchar_t*
 GetUnicodeString(
-	ULONG	CodePage,
-	LPCSTR	MultiByteString)
+	ULONG	codePage,
+	LPCSTR	multiByteString)
 {
-	wchar_t*	UnicodeString = NULL;
+	wchar_t*	unicodeString = NULL;
 
-	if (NULL != MultiByteString)
+	if (NULL != multiByteString)
 	{
-		const size_t	StringLength = strlen(MultiByteString) + 1;
-		UnicodeString = new wchar_t[StringLength];
-		GetUnicodeStringFromMultiByteString(MultiByteString, UnicodeString, (int)StringLength, CodePage);
+		const size_t	stringLength = strlen(multiByteString) + 1;
+		unicodeString = new wchar_t[stringLength];
+		GetUnicodeStringFromMultiByteString(multiByteString, unicodeString, (int)stringLength, codePage);
 	}
 
-	return UnicodeString;
+	return unicodeString;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -743,13 +743,13 @@ int GetUnicodeStringFromMultiByteString(
 			nCodePage = GetACP();
 		}
 
-		DWORD Flags = MB_PRECOMPOSED;
+		DWORD flags = MB_PRECOMPOSED;
 
-		const bool UseFlags = AllowConversionFlags(nCodePage);
+		const bool useFlags = AllowConversionFlags(nCodePage);
 
-		if (false == UseFlags)
+		if (false == useFlags)
 		{
-			Flags = 0;
+			flags = 0;
 		}
 
 		try
@@ -761,7 +761,7 @@ int GetUnicodeStringFromMultiByteString(
 			// When converting to UTF8, don't set any flags (see Q175392).
 			for (int codePageIndex = 0;;) {
 				nCharsWritten = MultiByteToWideChar(nCodePage,
-					Flags,
+					flags,
 					szMultiByteString,
 					-1,
 					szUnicodeString,
@@ -799,22 +799,22 @@ int GetUnicodeStringFromMultiByteString(
 	return nCharsWritten;
 }
 
-char* GetUtfMultiByteString(LPCTSTR UnicodeString)
+char* GetUtfMultiByteString(LPCTSTR unicodeString)
 {
 	// if this is not a Unicode build, just use the string itself.
 	// this function is then essentially a NOP, but its stamped all over the place.
 #ifndef UNICODE
-	return UnicodeString;
+	return unicodeString;
 #else
-	char* MultiByteString = NULL;
+	char* multiByteString = NULL;
 
-	if (NULL != UnicodeString)
+	if (NULL != unicodeString)
 	{
-		MultiByteString = GetMultiByteStringFromUnicodeString(UnicodeString,
+		multiByteString = GetMultiByteStringFromUnicodeString(unicodeString,
 			CP_UTF8);
 	}
 
-	return MultiByteString;
+	return multiByteString;
 #endif
 }
 
@@ -823,34 +823,34 @@ char* GetUtfMultiByteString(LPCTSTR UnicodeString)
 /////////////////////////////////////////////////////////////////////////////
 int
 	ShowMessageString(
-	LPCTSTR Title,
-	LPCTSTR Message,
+	LPCTSTR title,
+	LPCTSTR message,
 	UINT uType)
 {
-	const int ReturnCode	= MessageBox(GetActiveWindow(), Message, Title, uType);
+	const int returnCode	= MessageBox(GetActiveWindow(), message, title, uType);
 
-	return ReturnCode;
+	return returnCode;
 }
 
 TCHAR*	StringSprintfInt(
-	TCHAR*	OriginalString,
-	int	Number)
+	TCHAR*	originalString,
+	int	number)
 {
-	TCHAR* StringCopy = NULL;
+	TCHAR* stringCopy = NULL;
 
-	if (OriginalString != nullptr)
+	if (originalString != nullptr)
 	{
-		const size_t	SourceStringLength = (_tcslen(OriginalString) + 1) * sizeof(TCHAR) + 16;
+		const size_t	sourceStringLength = (_tcslen(originalString) + 1) * sizeof(TCHAR) + 16;
 
-		StringCopy = new TCHAR[SourceStringLength];
+		stringCopy = new TCHAR[sourceStringLength];
 
-		if (NULL != StringCopy)
+		if (NULL != stringCopy)
 		{
-			_stprintf_s(StringCopy, SourceStringLength, OriginalString, Number);
+			_stprintf_s(stringCopy, sourceStringLength, originalString, number);
 		}
 	}
 
-	return StringCopy;
+	return stringCopy;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -858,20 +858,20 @@ TCHAR*	StringSprintfInt(
 /////////////////////////////////////////////////////////////////////////////
 TCHAR*
 	GetTempFilePathName(
-	LPCTSTR	ApplicationName)
+	LPCTSTR	applicationName)
 {
-	TCHAR*	TempFileName	= new TCHAR[MAX_PATH];
+	TCHAR*	tempFileName	= new TCHAR[MAX_PATH];
 
-	if (NULL != TempFileName)
+	if (NULL != tempFileName)
 	{
-		TCHAR	TempPath[MAX_PATH] = {0};
+		TCHAR	tempPath[MAX_PATH] = {0};
 
-		GetTempPath(MAX_PATH, TempPath);
+		GetTempPath(MAX_PATH, tempPath);
 
-		GetTempFileName(TempPath, ApplicationName, 0, TempFileName);
+		GetTempFileName(tempPath, applicationName, 0, tempFileName);
 	}
 
-	return TempFileName;
+	return tempFileName;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -879,26 +879,26 @@ TCHAR*
 /////////////////////////////////////////////////////////////////////////////
 bool
 	GetLastErrorInfo(
-	HMODULE	ModuleHandle)
+	HMODULE	moduleHandle)
 {
 	const bool	bRet		= false;
 
 	LPVOID	pMsgBuffer = NULL;
 	const DWORD	dwErr		= GetLastError();
 	DWORD	dwRet;
-	DWORD	FormatFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
+	DWORD	formatFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
 #if FORMAT_MESSAGE_BUFFER_CAST
 	LPTSTR buffer = reinterpret_cast<LPTSTR>(&pMsgBuffer);
 #endif
 	LPTSTR buffer = NULL;
 
-	if (NULL != ModuleHandle)
+	if (NULL != moduleHandle)
 	{
-		FormatFlags |= FORMAT_MESSAGE_FROM_HMODULE;
+		formatFlags |= FORMAT_MESSAGE_FROM_HMODULE;
 	}
 
-	dwRet	= FormatMessage(FormatFlags,
-		ModuleHandle,
+	dwRet	= FormatMessage(formatFlags,
+		moduleHandle,
 		dwErr,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPWSTR)&buffer,
@@ -923,16 +923,16 @@ bool
 /////////////////////////////////////////////////////////////////////////////
 void
 	ShowTestResult(
-	TCHAR * TestName,
-	long TestResult)
+	TCHAR * testName,
+	long testResult)
 {
-	if (TestResult > 0)
+	if (testResult > 0)
 	{
-		_tprintf(_T("**%s: succeeded\r\n"), TestName);
+		_tprintf(_T("**%s: succeeded\r\n"), testName);
 	}
 	else
 	{
-		_tprintf(_T("--%s: failed\r\n"), TestName);
+		_tprintf(_T("--%s: failed\r\n"), testName);
 	}
 }
 
@@ -941,17 +941,17 @@ void
 /////////////////////////////////////////////////////////////////////////////
 void
 	ShowConditionResult(
-	TCHAR * TestName,
-	long TestResult,
-	long ExpectedResult)
+	TCHAR * testName,
+	long testResult,
+	long expectedResult)
 {
-	if (TestResult == ExpectedResult)
+	if (testResult == expectedResult)
 	{
-		_tprintf(_T("%s: succeeded\r\n"), TestName);
+		_tprintf(_T("%s: succeeded\r\n"), testName);
 	}
 	else
 	{
-		_tprintf(_T("%s: failed\r\n"), TestName);
+		_tprintf(_T("%s: failed\r\n"), testName);
 	}
 }
 
@@ -960,17 +960,17 @@ void
 /////////////////////////////////////////////////////////////////////////////
 void
 	ShowConditionResultNot(
-	TCHAR * TestName,
-	long TestResult,
-	long ExpectedResult)
+	TCHAR * testName,
+	long testResult,
+	long expectedResult)
 {
-	if (TestResult != ExpectedResult)
+	if (testResult != expectedResult)
 	{
-		_tprintf(_T("%s: succeeded\r\n"), TestName);
+		_tprintf(_T("%s: succeeded\r\n"), testName);
 	}
 	else
 	{
-		_tprintf(_T("%s: failed\r\n"), TestName);
+		_tprintf(_T("%s: failed\r\n"), testName);
 	}
 }
 
@@ -979,17 +979,17 @@ void
 /////////////////////////////////////////////////////////////////////////////
 void
 	ShowConditionResultNot(
-	TCHAR*	TestName,
-	void*	TestResult,
-	void*	ExpectedResult)
+	TCHAR*	testName,
+	void*	testResult,
+	void*	expectedResult)
 {
-	if (TestResult != ExpectedResult)
+	if (testResult != expectedResult)
 	{
-		_tprintf(_T("%s: succeeded\r\n"), TestName);
+		_tprintf(_T("%s: succeeded\r\n"), testName);
 	}
 	else
 	{
-		_tprintf(_T("%s: failed\r\n"), TestName);
+		_tprintf(_T("%s: failed\r\n"), testName);
 	}
 }
 
@@ -1000,39 +1000,39 @@ void
 //
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
-TCHAR* GetStringCopy(LPCTSTR SourceString)
+TCHAR* GetStringCopy(LPCTSTR sourceString)
 {
-	TCHAR* StringCopy = NULL;
+	TCHAR* stringCopy = NULL;
 
-	if (SourceString != nullptr)
+	if (sourceString != nullptr)
 	{
-		const size_t	SourceStringLength = (_tcslen(SourceString) + 1) * sizeof(TCHAR);
+		const size_t	sourceStringLength = (_tcslen(sourceString) + 1) * sizeof(TCHAR);
 
-		StringCopy = new TCHAR[SourceStringLength];
+		stringCopy = new TCHAR[sourceStringLength];
 
-		if (NULL != StringCopy)
+		if (NULL != stringCopy)
 		{
-			_tcscpy_s(StringCopy, SourceStringLength, SourceString);
+			_tcscpy_s(stringCopy, sourceStringLength, sourceString);
 		}
 	}
 
-	return StringCopy;
+	return stringCopy;
 }
 
-bool IsEmailValid(const char* Address)
+bool IsEmailValid(const char* address)
 {
-	int				Count = 0;
+	int				count = 0;
 	const char* c;
-	const char* Domain;
-	const char*	Rfc822Specials = "()<>@,;:\\\"[]";
+	const char* domain;
+	const char*	rfc822Specials = "()<>@,;:\\\"[]";
 
 	// first we validate the length of the name and domain (name@domain)
 	// name must be no longer than 64 chars and domain must be no longer than 255 chars
-	const char* t = strchr(Address, '@');
+	const char* t = strchr(address, '@');
 
 	if (!t)
 		return false;
-	size_t len = (size_t)(t - Address);
+	size_t len = (size_t)(t - address);
 	if (len > 64)
 		return false;
 	len = strlen(t);
@@ -1040,10 +1040,10 @@ bool IsEmailValid(const char* Address)
 		return false;
 
 	// then we validate the name portion (name@domain)
-	for (c = Address; *c; c++)
+	for (c = address; *c; c++)
 	{
 		if (*c == '\"' &&
-			(c == Address || *(c - 1) == '.' || *(c - 1) == '\"'))
+			(c == address || *(c - 1) == '.' || *(c - 1) == '\"'))
 		{
 			while (*++c)
 			{
@@ -1066,26 +1066,26 @@ bool IsEmailValid(const char* Address)
 			break;
 		if (*c <= ' ' || *c >= 127)
 			return false;
-		if (strchr(Rfc822Specials, *c))
+		if (strchr(rfc822Specials, *c))
 			return false;
 	}
-	if (c == Address || *(c - 1) == '.')
+	if (c == address || *(c - 1) == '.')
 		return false;
 
 	// then we validate the domain portion (name@domain)
-	if (!*(Domain = ++c))
+	if (!*(domain = ++c))
 		return false;
 	do
 	{
 		if (*c == '.')
 		{
-			if (c == Domain || *(c - 1) == '.')
+			if (c == domain || *(c - 1) == '.')
 				return false;
-			Count++;
+			count++;
 		}
 		if (*c <= ' ' || *c >= 127)
 			return false;
-		if (strchr(Rfc822Specials, *c))
+		if (strchr(rfc822Specials, *c))
 			return false;
 	}
 	while (*++c);

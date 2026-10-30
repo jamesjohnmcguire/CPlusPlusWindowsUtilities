@@ -11,10 +11,10 @@
 #include "Utils.h"
 
 Resource::Resource(
-	LPCTSTR ModulePath) :
+	LPCTSTR sourceModulePath) :
 	resourceModule(NULL)
 {
-	modulePath = ModulePath;
+	modulePath = sourceModulePath;
 }
 
 Resource::~Resource(void)
@@ -47,7 +47,7 @@ Resource::GetResourceModule()
 /////////////////////////////////////////////////////////////////////////////
 std::wstring
 Resource::GetString(
-	UINT	ResourceId)
+	UINT	resourceId)
 {
 	std::wstring resourceString;
 
@@ -58,7 +58,7 @@ Resource::GetString(
 
 	if (NULL != resourceModule)
 	{
-		resourceString = LoadStringResource(resourceModule, ResourceId);
+		resourceString = LoadStringResource(resourceModule, resourceId);
 	}
 
 	return resourceString;
@@ -80,16 +80,16 @@ std::wstring Resource::LoadStringResource(HINSTANCE hInstance, UINT resourceId)
 /////////////////////////////////////////////////////////////////////////////
 int
 Resource::ShowMessage(
-	int TitleId,
-	int	StringId)
+	int titleId,
+	int	stringId)
 {
-	std::wstring Title = GetString(TitleId);
-	std::wstring Message = GetString(StringId);
-	LPCWSTR pTitle = Title.c_str();
-	LPCWSTR pMessage = Message.c_str();
-	int ReturnCode = MessageBox(GetActiveWindow(), pMessage, pTitle, MB_OK);
+	std::wstring title = GetString(titleId);
+	std::wstring message = GetString(stringId);
+	LPCWSTR pTitle = title.c_str();
+	LPCWSTR pMessage = message.c_str();
+	int returnCode = MessageBox(GetActiveWindow(), pMessage, pTitle, MB_OK);
 
-	return ReturnCode;
+	return returnCode;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -97,20 +97,20 @@ Resource::ShowMessage(
 /////////////////////////////////////////////////////////////////////////////
 int
 Resource::ShowMessageError(
-	int TitleId,
-	LPCTSTR	Message,
-	int		StringId)
+	int titleId,
+	LPCTSTR	message,
+	int		stringId)
 {
-	std::wstring Title = GetString(TitleId);
-	std::wstring ErrorMessage = GetString(StringId);
-	LPCWSTR pTitle = Title.c_str();
+	std::wstring title = GetString(titleId);
+	std::wstring errorMessage = GetString(stringId);
+	LPCWSTR pTitle = title.c_str();
 
-	std::wstring CompleteMessage = std::wstring(Message) + L": " + ErrorMessage;
-	LPCWSTR pMessage = CompleteMessage.c_str();
+	std::wstring completeMessage = std::wstring(message) + L": " + errorMessage;
+	LPCWSTR pMessage = completeMessage.c_str();
 
-	int ReturnCode = MessageBox(GetActiveWindow(), pMessage, pTitle, MB_OK);
+	int returnCode = MessageBox(GetActiveWindow(), pMessage, pTitle, MB_OK);
 
-	return ReturnCode;
+	return returnCode;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -118,15 +118,15 @@ Resource::ShowMessageError(
 /////////////////////////////////////////////////////////////////////////////
 int
 Resource::ShowMessageYesNo(
-	int TitleId,
-	int	StringId)
+	int titleId,
+	int	stringId)
 {
-	std::wstring Title = GetString(TitleId);
-	std::wstring Message = GetString(StringId);
-	LPCWSTR pTitle = Title.c_str();
-	LPCWSTR pMessage = Message.c_str();
+	std::wstring title = GetString(titleId);
+	std::wstring message = GetString(stringId);
+	LPCWSTR pTitle = title.c_str();
+	LPCWSTR pMessage = message.c_str();
 
-	int ReturnCode	= MessageBox(GetActiveWindow(), pMessage, pTitle, MB_YESNO);
+	int returnCode	= MessageBox(GetActiveWindow(), pMessage, pTitle, MB_YESNO);
 
-	return ReturnCode;
+	return returnCode;
 }

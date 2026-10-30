@@ -24,19 +24,19 @@ class DllExport FileWrapper
 
 		// Methods
 			FileWrapper(
-				LPCTSTR FileName);
+				LPCTSTR sourceFileName);
 			FileWrapper(
-				LPCSTR FileName);
+				LPCSTR sourceFileName);
 			~FileWrapper(void);
 
 			bool Append(
-				BYTE*	Contents,
-				DWORD	ContentsLength);
+				BYTE*	contents,
+				DWORD	contentsLength);
 			bool Create(
-				BYTE*	Contents,
-				DWORD	ContentsLength);
+				BYTE*	contents,
+				DWORD	contentsLength);
 			BYTE* Read(
-				DWORD*	ContentsLength);
+				DWORD*	contentsLength);
 
 private:
 		// Properties

@@ -18,28 +18,28 @@ class DllExport Resource
 {
 	public:
 		Resource(
-			LPCTSTR ModulePath);
+			LPCTSTR sourceModulePath);
 		~Resource(void);
 
 		HMODULE GetResourceModule();
 		std::wstring GetString(
-			UINT	ResourceId);
+			UINT	resourceId);
 		std::wstring LoadStringResource(
 			HINSTANCE hInstance,
 			UINT resourceId);
 		int ShowMessageString(
-			LPCTSTR Message,
+			LPCTSTR message,
 			UINT uType = MB_OK);
 		int ShowMessage(
-			int TitleId,
-			int	StringId);
+			int titleId,
+			int	stringId);
 		int ShowMessageError(
-			int TitleId,
-			LPCTSTR	Message,
-			int		StringId);
+			int titleId,
+			LPCTSTR	message,
+			int		stringId);
 		int ShowMessageYesNo(
-			int TitleId,
-			int	StringId);
+			int titleId,
+			int	stringId);
 
 	private:
 		LPCTSTR modulePath;
