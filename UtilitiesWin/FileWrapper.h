@@ -12,6 +12,7 @@
 // Includes
 /////////////////////////////////////////////////////////////////////////////
 #include "UtilitiesWin.h"
+#include <string>
 
 /////////////////////////////////////////////////////////////////////////////
 // FileWrapper Class Definition
@@ -39,7 +40,7 @@ class DllExport FileWrapper
 
 private:
 		// Properties
-			LPCTSTR	m_FileName;
+			std::wstring m_FileName;
 
 		// Methods
 			char* ReadText(void);

@@ -12,6 +12,7 @@
 /////////////////////////////////////////////////////////////////////////////
 #include "pch.h"
 #include "FileWrapper.h"
+#include <memory>
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
@@ -24,27 +25,28 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // Constructors / Destructors
+// Store an owned filename so the caller's buffer can change or be released.
 /////////////////////////////////////////////////////////////////////////////
 FileWrapper::FileWrapper(
 	LPCTSTR FileName)
 {
-	m_FileName	= GetStringCopy(FileName);
+	if (FileName != nullptr)
+	{
+		m_FileName = FileName;
+	}
 }
 
 FileWrapper::FileWrapper(
 	LPCSTR FileName)
 {
-	m_FileName	= GetUnicodeString(FileName);
-}
-
-FileWrapper::~FileWrapper(void)
-{
-	if (NULL != m_FileName)
+	std::unique_ptr<wchar_t[]> converted(GetUnicodeString(FileName));
+	if (converted != nullptr)
 	{
-		delete m_FileName;
-		m_FileName = NULL;
+		m_FileName = converted.get();
 	}
 }
+
+FileWrapper::~FileWrapper(void) = default;
 
 /////////////////////////////////////////////////////////////////////////////
 // Append
@@ -56,9 +58,9 @@ bool
 {
 	bool	ReturnCode	= false;
 
-	if ((NULL != m_FileName) && (NULL != Contents))
+	if (!m_FileName.empty() && (NULL != Contents))
 	{
-		HANDLE	FileHandle	= CreateFile(m_FileName,
+		HANDLE	FileHandle	= CreateFile(m_FileName.c_str(),
 			GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -96,9 +98,9 @@ bool
 {
 	bool	ReturnCode	= false;
 
-	if ((NULL != m_FileName) && (NULL != Contents))
+	if (!m_FileName.empty() && (NULL != Contents))
 	{
-		HANDLE	FileHandle	= CreateFile(m_FileName,
+		HANDLE	FileHandle	= CreateFile(m_FileName.c_str(),
 			GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -133,9 +135,9 @@ BYTE*
 {
 	BYTE*	InputContents = NULL;
 
-	if (NULL != m_FileName)
+	if (!m_FileName.empty())
 	{
-		HANDLE	FileHandle	= CreateFile(m_FileName,
+		HANDLE	FileHandle	= CreateFile(m_FileName.c_str(),
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -181,9 +183,9 @@ char*
 {
 	char*	InputContents = NULL;
 
-	if (NULL != m_FileName)
+	if (!m_FileName.empty())
 	{
-		HANDLE	FileHandle	= CreateFile(m_FileName,
+		HANDLE	FileHandle	= CreateFile(m_FileName.c_str(),
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -228,9 +230,9 @@ TCHAR*
 {
 	TCHAR*	InputContents = NULL;
 
-	if (NULL != m_FileName)
+	if (!m_FileName.empty())
 	{
-		HANDLE	FileHandle	= CreateFile(m_FileName,
+		HANDLE	FileHandle	= CreateFile(m_FileName.c_str(),
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
