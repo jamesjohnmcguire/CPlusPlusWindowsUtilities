@@ -455,8 +455,8 @@ bool	ProcessFile(LPCTSTR pszFileName)
 	// if we can't open these files, no point in going on
 	if (nLength > 0)
 	{
-		PTSTR		pFileBufNew = NULL;
-		PTSTR		pVarBuf = NULL;
+		PTSTR		pFileBufNew = nullptr;
+		PTSTR		pVarBuf = nullptr;
 
 		bErrorCheck = cConfFile.Open();
 		const CString& projectPath = cConfFile.GetProjectPath();

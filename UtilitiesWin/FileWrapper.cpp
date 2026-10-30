@@ -58,7 +58,7 @@ bool
 {
 	bool	returnCode	= false;
 
-	if (!fileName.empty() && (NULL != contents))
+	if (!fileName.empty() && (nullptr != contents))
 	{
 		HANDLE	fileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_WRITE,
@@ -72,9 +72,9 @@ bool
 		{
 			DWORD	bytesRead	= 0;
 
-			SetFilePointer(fileHandle, 0, NULL, FILE_END);
+			SetFilePointer(fileHandle, 0, nullptr, FILE_END);
 
-			BOOL	resultCode	= WriteFile(fileHandle, contents, contentsLength, &bytesRead, NULL);
+			BOOL	resultCode	= WriteFile(fileHandle, contents, contentsLength, &bytesRead, nullptr);
 
 			CloseHandle(fileHandle);
 
@@ -98,7 +98,7 @@ bool
 {
 	bool	returnCode	= false;
 
-	if (!fileName.empty() && (NULL != contents))
+	if (!fileName.empty() && (nullptr != contents))
 	{
 		HANDLE	fileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_WRITE,
@@ -112,7 +112,7 @@ bool
 		{
 			DWORD	bytesRead	= 0;
 
-			BOOL	resultCode	= WriteFile(fileHandle, contents, contentsLength, &bytesRead, NULL);
+			BOOL	resultCode	= WriteFile(fileHandle, contents, contentsLength, &bytesRead, nullptr);
 
 			CloseHandle(fileHandle);
 
@@ -133,7 +133,7 @@ BYTE*
 	FileWrapper::Read(
 	DWORD*	contentsLength)
 {
-	BYTE*	inputContents = NULL;
+	BYTE*	inputContents = nullptr;
 
 	if (!fileName.empty())
 	{
@@ -147,19 +147,19 @@ BYTE*
 
 		if (INVALID_HANDLE_VALUE != fileHandle)
 		{
-			DWORD	contentsSize	= GetFileSize(fileHandle, NULL) + 2;
+			DWORD	contentsSize	= GetFileSize(fileHandle, nullptr) + 2;
 
 			if (0 < contentsSize )
 			{
 				inputContents = new BYTE[contentsSize];
 
-				if (NULL != inputContents)
+				if (nullptr != inputContents)
 				{
 					DWORD	bytesRead	= 0;
 
 					SecureZeroMemory(inputContents, contentsSize);
 
-					BOOL	resultCode	= ReadFile(fileHandle, inputContents, contentsSize, &bytesRead, NULL) ;
+					BOOL	resultCode	= ReadFile(fileHandle, inputContents, contentsSize, &bytesRead, nullptr) ;
 
 					CloseHandle(fileHandle);
 
@@ -181,7 +181,7 @@ BYTE*
 char*
 	FileWrapper::ReadText(void)
 {
-	char*	inputContents = NULL;
+	char*	inputContents = nullptr;
 
 	if (!fileName.empty())
 	{
@@ -195,19 +195,19 @@ char*
 
 		if (INVALID_HANDLE_VALUE != fileHandle)
 		{
-			DWORD	contentsSize	= GetFileSize(fileHandle, NULL) + 1;
+			DWORD	contentsSize	= GetFileSize(fileHandle, nullptr) + 1;
 
 			if (0 < contentsSize )
 			{
 				inputContents = new char[contentsSize];
 
-				if (NULL != inputContents)
+				if (nullptr != inputContents)
 				{
 					DWORD	bytesRead	= 0;
 
 					SecureZeroMemory(inputContents, contentsSize);
 
-					BOOL result = ReadFile(fileHandle, inputContents, contentsSize, &bytesRead, NULL) ;
+					BOOL result = ReadFile(fileHandle, inputContents, contentsSize, &bytesRead, nullptr) ;
 
 					if (result == FALSE)
 					{
@@ -228,7 +228,7 @@ char*
 TCHAR*
 	FileWrapper::ReadUnicodeText(void)
 {
-	TCHAR*	inputContents = NULL;
+	TCHAR*	inputContents = nullptr;
 
 	if (!fileName.empty())
 	{
@@ -242,19 +242,19 @@ TCHAR*
 
 		if (INVALID_HANDLE_VALUE != fileHandle)
 		{
-			DWORD	contentsSize	= GetFileSize(fileHandle, NULL) / sizeof(TCHAR) + 2;
+			DWORD	contentsSize	= GetFileSize(fileHandle, nullptr) / sizeof(TCHAR) + 2;
 
 			if (0 < contentsSize )
 			{
 				inputContents = new TCHAR[contentsSize];
 
-				if (NULL != inputContents)
+				if (nullptr != inputContents)
 				{
 					DWORD	bytesRead	= 0;
 
 					SecureZeroMemory(inputContents, contentsSize);
 
-					BOOL result = ReadFile(fileHandle, inputContents, contentsSize, &bytesRead, NULL) ;
+					BOOL result = ReadFile(fileHandle, inputContents, contentsSize, &bytesRead, nullptr) ;
 
 					if (result == FALSE)
 					{

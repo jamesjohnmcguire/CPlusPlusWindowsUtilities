@@ -12,7 +12,7 @@
 
 Resource::Resource(
 	LPCTSTR sourceModulePath) :
-	resourceModule(NULL)
+	resourceModule(nullptr)
 {
 	modulePath = sourceModulePath;
 }
@@ -27,9 +27,9 @@ Resource::~Resource(void)
 HMODULE
 Resource::GetResourceModule()
 {
-	if (NULL == resourceModule)
+	if (nullptr == resourceModule)
 	{
-		if (NULL != modulePath)
+		if (nullptr != modulePath)
 		{
 			resourceModule = LoadLibrary( modulePath );
 		}
@@ -51,12 +51,12 @@ Resource::GetString(
 {
 	std::wstring resourceString;
 
-	if (NULL == resourceModule)
+	if (nullptr == resourceModule)
 	{
 		resourceModule = GetResourceModule();
 	}
 
-	if (NULL != resourceModule)
+	if (nullptr != resourceModule)
 	{
 		resourceString = LoadStringResource(resourceModule, resourceId);
 	}

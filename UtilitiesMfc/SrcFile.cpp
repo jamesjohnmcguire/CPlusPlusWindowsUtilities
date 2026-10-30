@@ -61,7 +61,7 @@ BOOL CSrcFile::Open()
 BOOL CSrcFile::Open(
 	LPCTSTR lpszFileName,
 	UINT nOpenFlags,
-	CFileException* pError /*=NULL*/)
+	CFileException* pError /*=nullptr*/)
 {
 	// Process any Unicode stuff
 	ProcessFlags(lpszFileName, nOpenFlags);
@@ -117,8 +117,8 @@ size_t CSrcFile::Read(CString& rString, UINT nCount)
 	size_t		nCharsRead = -1;
 
 	LPTSTR		lpsz;
-	wchar_t*	pszUnicodeString = NULL;
-	char	*	pszMultiByteString = NULL;
+	wchar_t*	pszUnicodeString = nullptr;
+	char	*	pszMultiByteString = nullptr;
 
 	try
 	{
@@ -217,8 +217,8 @@ BOOL CSrcFile::ReadString(CString& rString)
 	BOOL			bReadData = FALSE;
 	LPTSTR		lpsz;
 	int			nLen = 0;
-	wchar_t*		pszUnicodeString = NULL;
-	char	*		pszMultiByteString = NULL;
+	wchar_t*		pszUnicodeString = nullptr;
+	char	*		pszMultiByteString = nullptr;
 	int			nChars = 0;
 
 	try
@@ -248,7 +248,7 @@ BOOL CSrcFile::ReadString(CString& rString)
 			memset(pszMultiByteString, 0, sizeof(char) * nMAX_LINE_CHARS);
 
 			// Read the string
-			bReadData = (NULL != fgets(pszMultiByteString, nMAX_LINE_CHARS, m_pStream));
+			bReadData = (nullptr != fgets(pszMultiByteString, nMAX_LINE_CHARS, m_pStream));
 
 			if (bReadData)
 			{
@@ -327,11 +327,11 @@ void CSrcFile::SetProjectPath(const CString& path)
 	projectPath = path;
 }
 
-bool CSrcFile::SetSrcFileName( LPCTSTR pszName /* = NULL */)
+bool CSrcFile::SetSrcFileName( LPCTSTR pszName /* = nullptr */)
 {
 	bool	bRet	= false;
 
-	if (NULL != pszName)
+	if (nullptr != pszName)
 	{
 		projectPath = pszName;
 		SetFilePath( pszName );	
@@ -421,12 +421,12 @@ bool CSrcFile::GetLastErrorInfo(void)
 	DWORD	dwRet;
 
 	dwRet = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL,
+		nullptr,
 		dwErr,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		reinterpret_cast<LPTSTR>(&pMsgBuffer),
 		0,
-		NULL);
+		nullptr);
 
 	if (pMsgBuffer)
 	{
@@ -604,14 +604,14 @@ int CSrcFile::GetMultiByteStringFromUnicodeString(wchar_t * szUnicodeString, cha
 
 			try
 			{
-				// If writing to UTF8, flags, default char and boolean flag must be NULL
+				// If writing to UTF8, flags, default char and boolean flag must be nullptr
 				nCharsWritten = WideCharToMultiByte((UINT)nCodePage,
 					(nCodePage == CP_UTF8 ? 0 : WC_COMPOSITECHECK | WC_SEPCHARS), // Flags
 					szUnicodeString, -1,
 					szMultiByteString,
 					nMultiByteBufferSize,
-					(nCodePage == CP_UTF8 ? NULL : DEFAULT_UNICODE_FILLER_CHAR),	// Filler char
-					(nCodePage == CP_UTF8 ? NULL : &bUsedDefChar));						// Did we use filler char?
+					(nCodePage == CP_UTF8 ? nullptr : DEFAULT_UNICODE_FILLER_CHAR),	// Filler char
+					(nCodePage == CP_UTF8 ? nullptr : &bUsedDefChar));						// Did we use filler char?
 
 				// If no chars were written and the buffer is not 0, error!
 				if (nCharsWritten == 0 && nMultiByteBufferSize > 0)
@@ -659,14 +659,14 @@ int CSrcFile::GetMultiByteStringFromUnicodeString(wchar_t * szUnicodeString, cha
 			nCodePage = GetACP();
 		}
 
-		// If writing to UTF8, flags, default char and boolean flag must be NULL
+		// If writing to UTF8, flags, default char and boolean flag must be nullptr
 		nCharsNeeded = WideCharToMultiByte((UINT)nCodePage,
 			(nCodePage == CP_UTF8 ? 0 : WC_COMPOSITECHECK | WC_SEPCHARS), // Flags
 			szUnicodeString, -1,
-			NULL,
+			nullptr,
 			0,	// Calculate required buffer, please! 
-			(nCodePage == CP_UTF8 ? NULL : DEFAULT_UNICODE_FILLER_CHAR),	// Filler char
-			NULL);
+			(nCodePage == CP_UTF8 ? nullptr : DEFAULT_UNICODE_FILLER_CHAR),	// Filler char
+			nullptr);
 	}
 	catch (...)
 	{
@@ -678,8 +678,8 @@ int CSrcFile::GetMultiByteStringFromUnicodeString(wchar_t * szUnicodeString, cha
 
 int	CSrcFile::Write(LPCTSTR pszString, int nCharsToWrite)
 {
-	wchar_t*	pszUnicodeString = NULL;
-	char*		pszMultiByteString = NULL;
+	wchar_t*	pszUnicodeString = nullptr;
+	char*		pszMultiByteString = nullptr;
 	int			nCharsWritten = -1;
 
 	try
@@ -807,8 +807,8 @@ HRESULT CSrcFile::Write(LPCTSTR pszString, bool bIgnore /* = FALSE */)
 //
 void CSrcFile::WriteString(LPCTSTR lpsz)
 {
-	wchar_t*	pszUnicodeString = NULL;
-	char	*	pszMultiByteString = NULL;
+	wchar_t*	pszUnicodeString = nullptr;
+	char	*	pszMultiByteString = nullptr;
 
 	try
 	{

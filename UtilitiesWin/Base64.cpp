@@ -29,10 +29,10 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 	hInputFile = CreateFile(source,
 		GENERIC_READ,
 		FILE_SHARE_READ,
-		NULL,
+		nullptr,
 		OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL,
-		NULL);
+		nullptr);
 
 	if (hInputFile == INVALID_HANDLE_VALUE)
 	{
@@ -44,10 +44,10 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 		hOutputFile = CreateFile(destination,
 			GENERIC_WRITE,
 			0,
-			NULL,
+			nullptr,
 			OPEN_ALWAYS,
 			FILE_ATTRIBUTE_NORMAL,
-			NULL);
+			nullptr);
 
 		if (hOutputFile == INVALID_HANDLE_VALUE)
 		{
@@ -59,7 +59,7 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 			LPVOID	pOutputBuffer;
 			DWORD	dwBytesRead;
 
-			DWORD	dwFileSize = GetFileSize(hInputFile, NULL);
+			DWORD	dwFileSize = GetFileSize(hInputFile, nullptr);
 
 			pInputBuffer = malloc(dwFileSize + 1);
 			pOutputBuffer = malloc(dwFileSize + 1);
@@ -68,7 +68,7 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 				pInputBuffer,
 				dwFileSize,
 				&dwBytesRead,
-				NULL);
+				nullptr);
 
 			if (returnCode != 0)
 			{
@@ -83,7 +83,7 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 						pOutputBuffer,
 						dwBytesRead,
 						&dwBytesRead,
-						NULL);
+						nullptr);
 					if (returnCode == TRUE)
 					{
 						result = 1;
@@ -128,7 +128,7 @@ bool ZenBase64Decode(
 	int		nLenEncodedBuffer	= 0;
 	int		nIndexOutBuffer		= 0;
 
-	if ((sEncodedBuffer != NULL) && (sEncodedBuffer != NULL))
+	if ((sEncodedBuffer != nullptr) && (sEncodedBuffer != nullptr))
 	{
 #if BASE64_TCHAR_INPUT
 		nLenEncodedBuffer = (int)_tcslen( sEncodedBuffer );

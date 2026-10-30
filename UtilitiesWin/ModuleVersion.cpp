@@ -11,7 +11,7 @@
 
 CModuleVersion::CModuleVersion()
 {
-	pVersionInfo = NULL;				// raw version info data
+	pVersionInfo = nullptr;				// raw version info data
 }
 
 //////////////////
@@ -35,7 +35,7 @@ BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR modulename)
 	// get module handle
 	TCHAR filename[_MAX_PATH];
 	HMODULE hModule = ::GetModuleHandle(modulename);
-	if (hModule==NULL && modulename!=NULL)
+	if (hModule==nullptr && modulename!=nullptr)
 		return FALSE;
 
 	// get module file name

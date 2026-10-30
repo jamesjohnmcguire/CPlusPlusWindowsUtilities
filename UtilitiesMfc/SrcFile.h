@@ -119,7 +119,7 @@ class CSrcFile : public CStdioFile
 		static bool IsFileUnicode(const CString& sFilePath);
 		bool IsFileUnicodeText() const noexcept { return isUnicodeText; }
 		BOOL Open();
-		virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pError = NULL);
+		virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pError = nullptr);
 		virtual size_t Read(CString& rString, UINT nCount);
 		virtual size_t Read(LPCTSTR rString, UINT nCount);
 		virtual BOOL ReadString(CString& rString);
@@ -127,7 +127,7 @@ class CSrcFile : public CStdioFile
 		void SetCodePage(IN const UINT nCodePage);
 		bool SetLogPath( LPCTSTR pszPath);
 		void SetProjectPath(const CString& path);
-		bool SetSrcFileName(LPCTSTR pszName = NULL);
+		bool SetSrcFileName(LPCTSTR pszName = nullptr);
 		void SetUnicode(bool bUnicode);
 		virtual int Write(LPCTSTR pszString, int nBytesToWrite);
 		virtual void	WriteString(LPCTSTR lpsz);
