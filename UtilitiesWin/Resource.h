@@ -42,6 +42,6 @@ class DllExport Resource
 			int	StringId);
 
 	private:
-		LPCTSTR m_ModulePath;
-		HMODULE m_ResourceModule;
+		LPCTSTR modulePath;
+		HMODULE resourceModule;
 };

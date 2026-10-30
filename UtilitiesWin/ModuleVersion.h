@@ -49,12 +49,12 @@ class CModuleVersion :
 	public VS_FIXEDFILEINFO
 {
 protected:
-	BYTE* m_pVersionInfo;	// all version info
+	BYTE* pVersionInfo;	// all version info
 
 	struct TRANSLATION {
 		WORD langID;			// language ID
 		WORD charset;			// character set (code page)
-	} m_translation;
+	} translation;
 
 public:
 	CModuleVersion();

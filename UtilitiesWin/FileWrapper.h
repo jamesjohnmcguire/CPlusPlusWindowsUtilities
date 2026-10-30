@@ -40,7 +40,7 @@ class DllExport FileWrapper
 
 private:
 		// Properties
-			std::wstring m_FileName;
+			std::wstring fileName;
 
 		// Methods
 			char* ReadText(void);

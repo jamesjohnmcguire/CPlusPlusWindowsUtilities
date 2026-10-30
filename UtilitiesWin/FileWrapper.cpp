@@ -32,7 +32,7 @@ FileWrapper::FileWrapper(
 {
 	if (FileName != nullptr)
 	{
-		m_FileName = FileName;
+		fileName = FileName;
 	}
 }
 
@@ -42,7 +42,7 @@ FileWrapper::FileWrapper(
 	std::unique_ptr<wchar_t[]> converted(GetUnicodeString(FileName));
 	if (converted != nullptr)
 	{
-		m_FileName = converted.get();
+		fileName = converted.get();
 	}
 }
 
@@ -58,9 +58,9 @@ bool
 {
 	bool	ReturnCode	= false;
 
-	if (!m_FileName.empty() && (NULL != Contents))
+	if (!fileName.empty() && (NULL != Contents))
 	{
-		HANDLE	FileHandle	= CreateFile(m_FileName.c_str(),
+		HANDLE	FileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -98,9 +98,9 @@ bool
 {
 	bool	ReturnCode	= false;
 
-	if (!m_FileName.empty() && (NULL != Contents))
+	if (!fileName.empty() && (NULL != Contents))
 	{
-		HANDLE	FileHandle	= CreateFile(m_FileName.c_str(),
+		HANDLE	FileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_WRITE,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -135,9 +135,9 @@ BYTE*
 {
 	BYTE*	InputContents = NULL;
 
-	if (!m_FileName.empty())
+	if (!fileName.empty())
 	{
-		HANDLE	FileHandle	= CreateFile(m_FileName.c_str(),
+		HANDLE	FileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -183,9 +183,9 @@ char*
 {
 	char*	InputContents = NULL;
 
-	if (!m_FileName.empty())
+	if (!fileName.empty())
 	{
-		HANDLE	FileHandle	= CreateFile(m_FileName.c_str(),
+		HANDLE	FileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,
@@ -230,9 +230,9 @@ TCHAR*
 {
 	TCHAR*	InputContents = NULL;
 
-	if (!m_FileName.empty())
+	if (!fileName.empty())
 	{
-		HANDLE	FileHandle	= CreateFile(m_FileName.c_str(),
+		HANDLE	FileHandle	= CreateFile(fileName.c_str(),
 			GENERIC_READ,
 			FILE_SHARE_READ | FILE_SHARE_WRITE,
 			0,

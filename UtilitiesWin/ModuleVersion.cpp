@@ -11,7 +11,7 @@
 
 CModuleVersion::CModuleVersion()
 {
-	m_pVersionInfo = NULL;				// raw version info data 
+	pVersionInfo = NULL;				// raw version info data
 }
 
 //////////////////
@@ -19,7 +19,7 @@ CModuleVersion::CModuleVersion()
 //
 CModuleVersion::~CModuleVersion()
 {
-	delete [] m_pVersionInfo;
+	delete [] pVersionInfo;
 }
 
 //////////////////
@@ -29,7 +29,7 @@ CModuleVersion::~CModuleVersion()
 //
 BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR modulename)
 {
-	m_translation.charset = 1252;		// default = ANSI code page
+	translation.charset = 1252;		// default = ANSI code page
 	memset((VS_FIXEDFILEINFO*)this, 0, sizeof(VS_FIXEDFILEINFO));
 
 	// get module handle
@@ -50,22 +50,22 @@ BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR modulename)
 	if (len <= 0)
 		return FALSE;
 
-	m_pVersionInfo = new BYTE[len]; // allocate version info
-	if (!::GetFileVersionInfo(filename, 0, len, m_pVersionInfo))
+	pVersionInfo = new BYTE[len]; // allocate version info
+	if (!::GetFileVersionInfo(filename, 0, len, pVersionInfo))
 		return FALSE;
 
 	LPVOID lpvi;
 	UINT iLen;
-	if (!VerQueryValue(m_pVersionInfo, _T("\\"), &lpvi, &iLen))
+	if (!VerQueryValue(pVersionInfo, _T("\\"), &lpvi, &iLen))
 		return FALSE;
 
 	// copy fixed info to myself, which am derived from VS_FIXEDFILEINFO
 	*(VS_FIXEDFILEINFO*)this = *(VS_FIXEDFILEINFO*)lpvi;
 
 	// Get translation info
-	if (VerQueryValue(m_pVersionInfo,
+	if (VerQueryValue(pVersionInfo,
 		_T("\\VarFileInfo\\Translation"), &lpvi, &iLen) && iLen >= 4) {
-		m_translation = *(TRANSLATION*)lpvi;
+		translation = *(TRANSLATION*)lpvi;
 	}
 
 	return dwSignature == VS_FFI_SIGNATURE;
@@ -80,7 +80,7 @@ std::wstring CModuleVersion::GetValue(LPCTSTR lpKeyName)
 {
 	std::wstring result;
 
-	if (m_pVersionInfo)
+	if (pVersionInfo)
 	{
 		// To get a string value must pass query in the form
 		//
@@ -89,8 +89,8 @@ std::wstring CModuleVersion::GetValue(LPCTSTR lpKeyName)
 		// where <lang-codepage> is the languageID concatenated with the
 		// code page, in hex. Wow.
 		std::wstring langCodePage = std::format(L"{:04x}{:04x}",
-			m_translation.langID,
-			m_translation.charset);
+			translation.langID,
+			translation.charset);
 
 		std::wstring query = std::format(L"\\StringFileInfo\\{}\\{}",
 			langCodePage,
@@ -100,7 +100,7 @@ std::wstring CModuleVersion::GetValue(LPCTSTR lpKeyName)
 		UINT iLenVal;
 
 		bool returnCode = VerQueryValue(
-			m_pVersionInfo,
+			pVersionInfo,
 			query.c_str(),
 			(LPVOID*)&pVal,
 			&iLenVal);
