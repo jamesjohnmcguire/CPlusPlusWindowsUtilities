@@ -70,6 +70,9 @@
 		<ClInclude Include="TimeHelpers.h">
 			<Filter>Header Files</Filter>
 		</ClInclude>
+		<ClInclude Include="UtilitiesWin.h">
+			<Filter>Header Files</Filter>
+		</ClInclude>
 		<ClInclude Include="Utils.h">
 			<Filter>Header Files</Filter>
 		</ClInclude>

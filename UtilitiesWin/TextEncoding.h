@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "Common.h"
+#include "UtilitiesWin.h"
 
 class TextEncoding
 {

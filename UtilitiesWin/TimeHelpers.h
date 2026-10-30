@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common.h"
+#include "UtilitiesWin.h"
 
 #define DATE_FORMAT "%02d/%02d %d %02d:%02d"
 
