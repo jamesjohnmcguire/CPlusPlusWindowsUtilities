@@ -66,6 +66,8 @@
 			<WarningLevel>Level3</WarningLevel>
 		</ClCompile>
 		<Link>
+			<ModuleDefinitionFile Condition="'$(Platform)'=='x64'">UtilitiesWin.def</ModuleDefinitionFile>
+			<ModuleDefinitionFile Condition="'$(Platform)'=='Win32'">UtilitiesWin.Win32.def</ModuleDefinitionFile>
 			<AdditionalDependencies>Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<SubSystem>Windows</SubSystem>
 		</Link>
@@ -120,6 +122,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="UtilitiesWin.def" />
+		<None Include="UtilitiesWin.Win32.def" />
 		<ProjectReference Include="..\Utilities\Utilities.vcxproj">
 			<Project>{7E733A03-874A-4663-B34F-83E8D87977D8}</Project>
 		</ProjectReference>
