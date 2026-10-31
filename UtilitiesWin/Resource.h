@@ -25,11 +25,11 @@ class DllExport Resource
 		std::wstring GetString(
 			UINT	resourceId);
 		std::wstring LoadStringResource(
-			HINSTANCE hInstance,
+			HINSTANCE moduleHandle,
 			UINT resourceId);
 		int ShowMessageString(
 			LPCTSTR message,
-			UINT uType = MB_OK);
+			UINT messageType = MB_OK);
 		int ShowMessage(
 			int titleId,
 			int	stringId);

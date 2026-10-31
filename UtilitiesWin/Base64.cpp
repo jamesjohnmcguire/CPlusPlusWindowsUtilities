@@ -15,18 +15,18 @@
 using namespace std;
 
 unsigned char Base64DecodeChar(
-	char c);
+	char character);
 bool ZenBase64Decode(
-	const char*	sEncodedBuffer,
-	PBYTE	sUnEncodedBuffer,
-	DWORD*	pnLenUnEncodedBuffer);
+	const char*	encodedBuffer,
+	PBYTE	decodedBuffer,
+	DWORD*	decodedLength);
 
 int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 {
 	int result = -1;
 
-	HANDLE	hInputFile;
-	hInputFile = CreateFile(source,
+	HANDLE	inputFileHandle;
+	inputFileHandle = CreateFile(source,
 		GENERIC_READ,
 		FILE_SHARE_READ,
 		nullptr,
@@ -34,14 +34,14 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 		FILE_ATTRIBUTE_NORMAL,
 		nullptr);
 
-	if (hInputFile == INVALID_HANDLE_VALUE)
+	if (inputFileHandle == INVALID_HANDLE_VALUE)
 	{
 		_tprintf(_T("Could not open file (error %d)\n"), GetLastError());
 	}
 	else
 	{
-		HANDLE	hOutputFile;
-		hOutputFile = CreateFile(destination,
+		HANDLE	outputFileHandle;
+		outputFileHandle = CreateFile(destination,
 			GENERIC_WRITE,
 			0,
 			nullptr,
@@ -49,40 +49,40 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 			FILE_ATTRIBUTE_NORMAL,
 			nullptr);
 
-		if (hOutputFile == INVALID_HANDLE_VALUE)
+		if (outputFileHandle == INVALID_HANDLE_VALUE)
 		{
 			_tprintf(_T("Could not open file (error %d)\n"), GetLastError());
 		}
 		else
 		{
-			LPVOID	pInputBuffer;
-			LPVOID	pOutputBuffer;
-			DWORD	dwBytesRead;
+			LPVOID	inputBuffer;
+			LPVOID	outputBuffer;
+			DWORD	bytesRead;
 
-			DWORD	dwFileSize = GetFileSize(hInputFile, nullptr);
+			DWORD	fileSize = GetFileSize(inputFileHandle, nullptr);
 
-			pInputBuffer = malloc(dwFileSize + 1);
-			pOutputBuffer = malloc(dwFileSize + 1);
+			inputBuffer = malloc(fileSize + 1);
+			outputBuffer = malloc(fileSize + 1);
 
-			int returnCode = ReadFile(hInputFile,
-				pInputBuffer,
-				dwFileSize,
-				&dwBytesRead,
+			int returnCode = ReadFile(inputFileHandle,
+				inputBuffer,
+				fileSize,
+				&bytesRead,
 				nullptr);
 
 			if (returnCode != 0)
 			{
 				returnCode = ZenBase64Decode(
-					(char*)pInputBuffer,
-					(PBYTE)pOutputBuffer,
-					&dwBytesRead);
+					(char*)inputBuffer,
+					(PBYTE)outputBuffer,
+					&bytesRead);
 
 				if (returnCode == TRUE)
 				{
-					returnCode = WriteFile(hOutputFile,
-						pOutputBuffer,
-						dwBytesRead,
-						&dwBytesRead,
+					returnCode = WriteFile(outputFileHandle,
+						outputBuffer,
+						bytesRead,
+						&bytesRead,
 						nullptr);
 					if (returnCode == TRUE)
 					{
@@ -97,21 +97,21 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 }
 
 unsigned char Base64DecodeChar(
-	char c)
+	char character)
 {
-	if (c >= 'A' && c <= 'Z')
+	if (character >= 'A' && character <= 'Z')
 	{
-		return c - 'A';
+		return character - 'A';
 	}
-	if (c >= 'a' && c <= 'z')
+	if (character >= 'a' && character <= 'z')
 	{
-		return c - 'a' + 26;
+		return character - 'a' + 26;
 	}
-	if (c >= '0' && c <= '9')
+	if (character >= '0' && character <= '9')
 	{
-		return c - '0' + 52;
+		return character - '0' + 52;
 	}
-	if (c == '+')
+	if (character == '+')
 	{
 		return 62;
 	}
@@ -120,58 +120,60 @@ unsigned char Base64DecodeChar(
 }
 
 bool ZenBase64Decode(
-	const char*	sEncodedBuffer,
-	PBYTE	sUnEncodedBuffer,
-	DWORD*	pnLenUnEncodedBuffer)
+	const char*	encodedBuffer,
+	PBYTE	decodedBuffer,
+	DWORD*	decodedLength)
 {
-	bool	bRet				= false;
-	int		nLenEncodedBuffer	= 0;
-	int		nIndexOutBuffer		= 0;
+	bool	result			= false;
+	int		encodedLength	= 0;
+	int		decodedIndex	= 0;
 
-	if ((sEncodedBuffer != nullptr) && (sEncodedBuffer != nullptr))
+	if ((encodedBuffer != nullptr) && (encodedBuffer != nullptr))
 	{
 #if BASE64_TCHAR_INPUT
-		nLenEncodedBuffer = (int)_tcslen( sEncodedBuffer );
+		encodedLength = (int)_tcslen( encodedBuffer );
 #endif
-		nLenEncodedBuffer = (int)strlen( sEncodedBuffer );
+		encodedLength = (int)strlen( encodedBuffer );
 
-		for (int i=0;i<nLenEncodedBuffer;i+=4)
+		for (int encodedIndex=0;encodedIndex<encodedLength;encodedIndex+=4)
 		{
-			char c1='A',c2='A',c3='A',c4='A';
-			c1 = sEncodedBuffer[i];
-			if (i+1<nLenEncodedBuffer)
-				c2 = sEncodedBuffer[i+1];
+			char firstCharacter='A',secondCharacter='A',thirdCharacter='A',
+				fourthCharacter='A';
+			firstCharacter = encodedBuffer[encodedIndex];
+			if (encodedIndex+1<encodedLength)
+				secondCharacter = encodedBuffer[encodedIndex+1];
 
-			if (i+2<nLenEncodedBuffer)
-				c3 = sEncodedBuffer[i+2];
+			if (encodedIndex+2<encodedLength)
+				thirdCharacter = encodedBuffer[encodedIndex+2];
 
-			if (i+3<nLenEncodedBuffer)
-				c4 = sEncodedBuffer[i+3];
+			if (encodedIndex+3<encodedLength)
+				fourthCharacter = encodedBuffer[encodedIndex+3];
 
-			unsigned char by1=0,by2=0,by3=0,by4=0;
-			by1 = Base64DecodeChar(c1);
-			by2 = Base64DecodeChar(c2);
-			by3 = Base64DecodeChar(c3);
-			by4 = Base64DecodeChar(c4);
+			unsigned char firstValue=0,secondValue=0,thirdValue=0,
+				fourthValue=0;
+			firstValue = Base64DecodeChar(firstCharacter);
+			secondValue = Base64DecodeChar(secondCharacter);
+			thirdValue = Base64DecodeChar(thirdCharacter);
+			fourthValue = Base64DecodeChar(fourthCharacter);
 
-			sUnEncodedBuffer[nIndexOutBuffer] = (by1<<2)|(by2>>4);
-			nIndexOutBuffer++;
+			decodedBuffer[decodedIndex] = (firstValue<<2)|(secondValue>>4);
+			decodedIndex++;
 
-			if (c3 != '=')
+			if (thirdCharacter != '=')
 			{
-				sUnEncodedBuffer[nIndexOutBuffer] = ((by2&0xf)<<4)|(by3>>2);
-				nIndexOutBuffer++;
+				decodedBuffer[decodedIndex] = ((secondValue&0xf)<<4)|(thirdValue>>2);
+				decodedIndex++;
 			}
-			if (c4 != '=')
+			if (fourthCharacter != '=')
 			{
-				sUnEncodedBuffer[nIndexOutBuffer] = ((by3&0x3)<<6)|by4;
-				nIndexOutBuffer++;
+				decodedBuffer[decodedIndex] = ((thirdValue&0x3)<<6)|fourthValue;
+				decodedIndex++;
 			}
 		}
 
-		sUnEncodedBuffer[nIndexOutBuffer]	= '\0';
-		*pnLenUnEncodedBuffer = nIndexOutBuffer;
-		bRet	= true;
+		decodedBuffer[decodedIndex]	= '\0';
+		*decodedLength = decodedIndex;
+		result	= true;
 	}
-	return bRet;
+	return result;
 }

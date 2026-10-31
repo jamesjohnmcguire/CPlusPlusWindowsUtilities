@@ -49,7 +49,7 @@ class CModuleVersion :
 	public VS_FIXEDFILEINFO
 {
 protected:
-	BYTE* pVersionInfo;	// all version info
+	BYTE* versionInfoData;	// all version info
 
 	struct TRANSLATION {
 		WORD langID;			// language ID
@@ -60,7 +60,7 @@ public:
 	CModuleVersion();
 	virtual ~CModuleVersion();
 
-	BOOL		GetFileVersionInfo(LPCTSTR modulename);
-	std::wstring GetValue(LPCTSTR lpKeyName);
-	static BOOL DllGetVersion(LPCTSTR modulename, DLLVERSIONINFO& dvi);
+	BOOL		GetFileVersionInfo(LPCTSTR moduleName);
+	std::wstring GetValue(LPCTSTR keyName);
+	static BOOL DllGetVersion(LPCTSTR moduleName, DLLVERSIONINFO& versionInfo);
 };

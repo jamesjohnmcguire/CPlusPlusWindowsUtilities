@@ -37,7 +37,7 @@ class CSrcFile : public CStdioFile
 	protected:
 		bool isUnicodeText;
 		UINT fileOpenFlags;
-		int nFileCodePage;
+		int fileCodePage;
 		CString cszBaseFileName;
 		CString cszClassName;
 
@@ -47,7 +47,7 @@ class CSrcFile : public CStdioFile
 	// Methods
 	public:
 		CSrcFile();
-		CSrcFile(LPCTSTR lpszFileName, UINT nOpenFlags);
+		CSrcFile(LPCTSTR sourceFileName, UINT openFlags);
 		virtual ~CSrcFile();
 
 		unsigned long GetCharCount();
@@ -60,10 +60,10 @@ class CSrcFile : public CStdioFile
 		// 
 		// Gets a MultiByte string from a Unicode string.
 		// 
-		// Parameters: wchar_t * szUnicodeString      Unicode input string
-		//             char*     szMultiByteString    Multibyte output string
-		//             int       nMultiByteBufferSize Multibyte buffer size
-		//             int       nCodePage            Code page used to
+		// Parameters: unicodeString       Unicode input string
+		//             multiByteString     Multibyte output string
+		//             multiByteBufferSize Multibyte buffer size
+		//             codePage            Code page used to
 		//                                            perform conversion
 		//                                            Default = -1
 		//                                            (local code page)
@@ -71,10 +71,10 @@ class CSrcFile : public CStdioFile
 		// Returns:   int - number of characters written. 0 means error
 		///////////////////////////////////////////////////////////////////////
 		static int GetMultiByteStringFromUnicodeString(
-			wchar_t* szUnicodeString,
-			char* szMultiByteString,
-			int nMultiByteBufferSize,
-			int nCodePage = -1);
+			wchar_t* unicodeString,
+			char* multiByteString,
+			int multiByteBufferSize,
+			int codePage = -1);
 
 		///////////////////////////////////////////////////////////////////////
 		// GetRequiredMultiByteLengthForUnicodeString()
@@ -86,24 +86,24 @@ class CSrcFile : public CStdioFile
 		// We can't assume that the buffer length is simply equal to the number
 		// of characters because that wouldn't accommodate multibyte characters!
 		///////////////////////////////////////////////////////////////////////
-		// Parameters: wchar_t * szUnicodeString,int nCodePage=-1
+		// Parameters: unicodeString, codePage = -1
 		// Returns:    int
 		///////////////////////////////////////////////////////////////////////
 		static int GetRequiredMultiByteLengthForUnicodeString(
-			wchar_t* szUnicodeString,
-			int nCodePage = -1);
+			wchar_t* unicodeString,
+			int codePage = -1);
 
 		/// Gets a Unicode string from a MultiByte string.
-		/// @param szMultiByteString Multi-byte input string
-		/// @param szUnicodeString Unicode output string (output parameter)
-		/// @param nUnicodeBufferSize Size of Unicode output buffer in characters
-		/// @param nCodePage Code page for conversion (-1 = local code page)
+		/// @param multiByteString Multi-byte input string
+		/// @param unicodeString Unicode output string (output parameter)
+		/// @param unicodeBufferSize Size of Unicode output buffer in characters
+		/// @param codePage Code page for conversion (-1 = local code page)
 		/// @return Number of characters written, or 0 on error
 		static int GetUnicodeStringFromMultiByteString(
-			LPCSTR szMultiByteString,
-			wchar_t* szUnicodeString,
-			int nUnicodeBufferSize,
-			int nCodePage = -1
+			LPCSTR multiByteString,
+			wchar_t* unicodeString,
+			int unicodeBufferSize,
+			int codePage = -1
 		);
 
 		///////////////////////////////////////////////////////////////////////
@@ -119,20 +119,20 @@ class CSrcFile : public CStdioFile
 		static bool IsFileUnicode(const CString& sFilePath);
 		bool IsFileUnicodeText() const noexcept { return isUnicodeText; }
 		BOOL Open();
-		virtual BOOL Open(LPCTSTR lpszFileName, UINT nOpenFlags, CFileException* pError = nullptr);
-		virtual size_t Read(CString& rString, UINT nCount);
-		virtual size_t Read(LPCTSTR rString, UINT nCount);
+		virtual BOOL Open(LPCTSTR sourceFileName, UINT openFlags, CFileException* errorInfo = nullptr);
+		virtual size_t Read(CString& rString, UINT count);
+		virtual size_t Read(LPCTSTR rString, UINT count);
 		virtual BOOL ReadString(CString& rString);
-		void SetClassName(LPCTSTR pszClassName);
-		void SetCodePage(IN const UINT nCodePage);
-		bool SetLogPath( LPCTSTR pszPath);
+		void SetClassName(LPCTSTR className);
+		void SetCodePage(IN const UINT codePage);
+		bool SetLogPath( LPCTSTR path);
 		void SetProjectPath(const CString& path);
-		bool SetSrcFileName(LPCTSTR pszName = nullptr);
-		void SetUnicode(bool bUnicode);
-		virtual int Write(LPCTSTR pszString, int nBytesToWrite);
-		virtual void	WriteString(LPCTSTR lpsz);
+		bool SetSrcFileName(LPCTSTR name = nullptr);
+		void SetUnicode(bool useUnicode);
+		virtual int Write(LPCTSTR text, int bytesToWrite);
+		virtual void	WriteString(LPCTSTR text);
 
 	protected:
-		UINT ProcessFlags(const CString& sFilePath, UINT& nOpenFlags);
+		UINT ProcessFlags(const CString& sFilePath, UINT& openFlags);
 		bool SetDefaultPath();
 };

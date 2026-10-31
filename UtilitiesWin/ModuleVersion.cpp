@@ -11,7 +11,7 @@
 
 CModuleVersion::CModuleVersion()
 {
-	pVersionInfo = nullptr;				// raw version info data
+	versionInfoData = nullptr;				// raw version info data
 }
 
 //////////////////
@@ -19,7 +19,7 @@ CModuleVersion::CModuleVersion()
 //
 CModuleVersion::~CModuleVersion()
 {
-	delete [] pVersionInfo;
+	delete [] versionInfoData;
 }
 
 //////////////////
@@ -27,45 +27,45 @@ CModuleVersion::~CModuleVersion()
 // Allocates storage for all info, fills "this" with
 // VS_FIXEDFILEINFO, and sets codepage.
 //
-BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR modulename)
+BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR moduleName)
 {
 	translation.charset = 1252;		// default = ANSI code page
 	memset((VS_FIXEDFILEINFO*)this, 0, sizeof(VS_FIXEDFILEINFO));
 
 	// get module handle
-	TCHAR filename[_MAX_PATH];
-	HMODULE hModule = ::GetModuleHandle(modulename);
-	if (hModule==nullptr && modulename!=nullptr)
+	TCHAR moduleFileName[_MAX_PATH];
+	HMODULE moduleHandle = ::GetModuleHandle(moduleName);
+	if (moduleHandle==nullptr && moduleName!=nullptr)
 		return FALSE;
 
 	// get module file name
-	DWORD len = GetModuleFileName(hModule, filename,
-		sizeof(filename)/sizeof(filename[0]));
-	if (len <= 0)
+	DWORD length = GetModuleFileName(moduleHandle, moduleFileName,
+		sizeof(moduleFileName)/sizeof(moduleFileName[0]));
+	if (length <= 0)
 		return FALSE;
 
 	// read file version info
-	DWORD dwDummyHandle; // will always be set to zero
-	len = GetFileVersionInfoSize(filename, &dwDummyHandle);
-	if (len <= 0)
+	DWORD ignoredHandle; // will always be set to zero
+	length = GetFileVersionInfoSize(moduleFileName, &ignoredHandle);
+	if (length <= 0)
 		return FALSE;
 
-	pVersionInfo = new BYTE[len]; // allocate version info
-	if (!::GetFileVersionInfo(filename, 0, len, pVersionInfo))
+	versionInfoData = new BYTE[length]; // allocate version info
+	if (!::GetFileVersionInfo(moduleFileName, 0, length, versionInfoData))
 		return FALSE;
 
-	LPVOID lpvi;
-	UINT iLen;
-	if (!VerQueryValue(pVersionInfo, _T("\\"), &lpvi, &iLen))
+	LPVOID versionValue;
+	UINT valueLength;
+	if (!VerQueryValue(versionInfoData, _T("\\"), &versionValue, &valueLength))
 		return FALSE;
 
 	// copy fixed info to myself, which am derived from VS_FIXEDFILEINFO
-	*(VS_FIXEDFILEINFO*)this = *(VS_FIXEDFILEINFO*)lpvi;
+	*(VS_FIXEDFILEINFO*)this = *(VS_FIXEDFILEINFO*)versionValue;
 
 	// Get translation info
-	if (VerQueryValue(pVersionInfo,
-		_T("\\VarFileInfo\\Translation"), &lpvi, &iLen) && iLen >= 4) {
-		translation = *(TRANSLATION*)lpvi;
+	if (VerQueryValue(versionInfoData,
+		_T("\\VarFileInfo\\Translation"), &versionValue, &valueLength) && valueLength >= 4) {
+		translation = *(TRANSLATION*)versionValue;
 	}
 
 	return dwSignature == VS_FFI_SIGNATURE;
@@ -76,11 +76,11 @@ BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR modulename)
 // Key name is something like "CompanyName".
 // returns the value as a CString.
 //
-std::wstring CModuleVersion::GetValue(LPCTSTR lpKeyName)
+std::wstring CModuleVersion::GetValue(LPCTSTR keyName)
 {
 	std::wstring result;
 
-	if (pVersionInfo)
+	if (versionInfoData)
 	{
 		// To get a string value must pass query in the form
 		//
@@ -94,21 +94,21 @@ std::wstring CModuleVersion::GetValue(LPCTSTR lpKeyName)
 
 		std::wstring query = std::format(L"\\StringFileInfo\\{}\\{}",
 			langCodePage,
-			lpKeyName);
+			keyName);
 
-		LPCTSTR pVal;
-		UINT iLenVal;
+		LPCTSTR value;
+		UINT valueLength;
 
 		bool returnCode = VerQueryValue(
-			pVersionInfo,
+			versionInfoData,
 			query.c_str(),
-			(LPVOID*)&pVal,
-			&iLenVal);
+			(LPVOID*)&value,
+			&valueLength);
 
 		if (returnCode == true)
 		{
 
-			result = pVal;
+			result = value;
 		}
 	}
 
@@ -121,24 +121,24 @@ typedef HRESULT (CALLBACK* DLLGETVERSIONPROC)(DLLVERSIONINFO *);
 /////////////////
 // Get DLL Version by calling DLL's DllGetVersion proc
 //
-BOOL CModuleVersion::DllGetVersion(LPCTSTR modulename, DLLVERSIONINFO& dvi)
+BOOL CModuleVersion::DllGetVersion(LPCTSTR moduleName, DLLVERSIONINFO& versionInfo)
 {
-	HINSTANCE hinst = LoadLibrary(modulename);
-	if (!hinst)
+	HINSTANCE moduleHandle = LoadLibrary(moduleName);
+	if (!moduleHandle)
 		return FALSE;
 
 	// Must use GetProcAddress because the DLL might not implement 
 	// DllGetVersion. Depending upon the DLL, the lack of implementation of the 
 	// function may be a version marker in itself.
 	//
-	DLLGETVERSIONPROC pDllGetVersion =
-		(DLLGETVERSIONPROC)GetProcAddress(hinst, "DllGetVersion");
+	DLLGETVERSIONPROC getDllVersion =
+		(DLLGETVERSIONPROC)GetProcAddress(moduleHandle, "DllGetVersion");
 
-	if (!pDllGetVersion)
+	if (!getDllVersion)
 		return FALSE;
 
-	memset(&dvi, 0, sizeof(dvi));			 // clear
-	dvi.cbSize = sizeof(dvi);				 // set size for Windows
+	memset(&versionInfo, 0, sizeof(versionInfo));			 // clear
+	versionInfo.cbSize = sizeof(versionInfo);				 // set size for Windows
 
-	return SUCCEEDED((*pDllGetVersion)(&dvi));
+	return SUCCEEDED((*getDllVersion)(&versionInfo));
 }

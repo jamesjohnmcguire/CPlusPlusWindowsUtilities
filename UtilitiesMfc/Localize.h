@@ -8,15 +8,15 @@
 // Support function prototypes
 ///////////////////////////////////////////////////////////////////////
 int	GetNextCharacterState(
-	int		nCurrentState,
+	int		currentState,
 	TCHAR	cNextNonSpaceChar,
 	CString	csNextCharStream);
 int		GetNextNonWhiteSpaceChar(CString& cszBuffer);
-DllExport bool	IsHelp(int nCntParams, TCHAR** asParameters);
-DllExport int		LocalizeIt(TCHAR* pszPath);
+DllExport bool	IsHelp(int parameterCount, TCHAR** asParameters);
+DllExport int		LocalizeIt(TCHAR* path);
 int		MainInit(void);
-bool	ProcessFile(LPCTSTR pszFileName);
-ULONGLONG	ReadFileIntoBuffer(LPCTSTR pszFileName, CString& cszBuffer);
+bool	ProcessFile(LPCTSTR fileName);
+ULONGLONG	ReadFileIntoBuffer(LPCTSTR fileName, CString& cszBuffer);
 #if LOCALIZE_UNICODE_DETECTION_UNIMPLEMENTED
 bool	IsUnicodeFile(CSrcFile& cSrcFile);
 #endif

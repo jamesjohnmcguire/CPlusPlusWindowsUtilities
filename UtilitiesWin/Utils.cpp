@@ -321,8 +321,8 @@ DllExport char *
 	LPCWSTR	unicodeString,
 	ULONG	codePage)
 {
-	const BOOL	bUsedDefChar	= FALSE;
-	int		nCharsWritten = 0;
+	const BOOL	usedDefaultCharacter	= FALSE;
+	int		charactersWritten = 0;
 	char*	multiByteString = nullptr;
 	try
 	{
@@ -358,7 +358,7 @@ DllExport char *
 			}
 
 			// If writing to UTF8, flags, default char and boolean flag must be nullptr
-			nCharsWritten = WideCharToMultiByte(codePage,
+			charactersWritten = WideCharToMultiByte(codePage,
 				flags,
 				unicodeString,
 				-1,
@@ -368,7 +368,7 @@ DllExport char *
 				nullptr);
 
 			// If no chars were written and the buffer is not 0, error!
-			if (nCharsWritten == 0 && multiByteBufferSize > 0)
+			if (charactersWritten == 0 && multiByteBufferSize > 0)
 			{
 				TCHAR	errorMessage[256];
 				_stprintf_s(errorMessage, _T("\r\nError in WideCharToMultiByte: %d\r\n"), GetLastError());
@@ -378,9 +378,9 @@ DllExport char *
 		}
 
 		// Now fix nCharsWritten
-		if (nCharsWritten > 0)
+		if (charactersWritten > 0)
 		{
-			nCharsWritten--;
+			charactersWritten--;
 		}
 		else
 		{
@@ -727,25 +727,25 @@ GetUnicodeString(
 // Purpose:		Gets a Unicode string from a MultiByte string.
 /////////////////////////////////////////////////////////////////////////////
 int GetUnicodeStringFromMultiByteString(
-	LPCSTR		szMultiByteString,
-	wchar_t*	szUnicodeString,
-	int			nUnicodeBufferSize,
-	ULONG		nCodePage)
+	LPCSTR		multiByteString,
+	wchar_t*	unicodeString,
+	int			unicodeBufferSize,
+	ULONG		codePage)
 {
-	const bool	bOK = true;
-	int		nCharsWritten = 0;
+	const bool	succeeded = true;
+	int		charactersWritten = 0;
 
-	if (szUnicodeString && szMultiByteString)
+	if (unicodeString && multiByteString)
 	{
 		// If no code page specified, take default for system
-		if (nCodePage == -1)
+		if (codePage == -1)
 		{
-			nCodePage = GetACP();
+			codePage = GetACP();
 		}
 
 		DWORD flags = MB_PRECOMPOSED;
 
-		const bool useFlags = AllowConversionFlags(nCodePage);
+		const bool useFlags = AllowConversionFlags(codePage);
 
 		if (false == useFlags)
 		{
@@ -755,30 +755,30 @@ int GetUnicodeStringFromMultiByteString(
 		try
 		{
 			// Zero out buffer first. NB: nUnicodeBufferSize is NUMBER OF CHARS, NOT BYTES!
-			memset((void*)szUnicodeString, '\0', sizeof(wchar_t) *
-				nUnicodeBufferSize);
+			memset((void*)unicodeString, '\0', sizeof(wchar_t) *
+				unicodeBufferSize);
 
 			// When converting to UTF8, don't set any flags (see Q175392).
 			for (int codePageIndex = 0;;) {
-				nCharsWritten = MultiByteToWideChar(nCodePage,
+				charactersWritten = MultiByteToWideChar(codePage,
 					flags,
-					szMultiByteString,
+					multiByteString,
 					-1,
-					szUnicodeString,
-					nUnicodeBufferSize + 1);
+					unicodeString,
+					unicodeBufferSize + 1);
 
-				if (nCharsWritten > 0 || alternativeCodePages[codePageIndex] == 0)
+				if (charactersWritten > 0 || alternativeCodePages[codePageIndex] == 0)
 					break;
 
 				//If there a problem converting to a wide char with the given code page.
-				nCodePage = alternativeCodePages[codePageIndex++];
+				codePage = alternativeCodePages[codePageIndex++];
 			}
 		}
 		catch (const std::exception& ex)
 		{
 			std::string errorMsg = ex.what();
-			std::wstring wErrorMsg(errorMsg.begin(), errorMsg.end());
-			OutputDebugString(wErrorMsg.c_str());
+			std::wstring wideErrorMessage(errorMsg.begin(), errorMsg.end());
+			OutputDebugString(wideErrorMessage.c_str());
 		}
 		catch (...)
 		{
@@ -787,16 +787,16 @@ int GetUnicodeStringFromMultiByteString(
 	}
 
 	// Now fix nCharsWritten
-	if (nCharsWritten > 0)
+	if (charactersWritten > 0)
 	{
-		nCharsWritten--;
+		charactersWritten--;
 	}
 	else
 	{
 		GetLastErrorInfo(nullptr);
 	}
 
-	return nCharsWritten;
+	return charactersWritten;
 }
 
 char* GetUtfMultiByteString(LPCTSTR unicodeString)
@@ -881,14 +881,14 @@ bool
 	GetLastErrorInfo(
 	HMODULE	moduleHandle)
 {
-	const bool	bRet		= false;
+	const bool	result		= false;
 
-	LPVOID	pMsgBuffer = nullptr;
-	const DWORD	dwErr		= GetLastError();
-	DWORD	dwRet;
+	LPVOID	messageBuffer = nullptr;
+	const DWORD	errorCode		= GetLastError();
+	DWORD	formattedLength;
 	DWORD	formatFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
 #if FORMAT_MESSAGE_BUFFER_CAST
-	LPTSTR buffer = reinterpret_cast<LPTSTR>(&pMsgBuffer);
+	LPTSTR buffer = reinterpret_cast<LPTSTR>(&messageBuffer);
 #endif
 	LPTSTR buffer = nullptr;
 
@@ -897,9 +897,9 @@ bool
 		formatFlags |= FORMAT_MESSAGE_FROM_HMODULE;
 	}
 
-	dwRet	= FormatMessage(formatFlags,
+	formattedLength	= FormatMessage(formatFlags,
 		moduleHandle,
-		dwErr,
+		errorCode,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPWSTR)&buffer,
 		0,
@@ -912,10 +912,10 @@ bool
 		TRACE(_T("Error: %s\r\n"), buffer);
 #endif
 		_tprintf(_T("\tError: %s"), buffer);
-		LocalFree(pMsgBuffer);
+		LocalFree(messageBuffer);
 	}
 
-	return bRet;
+	return result;
 }
 
 /////////////////////////////////////////////////////////////////////////////

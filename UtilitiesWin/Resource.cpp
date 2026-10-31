@@ -64,12 +64,12 @@ Resource::GetString(
 	return resourceString;
 }
 
-std::wstring Resource::LoadStringResource(HINSTANCE hInstance, UINT resourceId)
+std::wstring Resource::LoadStringResource(HINSTANCE moduleHandle, UINT resourceId)
 {
 	wchar_t buffer[256];
-	int len = ::LoadString(hInstance, resourceId, buffer, _countof(buffer));
+	int length = ::LoadString(moduleHandle, resourceId, buffer, _countof(buffer));
 
-	if (len > 0) {
+	if (length > 0) {
 		return std::wstring(buffer);
 	}
 	return L"";  // or throw an exception
@@ -85,9 +85,9 @@ Resource::ShowMessage(
 {
 	std::wstring title = GetString(titleId);
 	std::wstring message = GetString(stringId);
-	LPCWSTR pTitle = title.c_str();
-	LPCWSTR pMessage = message.c_str();
-	int returnCode = MessageBox(GetActiveWindow(), pMessage, pTitle, MB_OK);
+	LPCWSTR titleText = title.c_str();
+	LPCWSTR messageText = message.c_str();
+	int returnCode = MessageBox(GetActiveWindow(), messageText, titleText, MB_OK);
 
 	return returnCode;
 }
@@ -103,12 +103,12 @@ Resource::ShowMessageError(
 {
 	std::wstring title = GetString(titleId);
 	std::wstring errorMessage = GetString(stringId);
-	LPCWSTR pTitle = title.c_str();
+	LPCWSTR titleText = title.c_str();
 
 	std::wstring completeMessage = std::wstring(message) + L": " + errorMessage;
-	LPCWSTR pMessage = completeMessage.c_str();
+	LPCWSTR messageText = completeMessage.c_str();
 
-	int returnCode = MessageBox(GetActiveWindow(), pMessage, pTitle, MB_OK);
+	int returnCode = MessageBox(GetActiveWindow(), messageText, titleText, MB_OK);
 
 	return returnCode;
 }
@@ -123,10 +123,10 @@ Resource::ShowMessageYesNo(
 {
 	std::wstring title = GetString(titleId);
 	std::wstring message = GetString(stringId);
-	LPCWSTR pTitle = title.c_str();
-	LPCWSTR pMessage = message.c_str();
+	LPCWSTR titleText = title.c_str();
+	LPCWSTR messageText = message.c_str();
 
-	int returnCode	= MessageBox(GetActiveWindow(), pMessage, pTitle, MB_YESNO);
+	int returnCode	= MessageBox(GetActiveWindow(), messageText, titleText, MB_YESNO);
 
 	return returnCode;
 }

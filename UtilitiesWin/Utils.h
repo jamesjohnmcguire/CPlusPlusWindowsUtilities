@@ -115,15 +115,15 @@ ConcatStringsVA(
 /////////////////////////////////////////////////////////////////////////////
 DllExport char*
 GetMultiByteString(
-	LPCWSTR szUnicodeString);
+	LPCWSTR unicodeString);
 DllExport char*
 GetMultiByteString(
 	ULONG	codePage,
-	LPCWSTR szUnicodeString);
+	LPCWSTR unicodeString);
 DllExport char*
 GetMultiByteStringFromUnicodeString(
-	LPCWSTR szUnicodeString,
-	ULONG nCodePage);
+	LPCWSTR unicodeString,
+	ULONG codePage);
 
 DllExport wchar_t*
 GetUnicodeString(
@@ -134,10 +134,10 @@ GetUnicodeString(
 	LPCSTR	multiByteString);
 DllExport int
 GetUnicodeStringFromMultiByteString(
-	LPCSTR		szMultiByteString,
-	wchar_t*	szUnicodeString,
-	int			nUnicodeBufferSize,
-	ULONG		nCodePage);
+	LPCSTR		multiByteString,
+	wchar_t*	unicodeString,
+	int			unicodeBufferSize,
+	ULONG		codePage);
 
 #endif
 // allow InstallHelper to use

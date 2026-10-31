@@ -28,10 +28,10 @@ class DllExport Registry
 			~Registry(void);
 
 			LONG Delete(
-				HKEY	hKeyRoot,
-				LPCTSTR	pszRegKeyPath,
-				LPCTSTR	pszSubKey,
-				bool	bOnlyIfEmpty);
+				HKEY	rootKeyHandle,
+				LPCTSTR	registryKeyPath,
+				LPCTSTR	subKeyName,
+				bool	onlyIfEmpty);
 			DWORD GetDwordValue(
 				HKEY	keyRoot,
 				LPCTSTR	keyPath,
@@ -48,16 +48,16 @@ class DllExport Registry
 				LPCTSTR	regKeyPath,
 				LPCTSTR	regKeyVar);
 			LONG GetValue(
-				HKEY	hKeyRoot,
-				LPCTSTR	pszRegKeyPath,
-				LPCTSTR	pszRegKeyVar,
-				LPTSTR	pszValue,
-				DWORD	dwValueBufSize);
+				HKEY	rootKeyHandle,
+				LPCTSTR	registryKeyPath,
+				LPCTSTR	registryValueName,
+				LPTSTR	registryValue,
+				DWORD	valueBufferSize);
 			LONG SetValue(
-				HKEY	hKeyRoot,
-				LPCTSTR	pszRegKeyPath,
-				LPCTSTR	pszRegKeyVar,
-				LPCTSTR	pszValue);
+				HKEY	rootKeyHandle,
+				LPCTSTR	registryKeyPath,
+				LPCTSTR	registryValueName,
+				LPCTSTR	registryValue);
 			LONG SetValue(
 				HKEY	keyRoot,
 				LPCTSTR	regKeyPath,
