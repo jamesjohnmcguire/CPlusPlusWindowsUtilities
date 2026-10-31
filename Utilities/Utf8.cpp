@@ -18,7 +18,7 @@ bool HasUtf8Bom(const std::uint8_t* data, std::size_t length) noexcept
 	{
 		constexpr std::size_t bomSize = Utf8BomBytes.size();
 
-		if (bomSize > length)
+		if (bomSize <= length)
 		{
 			hasUtf8Bom =
 				std::equal(Utf8BomBytes.begin(), Utf8BomBytes.end(), data);
