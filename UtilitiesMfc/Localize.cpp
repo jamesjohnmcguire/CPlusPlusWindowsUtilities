@@ -172,7 +172,7 @@ bool IsHelp(int parameterCount, TCHAR** asParameters)
 	}
 	else
 	{
-		for (int i = 1; i <= parameterCount; i++)
+		for (int i = 1; i < parameterCount; i++)
 		{
 			if (_tcsncicmp(asParameters[i], _T("-?"), 2) == 0)
 			{
