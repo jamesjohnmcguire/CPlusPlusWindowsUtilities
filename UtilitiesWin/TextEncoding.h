@@ -29,5 +29,3 @@ class TextEncoding
 private:
 		static int GetCodePageFromName(const std::string& encoding) noexcept;
 };
-
-DllExport bool HasUtf8Bom(const uint8_t* data, size_t length);

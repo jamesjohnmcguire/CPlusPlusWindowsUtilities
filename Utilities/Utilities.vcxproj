@@ -52,7 +52,9 @@
 
 	<ItemGroup>
 		<ClInclude Include="Utilities.h" />
+		<ClInclude Include="Utf8.h" />
 		<ClCompile Include="Utilities.cpp" />
+		<ClCompile Include="Utf8.cpp" />
 	</ItemGroup>
 
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

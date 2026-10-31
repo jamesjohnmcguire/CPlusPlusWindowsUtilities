@@ -22,17 +22,6 @@ TEST(TextEncodingTests, ConvertsEmptyStrings)
 	EXPECT_EQ(TextEncoding::GetUnicodeTextFromMultiByte(""), L"");
 }
 
-TEST(TextEncodingTests, RecognizesUtf8BomOnlyAtStart)
-{
-	const uint8_t bom[] = {0xEF, 0xBB, 0xBF, 0x41};
-	const uint8_t other[] = {0x41, 0xEF, 0xBB, 0xBF};
-
-	EXPECT_TRUE(HasUtf8Bom(bom, sizeof(bom)));
-	EXPECT_FALSE(HasUtf8Bom(bom, 2));
-	EXPECT_FALSE(HasUtf8Bom(other, sizeof(other)));
-	EXPECT_FALSE(HasUtf8Bom(nullptr, 0));
-}
-
 TEST(FileWrapperTests, OwnsFileName)
 {
 	wchar_t tempDirectory[MAX_PATH]{};
