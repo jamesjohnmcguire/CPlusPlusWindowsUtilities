@@ -10,6 +10,9 @@
 ///////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <string>
+#include <windows.h>
+
 // tell linker to link with version.lib for VerQueryValue, etc.
 #pragma comment(linker, "/defaultlib:version.lib")
 

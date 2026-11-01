@@ -1,5 +1,10 @@
 LIBRARY "UtilitiesWin"
 
 EXPORTS
+	??0CModuleVersion@@QAE@XZ
+	??1CModuleVersion@@UAE@XZ
+	?GetFileVersionInfoW@CModuleVersion@@QAEHPB_W@Z
+	?GetValue@CModuleVersion@@QAE?AV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@PB_W@Z
+	?DllGetVersion@CModuleVersion@@SAHPB_WAAU_DllVersionInfo@@@Z
 	?GetMultiByteTextFromUnicode@TextEncoding@@SA?AV?$optional@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@std@@ABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@3@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@@Z
 	?GetUnicodeTextFromMultiByte@TextEncoding@@SA?AV?$optional@V?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@std@@ABV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@3@0@Z

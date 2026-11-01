@@ -3,9 +3,33 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <windows.h>
 
 #include "../UtilitiesWin/FileWrapper.h"
+#include "../UtilitiesWin/ModuleVersion.h"
 #include "../UtilitiesWin/TextEncoding.h"
+
+TEST(ModuleVersionTests, ReadsTestExecutableVersion)
+{
+	CModuleVersion version;
+
+	ASSERT_TRUE(version.GetFileVersionInfo(nullptr));
+	EXPECT_EQ(HIWORD(version.dwFileVersionMS), 3);
+	EXPECT_EQ(LOWORD(version.dwFileVersionMS), 7);
+	EXPECT_EQ(HIWORD(version.dwFileVersionLS), 11);
+	EXPECT_EQ(LOWORD(version.dwFileVersionLS), 13);
+	EXPECT_EQ(version.GetValue(L"CompanyName"),
+		L"DigitalZenWorks Test Fixture");
+}
+
+TEST(ModuleVersionTests, ReportsMissingModule)
+{
+	CModuleVersion version;
+
+	EXPECT_FALSE(version.GetFileVersionInfo(
+		L"Missing.ModuleVersion.Fixture.dll"));
+	EXPECT_TRUE(version.GetValue(L"CompanyName").empty());
+}
 
 TEST(TextEncodingTests, ConvertsUnicodeToUtf8AndBack)
 {
