@@ -19,24 +19,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ClCompile Include="Localize.cpp">
-			<Filter>Source Files</Filter>
-		</ClCompile>
-		<ClCompile Include="SrcFile.cpp">
-		<Filter>Source Files</Filter>
-		</ClCompile>
 		<ClCompile Include="pch.cpp">
 		<Filter>Source Files</Filter>
 		</ClCompile>
 	</ItemGroup>
 
 	<ItemGroup>
-		<ClInclude Include="Localize.h">
-			<Filter>Header Files</Filter>
-		</ClInclude>
-		<ClInclude Include="SrcFile.h">
-			<Filter>Header Files</Filter>
-		</ClInclude>
 		<ClInclude Include="pch.h">
 			<Filter>Header Files</Filter>
 		</ClInclude>

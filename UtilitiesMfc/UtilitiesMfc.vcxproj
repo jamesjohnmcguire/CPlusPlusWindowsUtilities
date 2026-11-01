@@ -80,16 +80,12 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Localize.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="SrcFile.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Localize.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="SrcFile.cpp" />
   </ItemGroup>
 
 	<ItemGroup>

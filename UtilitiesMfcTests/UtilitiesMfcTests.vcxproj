@@ -47,7 +47,7 @@
 			<WarningLevel>Level3</WarningLevel>
 		</ClCompile>
 		<Link>
-			<AdditionalDependencies>$(OutDir)UtilitiesMfc.lib;gtest.lib;gtest_main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+			<AdditionalDependencies>gtest.lib;gtest_main.lib;%(AdditionalDependencies)</AdditionalDependencies>
 			<SubSystem>Console</SubSystem>
 		</Link>
 	</ItemDefinitionGroup>
@@ -70,11 +70,6 @@
 			<PrecompiledHeader>Create</PrecompiledHeader>
 		</ClCompile>
 		<ClCompile Include="test.cpp" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\UtilitiesMfc\UtilitiesMfc.vcxproj">
-			<Project>{96FD94A6-9F17-44C1-A7BE-4EDDE37D471D}</Project>
-		</ProjectReference>
 	</ItemGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 	<Import Project="$(VCPKG_ROOT)\scripts\buildsystems\msbuild\vcpkg.targets" />
