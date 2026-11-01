@@ -9,19 +9,19 @@
 ///////////////////////////////////////////////////////////////////////
 int	GetNextCharacterState(
 	int		currentState,
-	TCHAR	cNextNonSpaceChar,
+	wchar_t	cNextNonSpaceChar,
 	CString	csNextCharStream);
 int		GetNextNonWhiteSpaceChar(CString& cszBuffer);
-DllExport bool	IsHelp(int parameterCount, TCHAR** asParameters);
-DllExport int		LocalizeIt(TCHAR* path);
+DllExport bool	IsHelp(int parameterCount, wchar_t** asParameters);
+DllExport int		LocalizeIt(wchar_t* path);
 int		MainInit(void);
-bool	ProcessFile(LPCTSTR fileName);
-ULONGLONG	ReadFileIntoBuffer(LPCTSTR fileName, CString& cszBuffer);
+bool	ProcessFile(const wchar_t* fileName);
+ULONGLONG	ReadFileIntoBuffer(const wchar_t* fileName, CString& cszBuffer);
 #if LOCALIZE_UNICODE_DETECTION_UNIMPLEMENTED
 bool	IsUnicodeFile(CSrcFile& cSrcFile);
 #endif
 
-extern TCHAR*	g_psTestArgv1;
+extern wchar_t*	g_psTestArgv1;
 extern ULONG	g_uSectionCount;
 
 class Localize

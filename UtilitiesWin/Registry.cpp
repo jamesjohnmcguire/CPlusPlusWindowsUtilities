@@ -36,8 +36,8 @@ Registry::~Registry(void)
 LONG
 	Registry::Delete(
 	HKEY	rootKeyHandle,
-	LPCTSTR	registryKeyPath,
-	LPCTSTR	subKeyName,
+	const wchar_t*	registryKeyPath,
+	const wchar_t*	subKeyName,
 	bool	onlyIfEmpty)
 {
 	LONG	registryResult	= -1;
@@ -67,8 +67,8 @@ LONG
 /////////////////////////////////////////////////////////////////////////////
 // GetDwordValue
 /////////////////////////////////////////////////////////////////////////////
-DWORD Registry::GetDwordValue(HKEY keyRoot, LPCTSTR keyPath,
-	LPCTSTR keyVariable)
+DWORD Registry::GetDwordValue(HKEY keyRoot, const wchar_t* keyPath,
+	const wchar_t* keyVariable)
 {
 	LONG	successCode	= -1;
 	HKEY	keyHandle;
@@ -90,13 +90,13 @@ DWORD Registry::GetDwordValue(HKEY keyRoot, LPCTSTR keyPath,
 /////////////////////////////////////////////////////////////////////////////
 // GetSubKeyNames
 /////////////////////////////////////////////////////////////////////////////
-TCHAR** Registry::GetSubKeyNames(
-	HKEY keyRoot, const TCHAR* regKey, DWORD* keyCount)
+wchar_t** Registry::GetSubKeyNames(
+	HKEY keyRoot, const wchar_t* regKey, DWORD* keyCount)
 {
 	LONG	registryResult = -1;
 	HKEY	keyHandle;
 	DWORD	keyValuesCount = 0;
-	TCHAR**	keyNames = nullptr;
+	wchar_t**	keyNames = nullptr;
 
 	registryResult = RegOpenKeyEx(keyRoot, regKey, 0, KEY_READ, &keyHandle);
 
@@ -107,11 +107,11 @@ TCHAR** Registry::GetSubKeyNames(
 
 		if ((ERROR_SUCCESS == registryResult) && (keyValuesCount > 0))
 		{
-			keyNames = new TCHAR*[keyValuesCount];
+			keyNames = new wchar_t*[keyValuesCount];
 
 			if (nullptr != keyNames)
 			{
-				TCHAR	keyName[MAX_KEY_LENGTH];
+				wchar_t	keyName[MAX_KEY_LENGTH];
 				DWORD	keyNameLength = MAX_KEY_LENGTH;
 
 				for (DWORD loopIndex=0; loopIndex < keyValuesCount; loopIndex++)
@@ -145,7 +145,7 @@ TCHAR** Registry::GetSubKeyNames(
 /////////////////////////////////////////////////////////////////////////////
 // GetSubKeysCount
 /////////////////////////////////////////////////////////////////////////////
-DWORD Registry::GetSubKeysCount(HKEY keyRoot, LPCTSTR regKey)
+DWORD Registry::GetSubKeysCount(HKEY keyRoot, const wchar_t* regKey)
 {
 	LONG	registryResult	= -1;
 	HKEY	keyHandle;
@@ -172,15 +172,15 @@ DWORD Registry::GetSubKeysCount(HKEY keyRoot, LPCTSTR regKey)
 /////////////////////////////////////////////////////////////////////////////
 // GetValue
 /////////////////////////////////////////////////////////////////////////////
-TCHAR*
+wchar_t*
 	Registry::GetValue(
 	HKEY keyRoot,
-	LPCTSTR regKeyPath,
-	LPCTSTR regKeyVar)
+	const wchar_t* regKeyPath,
+	const wchar_t* regKeyVar)
 {
 	LONG	returnCode	= -1;
 	HKEY	keyHandle;
-	TCHAR*	stringValue	= nullptr;
+	wchar_t*	stringValue	= nullptr;
 	DWORD	bufferSize	= 0;
 	returnCode = RegOpenKeyEx(	keyRoot,
 		regKeyPath,
@@ -199,7 +199,7 @@ TCHAR*
 
 		if (ERROR_SUCCESS == returnCode)
 		{
-			stringValue = new TCHAR[bufferSize+1];
+			stringValue = new wchar_t[bufferSize+1];
 
 			returnCode	= RegQueryValueEx(	keyHandle,
 				regKeyVar,
@@ -221,9 +221,9 @@ TCHAR*
 LONG
 	Registry::GetValue(
 	HKEY	rootKeyHandle,
-	LPCTSTR	registryKeyPath,
-	LPCTSTR	registryValueName,
-	LPTSTR	registryValue,
+	const wchar_t*	registryKeyPath,
+	const wchar_t*	registryValueName,
+	wchar_t*	registryValue,
 	DWORD	valueBufferSize)
 {
 	LONG	registryResult	= -1;
@@ -259,9 +259,9 @@ LONG
 LONG
 	Registry::SetValue(
 	HKEY	rootKeyHandle,
-	LPCTSTR	registryKeyPath,
-	LPCTSTR	registryValueName,
-	LPCTSTR	registryValue)
+	const wchar_t*	registryKeyPath,
+	const wchar_t*	registryValueName,
+	const wchar_t*	registryValue)
 {
 	LONG	registryResult	= -1;
 	HKEY	keyHandle;
@@ -293,14 +293,14 @@ LONG
 				0,
 				REG_SZ,
 				(LPBYTE)registryValue,
-				(DWORD)(_tcslen(registryValue) + 1) * sizeof(TCHAR));
+				(DWORD)(wcslen(registryValue) + 1) * sizeof(wchar_t));
 
 #ifdef _DEBUG
 			if (ERROR_SUCCESS != registryResult)
 			{
-				TCHAR message[128];
-				_stprintf_s(message,
-					_T("Registry::SetValue: RegSetValueEx failed (%ld)\n"),
+				wchar_t message[128];
+				swprintf_s(message,
+					L"Registry::SetValue: RegSetValueEx failed (%ld)\n",
 					registryResult);
 				OutputDebugString(message);
 			}
@@ -310,9 +310,9 @@ LONG
 #ifdef _DEBUG
 		else
 		{
-			TCHAR message[128];
-			_stprintf_s(message,
-				_T("Registry::SetValue: RegCreateKeyEx failed (%ld)\n"),
+			wchar_t message[128];
+			swprintf_s(message,
+				L"Registry::SetValue: RegCreateKeyEx failed (%ld)\n",
 				registryResult);
 			OutputDebugString(message);
 		}
@@ -328,8 +328,8 @@ LONG
 LONG
 	Registry::SetValue(
 	HKEY keyRoot,
-	LPCTSTR regKeyPath,
-	LPCTSTR regKeyVar,
+	const wchar_t* regKeyPath,
+	const wchar_t* regKeyVar,
 	DWORD value)
 {
 	LONG	registryResult	= -1;

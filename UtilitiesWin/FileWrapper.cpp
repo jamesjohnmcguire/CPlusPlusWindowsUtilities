@@ -28,7 +28,7 @@
 // Store an owned filename so the caller's buffer can change or be released.
 /////////////////////////////////////////////////////////////////////////////
 FileWrapper::FileWrapper(
-	LPCTSTR sourceFileName)
+	const wchar_t* sourceFileName)
 {
 	if (sourceFileName != nullptr)
 	{
@@ -225,10 +225,10 @@ char*
 /////////////////////////////////////////////////////////////////////////////
 // ReadUnicodeText
 /////////////////////////////////////////////////////////////////////////////
-TCHAR*
+wchar_t*
 	FileWrapper::ReadUnicodeText(void)
 {
-	TCHAR*	inputContents = nullptr;
+	wchar_t*	inputContents = nullptr;
 
 	if (!fileName.empty())
 	{
@@ -242,11 +242,11 @@ TCHAR*
 
 		if (INVALID_HANDLE_VALUE != fileHandle)
 		{
-			DWORD	contentsSize	= GetFileSize(fileHandle, nullptr) / sizeof(TCHAR) + 2;
+			DWORD	contentsSize	= GetFileSize(fileHandle, nullptr) / sizeof(wchar_t) + 2;
 
 			if (0 < contentsSize )
 			{
-				inputContents = new TCHAR[contentsSize];
+				inputContents = new wchar_t[contentsSize];
 
 				if (nullptr != inputContents)
 				{

@@ -18,7 +18,7 @@
 // Unicode "byte order mark" which goes at start of file
 #define	UNICODE_BOM 0xFEFF
 // New line characters
-#define	NEWLINE _T("\r\n")
+#define	NEWLINE L"\r\n"
 // Filler char used when no conversion from Unicode to local code page
 // is possible
 #define	DEFAULT_UNICODE_FILLER_CHAR "#"
@@ -47,7 +47,7 @@ class CSrcFile : public CStdioFile
 	// Methods
 	public:
 		CSrcFile();
-		CSrcFile(LPCTSTR sourceFileName, UINT openFlags);
+		CSrcFile(const wchar_t* sourceFileName, UINT openFlags);
 		virtual ~CSrcFile();
 
 		unsigned long GetCharCount();
@@ -119,18 +119,18 @@ class CSrcFile : public CStdioFile
 		static bool IsFileUnicode(const CString& sFilePath);
 		bool IsFileUnicodeText() const noexcept { return isUnicodeText; }
 		BOOL Open();
-		virtual BOOL Open(LPCTSTR sourceFileName, UINT openFlags, CFileException* errorInfo = nullptr);
+		virtual BOOL Open(const wchar_t* sourceFileName, UINT openFlags, CFileException* errorInfo = nullptr);
 		virtual size_t Read(CString& rString, UINT count);
-		virtual size_t Read(LPCTSTR rString, UINT count);
+		virtual size_t Read(const wchar_t* rString, UINT count);
 		virtual BOOL ReadString(CString& rString);
-		void SetClassName(LPCTSTR className);
+		void SetClassName(const wchar_t* className);
 		void SetCodePage(IN const UINT codePage);
-		bool SetLogPath( LPCTSTR path);
+		bool SetLogPath( const wchar_t* path);
 		void SetProjectPath(const CString& path);
-		bool SetSrcFileName(LPCTSTR name = nullptr);
+		bool SetSrcFileName(const wchar_t* name = nullptr);
 		void SetUnicode(bool useUnicode);
-		virtual int Write(LPCTSTR text, int bytesToWrite);
-		virtual void	WriteString(LPCTSTR text);
+		virtual int Write(const wchar_t* text, int bytesToWrite);
+		virtual void	WriteString(const wchar_t* text);
 
 	protected:
 		UINT ProcessFlags(const CString& sFilePath, UINT& openFlags);

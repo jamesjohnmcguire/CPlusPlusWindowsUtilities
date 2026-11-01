@@ -21,7 +21,7 @@ bool ZenBase64Decode(
 	PBYTE	decodedBuffer,
 	DWORD*	decodedLength);
 
-int Base64DecodeFile(TCHAR* source, TCHAR* destination)
+int Base64DecodeFile(wchar_t* source, wchar_t* destination)
 {
 	int result = -1;
 
@@ -36,7 +36,7 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 
 	if (inputFileHandle == INVALID_HANDLE_VALUE)
 	{
-		_tprintf(_T("Could not open file (error %d)\n"), GetLastError());
+		wprintf(L"Could not open file (error %d)\n", GetLastError());
 	}
 	else
 	{
@@ -51,7 +51,7 @@ int Base64DecodeFile(TCHAR* source, TCHAR* destination)
 
 		if (outputFileHandle == INVALID_HANDLE_VALUE)
 		{
-			_tprintf(_T("Could not open file (error %d)\n"), GetLastError());
+			wprintf(L"Could not open file (error %d)\n", GetLastError());
 		}
 		else
 		{
@@ -131,7 +131,7 @@ bool ZenBase64Decode(
 	if ((encodedBuffer != nullptr) && (encodedBuffer != nullptr))
 	{
 #if BASE64_TCHAR_INPUT
-		encodedLength = (int)_tcslen( encodedBuffer );
+		encodedLength = (int)wcslen( encodedBuffer );
 #endif
 		encodedLength = (int)strlen( encodedBuffer );
 

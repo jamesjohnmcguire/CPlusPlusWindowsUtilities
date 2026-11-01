@@ -18,7 +18,7 @@ class DllExport Resource
 {
 	public:
 		Resource(
-			LPCTSTR sourceModulePath);
+			const wchar_t* sourceModulePath);
 		~Resource(void);
 
 		HMODULE GetResourceModule();
@@ -28,20 +28,20 @@ class DllExport Resource
 			HINSTANCE moduleHandle,
 			UINT resourceId);
 		int ShowMessageString(
-			LPCTSTR message,
+			const wchar_t* message,
 			UINT messageType = MB_OK);
 		int ShowMessage(
 			int titleId,
 			int	stringId);
 		int ShowMessageError(
 			int titleId,
-			LPCTSTR	message,
+			const wchar_t*	message,
 			int		stringId);
 		int ShowMessageYesNo(
 			int titleId,
 			int	stringId);
 
 	private:
-		LPCTSTR modulePath;
+		const wchar_t* modulePath;
 		HMODULE resourceModule;
 };

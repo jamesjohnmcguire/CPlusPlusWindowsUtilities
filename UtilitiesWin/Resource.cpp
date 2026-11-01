@@ -11,7 +11,7 @@
 #include "Utils.h"
 
 Resource::Resource(
-	LPCTSTR sourceModulePath) :
+	const wchar_t* sourceModulePath) :
 	resourceModule(nullptr)
 {
 	modulePath = sourceModulePath;
@@ -98,7 +98,7 @@ Resource::ShowMessage(
 int
 Resource::ShowMessageError(
 	int titleId,
-	LPCTSTR	message,
+	const wchar_t*	message,
 	int		stringId)
 {
 	std::wstring title = GetString(titleId);

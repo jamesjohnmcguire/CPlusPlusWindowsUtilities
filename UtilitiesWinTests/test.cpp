@@ -57,7 +57,7 @@ TEST(FileWrapperTests, RejectsUnusableFileName)
 {
 	BYTE contents[] = {'O', 'K'};
 	FileWrapper empty(L"");
-	FileWrapper missing(static_cast<LPCTSTR>(nullptr));
+	FileWrapper missing(static_cast<const wchar_t*>(nullptr));
 
 	EXPECT_FALSE(empty.Create(contents, sizeof(contents)));
 	EXPECT_FALSE(missing.Create(contents, sizeof(contents)));

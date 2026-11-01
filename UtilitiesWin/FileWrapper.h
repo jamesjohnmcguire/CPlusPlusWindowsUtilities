@@ -24,7 +24,7 @@ class DllExport FileWrapper
 
 		// Methods
 			FileWrapper(
-				LPCTSTR sourceFileName);
+				const wchar_t* sourceFileName);
 			FileWrapper(
 				LPCSTR sourceFileName);
 			~FileWrapper(void);
@@ -44,5 +44,5 @@ private:
 
 		// Methods
 			char* ReadText(void);
-			TCHAR* ReadUnicodeText(void);
+			wchar_t* ReadUnicodeText(void);
 };

@@ -27,13 +27,13 @@ CModuleVersion::~CModuleVersion()
 // Allocates storage for all info, fills "this" with
 // VS_FIXEDFILEINFO, and sets codepage.
 //
-BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR moduleName)
+BOOL CModuleVersion::GetFileVersionInfo(const wchar_t* moduleName)
 {
 	translation.charset = 1252;		// default = ANSI code page
 	memset((VS_FIXEDFILEINFO*)this, 0, sizeof(VS_FIXEDFILEINFO));
 
 	// get module handle
-	TCHAR moduleFileName[_MAX_PATH];
+	wchar_t moduleFileName[_MAX_PATH];
 	HMODULE moduleHandle = ::GetModuleHandle(moduleName);
 	if (moduleHandle==nullptr && moduleName!=nullptr)
 		return FALSE;
@@ -56,7 +56,7 @@ BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR moduleName)
 
 	LPVOID versionValue;
 	UINT valueLength;
-	if (!VerQueryValue(versionInfoData, _T("\\"), &versionValue, &valueLength))
+	if (!VerQueryValue(versionInfoData, L"\\", &versionValue, &valueLength))
 		return FALSE;
 
 	// copy fixed info to myself, which am derived from VS_FIXEDFILEINFO
@@ -64,7 +64,7 @@ BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR moduleName)
 
 	// Get translation info
 	if (VerQueryValue(versionInfoData,
-		_T("\\VarFileInfo\\Translation"), &versionValue, &valueLength) && valueLength >= 4) {
+		L"\\VarFileInfo\\Translation", &versionValue, &valueLength) && valueLength >= 4) {
 		translation = *(TRANSLATION*)versionValue;
 	}
 
@@ -76,7 +76,7 @@ BOOL CModuleVersion::GetFileVersionInfo(LPCTSTR moduleName)
 // Key name is something like "CompanyName".
 // returns the value as a CString.
 //
-std::wstring CModuleVersion::GetValue(LPCTSTR keyName)
+std::wstring CModuleVersion::GetValue(const wchar_t* keyName)
 {
 	std::wstring result;
 
@@ -96,7 +96,7 @@ std::wstring CModuleVersion::GetValue(LPCTSTR keyName)
 			langCodePage,
 			keyName);
 
-		LPCTSTR value;
+		const wchar_t* value;
 		UINT valueLength;
 
 		bool returnCode = VerQueryValue(
@@ -121,7 +121,7 @@ typedef HRESULT (CALLBACK* DLLGETVERSIONPROC)(DLLVERSIONINFO *);
 /////////////////
 // Get DLL Version by calling DLL's DllGetVersion proc
 //
-BOOL CModuleVersion::DllGetVersion(LPCTSTR moduleName, DLLVERSIONINFO& versionInfo)
+BOOL CModuleVersion::DllGetVersion(const wchar_t* moduleName, DLLVERSIONINFO& versionInfo)
 {
 	HINSTANCE moduleHandle = LoadLibrary(moduleName);
 	if (!moduleHandle)

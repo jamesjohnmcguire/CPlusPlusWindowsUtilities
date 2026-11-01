@@ -23,7 +23,7 @@ CSrcFile::CSrcFile()
 	CStdioFile::CStdioFile( );
 }
 
-CSrcFile::CSrcFile(LPCTSTR sourceFileName, UINT openFlags)
+CSrcFile::CSrcFile(const wchar_t* sourceFileName, UINT openFlags)
 	:CStdioFile(sourceFileName, ProcessFlags(sourceFileName, openFlags))
 {
 	fileCodePage = -1;
@@ -59,7 +59,7 @@ BOOL CSrcFile::Open()
 }
 
 BOOL CSrcFile::Open(
-	LPCTSTR sourceFileName,
+	const wchar_t* sourceFileName,
 	UINT openFlags,
 	CFileException* errorInfo /*=nullptr*/)
 {
@@ -101,7 +101,7 @@ UINT CSrcFile::ProcessFlags(const CString& filePath, UINT& openFlags)
 	return openFlags;
 }
 
-size_t	CSrcFile::Read(LPCTSTR rString, UINT count)
+size_t	CSrcFile::Read(const wchar_t* rString, UINT count)
 {
 	CString	cstring = rString;
 
@@ -116,7 +116,7 @@ size_t CSrcFile::Read(CString& rString, UINT count)
 	int			characterCount = 0;
 	size_t		charactersRead = -1;
 
-	LPTSTR		lineBuffer;
+	wchar_t*		lineBuffer;
 	wchar_t*	unicodeString = nullptr;
 	char	*	multiByteString = nullptr;
 
@@ -127,7 +127,7 @@ size_t CSrcFile::Read(CString& rString, UINT count)
 		{
 			wchar_t	cDummy;
 #if SRC_FILE_BOM_READ_ALTERNATIVE
-			Read(&cDummy, sizeof(_TCHAR));
+			Read(&cDummy, sizeof(wchar_t));
 #endif
 			CFile::Read(&cDummy, sizeof(wchar_t));
 		}
@@ -135,7 +135,7 @@ size_t CSrcFile::Read(CString& rString, UINT count)
 		if (isUnicodeText)
 		{
 			// Do standard stuff - Unicode to Unicode. Seems to work OK.
-			LPTSTR	textBuffer = rString.GetBufferSetLength(count);
+			wchar_t*	textBuffer = rString.GetBufferSetLength(count);
 			charactersRead = CFile::Read(textBuffer, count);
 			rString.ReleaseBuffer();
 		}
@@ -180,7 +180,7 @@ size_t CSrcFile::Read(CString& rString, UINT count)
 			else
 			{
 				lineBuffer = rString.GetBuffer(0);
-				if (textLength != 0 && (lineBuffer[textLength - 1] == _T('\r') || lineBuffer[textLength - 1] == _T('\n')))
+				if (textLength != 0 && (lineBuffer[textLength - 1] == L'\r' || lineBuffer[textLength - 1] == L'\n'))
 				{
 					rString.GetBufferSetLength(textLength - 1);
 				}
@@ -194,8 +194,8 @@ size_t CSrcFile::Read(CString& rString, UINT count)
 		int count;
 #endif
 		CString cError;
-		LPTSTR errorText = cError.GetBuffer();
-		_tprintf(_T("Exception: %s\r\n"), ex->GetErrorMessage(errorText, 3));
+		wchar_t* errorText = cError.GetBuffer();
+		wprintf(L"Exception: %s\r\n", ex->GetErrorMessage(errorText, 3));
 		cError.ReleaseBuffer();
 		if (unicodeString)	delete[] unicodeString;
 
@@ -215,7 +215,7 @@ BOOL CSrcFile::ReadString(CString& rString)
 {
 	const int	maxLineCharacters = 4096;
 	BOOL			readData = FALSE;
-	LPTSTR		lineBuffer;
+	wchar_t*		lineBuffer;
 	int			textLength = 0;
 	wchar_t*		unicodeString = nullptr;
 	char	*		multiByteString = nullptr;
@@ -228,7 +228,7 @@ BOOL CSrcFile::ReadString(CString& rString)
 		{
 			wchar_t	cDummy;
 #if SRC_FILE_BOM_READ_ALTERNATIVE
-			Read(&cDummy, sizeof(_TCHAR));
+			Read(&cDummy, sizeof(wchar_t));
 #endif
 			CFile::Read(&cDummy, sizeof(wchar_t));
 		}
@@ -274,7 +274,7 @@ BOOL CSrcFile::ReadString(CString& rString)
 			else
 			{
 				lineBuffer = rString.GetBuffer(0);
-				if (textLength != 0 && (lineBuffer[textLength - 1] == _T('\r') || lineBuffer[textLength - 1] == _T('\n')))
+				if (textLength != 0 && (lineBuffer[textLength - 1] == L'\r' || lineBuffer[textLength - 1] == L'\n'))
 				{
 					rString.GetBufferSetLength(textLength - 1);
 				}
@@ -303,12 +303,12 @@ void CSrcFile::SetCodePage(IN const UINT codePage)
 	fileCodePage = (int)codePage;
 }
 
-void CSrcFile::SetClassName(LPCTSTR className)
+void CSrcFile::SetClassName(const wchar_t* className)
 {
 	cszClassName  = className;
 }
 
-bool CSrcFile::SetLogPath(LPCTSTR path)
+bool CSrcFile::SetLogPath(const wchar_t* path)
 {
 	bool	result	= false;
 
@@ -327,7 +327,7 @@ void CSrcFile::SetProjectPath(const CString& path)
 	projectPath = path;
 }
 
-bool CSrcFile::SetSrcFileName( LPCTSTR name /* = nullptr */)
+bool CSrcFile::SetSrcFileName( const wchar_t* name /* = nullptr */)
 {
 	bool	result	= false;
 
@@ -344,14 +344,14 @@ bool CSrcFile::SetSrcFileName( LPCTSTR name /* = nullptr */)
 			SetDefaultPath();
 		}
 
-		int intDelimiterIndex = projectPath.GetLength() - projectPath.ReverseFind(_TEXT('\\'));
+		int intDelimiterIndex = projectPath.GetLength() - projectPath.ReverseFind(L'\\');
 
 		projectPath.Right(intDelimiterIndex);
 
-		intDelimiterIndex = projectPath.ReverseFind(_TEXT('.'));
+		intDelimiterIndex = projectPath.ReverseFind(L'.');
 
 		projectPath.Left(intDelimiterIndex);
-		projectPath += _T(".log");
+		projectPath += L".log";
 	}
 
 	return result;
@@ -424,14 +424,14 @@ bool CSrcFile::GetLastErrorInfo(void)
 		nullptr,
 		errorCode,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		reinterpret_cast<LPTSTR>(&messageBuffer),
+		reinterpret_cast<wchar_t*>(&messageBuffer),
 		0,
 		nullptr);
 
 	if (messageBuffer)
 	{
-		OutputDebugString(reinterpret_cast<LPTSTR>(messageBuffer));
-		_tprintf(_T("Error: %s\r\n"), reinterpret_cast<LPTSTR>(messageBuffer));
+		OutputDebugString(reinterpret_cast<wchar_t*>(messageBuffer));
+		wprintf(L"Error: %s\r\n", reinterpret_cast<wchar_t*>(messageBuffer));
 		LocalFree(messageBuffer);
 	}
 
@@ -467,14 +467,14 @@ unsigned long CSrcFile::GetCharCount()
 // Get the current userLs code page
 UINT CSrcFile::GetCurrentLocaleCodePage()
 {
-	_TCHAR	localCodePageText[10];
+	wchar_t	localCodePageText[10];
 	UINT		localeCodePage = 0;
 	int		localeCharacterCount = ::GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IDEFAULTANSICODEPAGE, localCodePageText, 10);
 
 	// If OK
 	if (localeCharacterCount > 0)
 	{
-		localeCodePage = (UINT)_ttoi(localCodePageText);
+		localeCodePage = (UINT)_wtoi(localCodePageText);
 		ASSERT(localeCodePage > 0);
 	}
 	else
@@ -549,10 +549,10 @@ int CSrcFile::GetUnicodeStringFromMultiByteString(
 			int count;
 #endif
 			CString cError;
-			LPTSTR errorText = cError.GetBuffer();
-			_tprintf(_T("Exception: %s\r\n"), ex->GetErrorMessage(errorText, 3));
+			wchar_t* errorText = cError.GetBuffer();
+			wprintf(L"Exception: %s\r\n", ex->GetErrorMessage(errorText, 3));
 			cError.ReleaseBuffer();
-			TRACE(_T("Controlled exception in MultiByteToWideChar!\n"));
+			TRACE(L"Controlled exception in MultiByteToWideChar!\n");
 		}
 	}
 
@@ -621,7 +621,7 @@ int CSrcFile::GetMultiByteStringFromUnicodeString(wchar_t * unicodeString, char*
 			}
 			catch (...)
 			{
-				TRACE(_T("Controlled exception in WideCharToMultiByte!\n"));
+				TRACE(L"Controlled exception in WideCharToMultiByte!\n");
 			}
 		}
 	}
@@ -670,13 +670,13 @@ int CSrcFile::GetMultiByteStringFromUnicodeString(wchar_t * unicodeString, char*
 	}
 	catch (...)
 	{
-		TRACE(_T("Controlled exception in WideCharToMultiByte!\n"));
+		TRACE(L"Controlled exception in WideCharToMultiByte!\n");
 	}
 
 	return requiredCharacterCount;
 }
 
-int	CSrcFile::Write(LPCTSTR text, int charactersToWrite)
+int	CSrcFile::Write(const wchar_t* text, int charactersToWrite)
 {
 	wchar_t*	unicodeString = nullptr;
 	char*		multiByteString = nullptr;
@@ -778,7 +778,7 @@ HRESULT CSrcFile::Write(CString &cszString, bool ignore /* = FALSE */)
 	return TRUE;
 }
 
-HRESULT CSrcFile::Write(LPCTSTR text, bool ignore /* = FALSE */)
+HRESULT CSrcFile::Write(const wchar_t* text, bool ignore /* = FALSE */)
 {
 	CString cszString   = text;
 
@@ -792,7 +792,7 @@ HRESULT CSrcFile::Write(LPCTSTR text, bool ignore /* = FALSE */)
 //
 // --------------------------------------------------------------------------------------------
 // Returns:    void
-// Parameters: LPCTSTR text
+// Parameters: const wchar_t* text
 //
 // Purpose:		Writes string to file either in Unicode or multibyte, depending on whether the caller specified the
 //					CSrcFile::modeWriteUnicode flag. Override of base class function.
@@ -805,7 +805,7 @@ HRESULT CSrcFile::Write(LPCTSTR text, bool ignore /* = FALSE */)
 //						we want to write in Unicode.
 // Exceptions:	None.
 //
-void CSrcFile::WriteString(LPCTSTR text)
+void CSrcFile::WriteString(const wchar_t* text)
 {
 	wchar_t*	unicodeString = nullptr;
 	char	*	multiByteString = nullptr;
@@ -880,7 +880,7 @@ bool CSrcFile::SetDefaultPath()
 
 	projectPath = AfxGetAppName();
 
-	int delimiterIndex = projectPath.ReverseFind(_TEXT('\\'));
+	int delimiterIndex = projectPath.ReverseFind(L'\\');
 	projectPath.Left(delimiterIndex);
 
 	return result;

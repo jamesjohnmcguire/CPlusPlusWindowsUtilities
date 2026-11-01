@@ -37,38 +37,38 @@ const int	STATE_TEXT = 2;
 // hack until oo
 bool	g_bIsUnicodeFile = false;
 #if LOCALIZE_TEST_ARGUMENT
-TCHAR*	g_psTestArgv1;
+wchar_t*	g_psTestArgv1;
 #endif
-TCHAR	g_szDebug[128];
-TCHAR	g_szBufferTmp[128];
-TCHAR	g_szVarNumber[10];
+wchar_t	g_szDebug[128];
+wchar_t	g_szBufferTmp[128];
+wchar_t	g_szVarNumber[10];
 ULONG	g_uSectionCount;
 ULONG	g_uVarCount;
 
 ///////////////////////////////////////////////////////////////////////
 // Support function prototypes
 ///////////////////////////////////////////////////////////////////////
-PTSTR	AtoiX(int index);
-CString&	GetBaseFileName(LPCTSTR fileName, CString& cBaseFileName);
-TCHAR	getNextNonWhiteSpaceChar(PTSTR streamText);
-bool	IsHelp(int parameterCount, TCHAR** asParameters);
-bool	IsJavaScript(LPCTSTR streamText);
-bool	IsLegitemate(PTSTR streamText);
-PTSTR	MakeNewVarName(LPCTSTR originalVariableName, int index);
-PTSTR	MakeNewVarNameEx(int index);
-UINT	NewLineCount(LPCTSTR bufferData);
+wchar_t*	AtoiX(int index);
+CString&	GetBaseFileName(const wchar_t* fileName, CString& cBaseFileName);
+wchar_t	getNextNonWhiteSpaceChar(wchar_t* streamText);
+bool	IsHelp(int parameterCount, wchar_t** asParameters);
+bool	IsJavaScript(const wchar_t* streamText);
+bool	IsLegitemate(wchar_t* streamText);
+wchar_t*	MakeNewVarName(const wchar_t* originalVariableName, int index);
+wchar_t*	MakeNewVarNameEx(int index);
+UINT	NewLineCount(const wchar_t* bufferData);
 bool	ShowHelp(void);
-bool	WriteSqlCommand(CSrcFile& cFile, UINT sectionId, LPCTSTR variableText, LPCTSTR valueText);
-bool	WriteSqlSection(CSrcFile& cSqlFile, LPCTSTR sectionName);
+bool	WriteSqlCommand(CSrcFile& cFile, UINT sectionId, const wchar_t* variableText, const wchar_t* valueText);
+bool	WriteSqlSection(CSrcFile& cSqlFile, const wchar_t* sectionName);
 bool	WriteSqlSectionBegin(CSrcFile& cFile);
 
 ///////////////////////////////////////////////////////////////////////
 // functions
 ///////////////////////////////////////////////////////////////////////
 
-PTSTR	AtoiX(int index)
+wchar_t*	AtoiX(int index)
 {
-	_itot_s(index, g_szVarNumber, 10);
+	_itow_s(index, g_szVarNumber, 10);
 
 	return g_szVarNumber;
 }
@@ -77,16 +77,16 @@ PTSTR	AtoiX(int index)
 ///////////////////////////////////////////////////////////////////////
 // GetBaseFileName
 ///////////////////////////////////////////////////////////////////////
-CString&	GetBaseFileName(LPCTSTR fileName, CString& cBaseFileName)
+CString&	GetBaseFileName(const wchar_t* fileName, CString& cBaseFileName)
 {
 	CString	cszFilePath(fileName);
 	CString	cszFileName;
 
-	int intDelimiterIndex = cszFilePath.GetLength() - cszFilePath.ReverseFind(_TEXT('\\'));
+	int intDelimiterIndex = cszFilePath.GetLength() - cszFilePath.ReverseFind(L'\\');
 
 	cszFileName = cszFilePath.Right(intDelimiterIndex - 1);
 
-	intDelimiterIndex = cszFileName.ReverseFind(_TEXT('.'));
+	intDelimiterIndex = cszFileName.ReverseFind(L'.');
 	cBaseFileName = cszFileName.Left(intDelimiterIndex);
 
 	return cBaseFileName;
@@ -97,7 +97,7 @@ CString&	GetBaseFileName(LPCTSTR fileName, CString& cBaseFileName)
 ///////////////////////////////////////////////////////////////////////
 int	GetNextCharacterState(
 	int		currentState,
-	TCHAR	cNextNonSpaceChar,
+	wchar_t	cNextNonSpaceChar,
 	CString	csNextCharStream)
 {
 	int	nextState = currentState;
@@ -136,7 +136,7 @@ int	GetNextCharacterState(
 ///////////////////////////////////////////////////////////////////////
 // getNextNonWhiteSpaceChar
 ///////////////////////////////////////////////////////////////////////
-TCHAR	getNextNonWhiteSpaceChar(PTSTR streamText)
+wchar_t	getNextNonWhiteSpaceChar(wchar_t* streamText)
 {
 	while ((UINT)*streamText < 0x21)
 		streamText++;
@@ -162,7 +162,7 @@ int	GetNextNonWhiteSpaceChar(CString& cszBuffer)
 // IsHelp
 ///////////////////////////////////////////////////////////////////////
 // returns whether the command line indicated the user wanted to see help or if there were problems
-bool IsHelp(int parameterCount, TCHAR** asParameters)
+bool IsHelp(int parameterCount, wchar_t** asParameters)
 {
 	bool	isHelp = false;
 
@@ -174,36 +174,36 @@ bool IsHelp(int parameterCount, TCHAR** asParameters)
 	{
 		for (int i = 1; i < parameterCount; i++)
 		{
-			if (_tcsncicmp(asParameters[i], _T("-?"), 2) == 0)
+			if (_wcsnicmp(asParameters[i], L"-?", 2) == 0)
 			{
 				isHelp = true;
 				break;
 			}
 
-			if (_tcsncicmp(asParameters[i], _T("/?"), 2) == 0)
+			if (_wcsnicmp(asParameters[i], L"/?", 2) == 0)
 			{
 				isHelp = true;
 				break;
 			}
 
-			if (_tcsncicmp(asParameters[i], _T("?"), 2) == 0)
+			if (_wcsnicmp(asParameters[i], L"?", 2) == 0)
 			{
 				isHelp = true;
 				break;
 			}
-			if (_tcsncicmp(asParameters[i], _T("-h"), 2) == 0)
-			{
-				isHelp = true;
-				break;
-			}
-
-			if (_tcsncicmp(asParameters[i], _T("/h"), 2) == 0)
+			if (_wcsnicmp(asParameters[i], L"-h", 2) == 0)
 			{
 				isHelp = true;
 				break;
 			}
 
-			if (_tcsncicmp(asParameters[i], _T("help"), 4) == 0)
+			if (_wcsnicmp(asParameters[i], L"/h", 2) == 0)
+			{
+				isHelp = true;
+				break;
+			}
+
+			if (_wcsnicmp(asParameters[i], L"help", 4) == 0)
 			{
 				isHelp = true;
 				break;
@@ -217,7 +217,7 @@ bool IsHelp(int parameterCount, TCHAR** asParameters)
 // IsJavaScript
 // this needs to be improved!
 ///////////////////////////////////////////////////////////////////////
-bool IsJavaScript(LPCTSTR streamText)
+bool IsJavaScript(const wchar_t* streamText)
 {
 	bool	result = false;
 
@@ -225,7 +225,7 @@ bool IsJavaScript(LPCTSTR streamText)
 		streamText++;
 
 	// if it matches 'function' let's assume it's javascript.
-	int	resultCode = _tcsnicmp(streamText, _T("function"), 8);
+	int	resultCode = _wcsnicmp(streamText, L"function", 8);
 
 	if (0 == resultCode)
 		result = true;
@@ -236,7 +236,7 @@ bool IsJavaScript(LPCTSTR streamText)
 ///////////////////////////////////////////////////////////////////////
 // IsLegitemate
 ///////////////////////////////////////////////////////////////////////
-bool	IsLegitemate(PTSTR streamText)
+bool	IsLegitemate(wchar_t* streamText)
 {
 	bool	result = false;
 
@@ -270,14 +270,14 @@ bool	IsUnicodeFile(CSrcFile& cSrcFile)
 ///////////////////////////////////////////////////////////////////////
 // LocalizeIt
 ///////////////////////////////////////////////////////////////////////
-int LocalizeIt(TCHAR* path)
+int LocalizeIt(wchar_t* path)
 {
 	int returnCode = EXIT_FAILURE;
 
 	CStringArray	afilePaths;
 #if LOCALIZE_FILE_PATTERN_ALTERNATIVES
-		CString	cszFileTypes	= cszDir + _T("\\*.tpl");
-		CString	cszFileTypes	= _T("\\");
+		CString	cszFileTypes	= cszDir + L"\\*.tpl";
+		CString	cszFileTypes	= L"\\";
 #endif
 	CString	cszFileTypes = path;
 	UINT	uFileCount = 0;
@@ -297,7 +297,7 @@ int LocalizeIt(TCHAR* path)
 			afilePaths.Add(finder.GetFilePath());
 			uFileCount++;
 			g_uSectionCount++;
-			ProcessFile((LPCTSTR)finder.GetFilePath());
+			ProcessFile((const wchar_t*)finder.GetFilePath());
 		}
 	}
 	returnCode = EXIT_SUCCESS;
@@ -308,17 +308,17 @@ int LocalizeIt(TCHAR* path)
 ///////////////////////////////////////////////////////////////////////
 // MakeNewVarName
 ///////////////////////////////////////////////////////////////////////
-PTSTR	MakeNewVarName(LPCTSTR originalVariableName, int index)
+wchar_t*	MakeNewVarName(const wchar_t* originalVariableName, int index)
 {
 	CString		cTmp(originalVariableName);
 
-	_itot_s(index, g_szVarNumber, 10);
+	_itow_s(index, g_szVarNumber, 10);
 
-	_tcscpy_s(g_szBufferTmp, originalVariableName);
-	_tcscat_s(g_szBufferTmp, g_szVarNumber);
+	wcscpy_s(g_szBufferTmp, originalVariableName);
+	wcscat_s(g_szBufferTmp, g_szVarNumber);
 #if LOCALIZE_VAR_NAME_BUFFER_INCOMPLETE
 	cTmp =+ &g_szVarNumber;
-	PTSTR	temporaryText	= cTmp.GetBuffer( 64 );
+	wchar_t*	temporaryText	= cTmp.GetBuffer( 64 );
 	cTmp.ReleaseBuffer
 #endif
 	return g_szBufferTmp;
@@ -327,25 +327,25 @@ PTSTR	MakeNewVarName(LPCTSTR originalVariableName, int index)
 ///////////////////////////////////////////////////////////////////////
 // MakeNewVarNameEx
 ///////////////////////////////////////////////////////////////////////
-PTSTR	MakeNewVarNameEx(int index)
+wchar_t*	MakeNewVarNameEx(int index)
 {
-	_itot_s(index, g_szVarNumber, 10);
+	_itow_s(index, g_szVarNumber, 10);
 
-	_tcscpy_s(g_szBufferTmp, _T("Var"));
-	_tcscat_s(g_szBufferTmp, g_szVarNumber);
+	wcscpy_s(g_szBufferTmp, L"Var");
+	wcscat_s(g_szBufferTmp, g_szVarNumber);
 	return g_szBufferTmp;
 }
 
 ///////////////////////////////////////////////////////////////////////
 // NewLineCount
 ///////////////////////////////////////////////////////////////////////
-UINT	NewLineCount(LPCTSTR bufferData)
+UINT	NewLineCount(const wchar_t* bufferData)
 {
 	UINT	uCount = 0;
 	int		position = 0;
 	CString	cszBuffer = bufferData;
 
-	position = cszBuffer.Find(_T('\n'), position);
+	position = cszBuffer.Find(L'\n', position);
 	while (-1 != position)
 	{
 		uCount++;
@@ -359,7 +359,7 @@ UINT	NewLineCount(LPCTSTR bufferData)
 // ProcessDefaultState
 ///////////////////////////////////////////////////////////////////////
 #if LOCALIZE_DEFAULT_STATE_INCOMPLETE
-bool	ProcessDefaultState( LPCTSTR sInputStream, LPCTSTR sOutputStream)
+bool	ProcessDefaultState( const wchar_t* sInputStream, const wchar_t* sOutputStream)
 {
 	bool	result	= false;
 
@@ -412,7 +412,7 @@ bool	ProcessDefaultState( LPCTSTR sInputStream, LPCTSTR sOutputStream)
 ///////////////////////////////////////////////////////////////////////
 // ProcessFile
 ///////////////////////////////////////////////////////////////////////
-bool	ProcessFile(LPCTSTR fileName)
+bool	ProcessFile(const wchar_t* fileName)
 {
 	bool	result = true;
 	bool	begin = false;
@@ -440,12 +440,12 @@ bool	ProcessFile(LPCTSTR fileName)
 	CString	cszSectionName = GetBaseFileName(fileName, cBaseFileName);
 
 #if LOCALIZE_ORIGINAL_VARIABLE_SUFFIX
-	cOrigVarName	+= _T(":::Var");
+	cOrigVarName	+= L":::Var";
 #endif
-	cOrigVarName = _T("Var");
+	cOrigVarName = L"Var";
 
-	CString	cConfFileName = cszFilePath + _T(".conf");
-	CString	cSqlFileName = _T("UpdateLanguage.sql");
+	CString	cConfFileName = cszFilePath + L".conf";
+	CString	cSqlFileName = L"UpdateLanguage.sql";
 
 	cConfFile.SetSrcFileName(cConfFileName);
 	cSqlFile.SetSrcFileName(cSqlFileName);
@@ -455,15 +455,15 @@ bool	ProcessFile(LPCTSTR fileName)
 	// if we can't open these files, no point in going on
 	if (length > 0)
 	{
-		PTSTR		newFileBuffer = nullptr;
-		PTSTR		variableBuffer = nullptr;
+		wchar_t*		newFileBuffer = nullptr;
+		wchar_t*		variableBuffer = nullptr;
 
 		checkErrors = cConfFile.Open();
 		const CString& projectPath = cConfFile.GetProjectPath();
 
 		if (result == FALSE)
 		{
-			_tprintf(_T("error opening file: %s\r\n"), projectPath);
+			wprintf(L"error opening file: %s\r\n", projectPath);
 		}
 		else
 		{
@@ -471,24 +471,24 @@ bool	ProcessFile(LPCTSTR fileName)
 
 			if (result == FALSE)
 			{
-				_tprintf(_T("error opening file: %s\r\n"), projectPath);
+				wprintf(L"error opening file: %s\r\n", projectPath);
 			}
 			else
 			{
 				// Way overkill, in fact, it should probably be shorter then original
-				size_t	newFileLength = (size_t)(length + 1) * sizeof(TCHAR) * 2;
+				size_t	newFileLength = (size_t)(length + 1) * sizeof(wchar_t) * 2;
 				cSqlFile.SeekToEnd();
 
-				newFileBuffer = (PTSTR)malloc(newFileLength);
-				variableBuffer = (PTSTR)malloc(((size_t)length + 1) * sizeof(TCHAR));
+				newFileBuffer = (wchar_t*)malloc(newFileLength);
+				variableBuffer = (wchar_t*)malloc(((size_t)length + 1) * sizeof(wchar_t));
 
 				memset(newFileBuffer, 0, newFileLength);
-				memset(variableBuffer, 0, ((size_t)length + 1) * sizeof(TCHAR));
+				memset(variableBuffer, 0, ((size_t)length + 1) * sizeof(wchar_t));
 				UINT	uNewLines = NewLineCount(cOriginalFileBuffer);
 
 				length = length - uNewLines;
 #if LOCALIZE_SECTION_PREFIX
-				int foundIndex	= cszSectionName.Find( _T("va_") );
+				int foundIndex	= cszSectionName.Find( L"va_" );
 
 				if (foundIndex != -1)
 					cszSectionName = cszSectionName.Right( cszSectionName.GetLength( ) - 3);
@@ -507,9 +507,9 @@ bool	ProcessFile(LPCTSTR fileName)
 					int	nextNonSpaceCharacter;
 
 					CString	csNextCharStream;
-					TCHAR	cCurrentChar;
-					TCHAR	cNextChar;
-					TCHAR	cNextNonSpaceChar;
+					wchar_t	cCurrentChar;
+					wchar_t	cNextChar;
+					wchar_t	cNextNonSpaceChar;
 
 					// determine how much is remaining for our input buffer
 					remainingBufferLength = cOriginalFileBuffer.GetLength() - i;
@@ -524,7 +524,7 @@ bool	ProcessFile(LPCTSTR fileName)
 					cNextNonSpaceChar = cOriginalFileBuffer.GetAt(i + nextNonSpaceCharacter);
 
 #if LOCALIZE_DEBUG_BUFFER
-					_tcsncpy( g_szDebug, &previousFileBuffer[i], 120 );
+					wcsncpy( g_szDebug, &previousFileBuffer[i], 120 );
 					g_szDebug[121] = '\0';
 #endif
 					switch (state)
@@ -596,27 +596,27 @@ bool	ProcessFile(LPCTSTR fileName)
 							{
 								// write the string into the conf file
 #if LOCALIZE_VARIABLE_LINE
-						CString cszLine	= cVarName + _T(":::") + variableBuffer;
+						CString cszLine	= cVarName + L":::" + variableBuffer;
 #endif
-								CString cszLine = cVarName + _T(":::") + cVarValue;
+								CString cszLine = cVarName + L":::" + cVarValue;
 
-								cszLine += _T("\n");
+								cszLine += L"\n";
 								cConfFile.WriteString(cszLine);
 
-								cVarBuffer = _T("{#") + cVarName + _T("#}");
+								cVarBuffer = L"{#" + cVarName + L"#}";
 
 								// write the variable into the new file
-								LPCTSTR	temporaryBuffer = (LPCTSTR)cVarBuffer;
-								UINT	uStringLen = (UINT)_tcsclen(temporaryBuffer);
+								const wchar_t*	temporaryBuffer = (const wchar_t*)cVarBuffer;
+								UINT	uStringLen = (UINT)wcslen(temporaryBuffer);
 								if (uStringLen > 0)
 								{
-									errno_t errorCode = _tcscpy_s(&newFileBuffer[k], uStringLen + 1, temporaryBuffer);
+									errno_t errorCode = wcscpy_s(&newFileBuffer[k], uStringLen + 1, temporaryBuffer);
 									k += cVarBuffer.GetLength();
 								}
 								//
-								PTSTR	variableName = MakeNewVarNameEx(variableIncrement);
+								wchar_t*	variableName = MakeNewVarNameEx(variableIncrement);
 
-								cVarValue.Replace(_T("'"), _T("\\'"));
+								cVarValue.Replace(L"'", L"\\'");
 								WriteSqlCommand(cSqlFile, g_uSectionCount, variableName, cVarValue);
 
 								variableIncrement++;
@@ -627,11 +627,11 @@ bool	ProcessFile(LPCTSTR fileName)
 							}
 							else
 							{
-								UINT	uStringLen = (UINT)_tcsclen(variableBuffer);
+								UINT	uStringLen = (UINT)wcslen(variableBuffer);
 								if (uStringLen > 0)
 								{
 									// ignore the string and leave in file as-is
-									errno_t errorCode = _tcscpy_s(&newFileBuffer[k], uSize, (LPCTSTR)variableBuffer);
+									errno_t errorCode = wcscpy_s(&newFileBuffer[k], uSize, (const wchar_t*)variableBuffer);
 									k += uStringLen;
 								}
 								// also write this current character
@@ -675,14 +675,14 @@ bool	ProcessFile(LPCTSTR fileName)
 				}
 				newFileBuffer[k] = '\0';
 
-				length = _tcsclen(newFileBuffer);
+				length = wcslen(newFileBuffer);
 #if LOCALIZE_SOURCE_FILE_CLOSE
 				cSrcFile.Close( );
 #endif
 				cSqlFile.Close();
 
 				CSrcFile	cNewFile;
-				CString	cszNewFile = cszFilePath + _T(".new");
+				CString	cszNewFile = cszFilePath + L".new";
 				cNewFile.SetSrcFileName(cszNewFile);
 				cNewFile.SetUnicode(g_bIsUnicodeFile);
 				cNewFile.Open();
@@ -699,7 +699,7 @@ bool	ProcessFile(LPCTSTR fileName)
 	return result;
 }
 
-ULONGLONG	ReadFileIntoBuffer(LPCTSTR fileName, CString& cszBuffer)
+ULONGLONG	ReadFileIntoBuffer(const wchar_t* fileName, CString& cszBuffer)
 {
 	BOOL		checkErrors = FALSE;
 	ULONGLONG	uFileLength = 0;
@@ -715,7 +715,7 @@ ULONGLONG	ReadFileIntoBuffer(LPCTSTR fileName, CString& cszBuffer)
 	// if we can't open these files, no point in going on
 	if (checkErrors == FALSE)
 	{
-		_tprintf(_T("error opening file: %s\r\n"), fileName);
+		wprintf(L"error opening file: %s\r\n", fileName);
 	}
 	else
 	{
@@ -734,7 +734,7 @@ ULONGLONG	ReadFileIntoBuffer(LPCTSTR fileName, CString& cszBuffer)
 // WriteSqlCommand
 ///////////////////////////////////////////////////////////////////////
 // In theory, we should know the id, since it is in sync with our var count, section count
-bool	WriteSqlCommand(CSrcFile& cFile, UINT sectionId, LPCTSTR variableText, LPCTSTR valueText)
+bool	WriteSqlCommand(CSrcFile& cFile, UINT sectionId, const wchar_t* variableText, const wchar_t* valueText)
 {
 	bool result = true;
 
@@ -742,28 +742,28 @@ bool	WriteSqlCommand(CSrcFile& cFile, UINT sectionId, LPCTSTR variableText, LPCT
 
 	// first insert into var
 
-	CString	cSql = _T("INSERT INTO string( Var, id_section) values ('");
+	CString	cSql = L"INSERT INTO string( Var, id_section) values ('";
 	cSql += variableText;
-	cSql += _T("', '");
+	cSql += L"', '";
 	cSql += cszSectionId;
-	cSql += _T("');\n");
+	cSql += L"');\n";
 	cFile.WriteString(cSql);
 
 	g_uVarCount++;
-	PTSTR	variableCountText = AtoiX(g_uVarCount);
+	wchar_t*	variableCountText = AtoiX(g_uVarCount);
 
-	cSql = _T("INSERT INTO language_string( id_lang, id_var, string) values ('1', '");
+	cSql = L"INSERT INTO language_string( id_lang, id_var, string) values ('1', '";
 	cSql += variableCountText;
-	cSql += _T("', '");
+	cSql += L"', '";
 	cSql += valueText;
-	cSql += _T("');\n");
+	cSql += L"');\n";
 	cFile.WriteString(cSql);
 
-	cSql = _T("INSERT INTO language_string( id_lang, id_var, string) values ('2', '");
+	cSql = L"INSERT INTO language_string( id_lang, id_var, string) values ('2', '";
 	cSql += variableCountText;
-	cSql += _T("', '");
+	cSql += L"', '";
 	cSql += valueText;
-	cSql += _T("');\n");
+	cSql += L"');\n";
 	cFile.WriteString(cSql);
 
 	return result;
@@ -772,13 +772,13 @@ bool	WriteSqlCommand(CSrcFile& cFile, UINT sectionId, LPCTSTR variableText, LPCT
 ///////////////////////////////////////////////////////////////////////
 // WriteSqlSection
 ///////////////////////////////////////////////////////////////////////
-bool	WriteSqlSection(CSrcFile& cSqlFile, LPCTSTR sectionName)
+bool	WriteSqlSection(CSrcFile& cSqlFile, const wchar_t* sectionName)
 {
 	bool result = true;
 
-	CString	cSql = _T("INSERT INTO language_section(Section) values ('");
+	CString	cSql = L"INSERT INTO language_section(Section) values ('";
 	cSql += sectionName;
-	cSql += _T("');\n");
+	cSql += L"');\n";
 
 	cSqlFile.WriteString(cSql);
 
@@ -792,20 +792,20 @@ bool	WriteSqlSectionBegin(CSrcFile& cFile)
 {
 	bool result = true;
 
-	CString	cSql = _T("DROP TABLE language_section;\n");
+	CString	cSql = L"DROP TABLE language_section;\n";
 	cFile.WriteString(cSql);
 
-	cSql = _T("CREATE TABLE `language_section`\n");
+	cSql = L"CREATE TABLE `language_section`\n";
 	cFile.WriteString(cSql);
-	cSql = _T("(\n");
+	cSql = L"(\n";
 	cFile.WriteString(cSql);
-	cSql = _T("  `id` int(4) unsigned NOT NULL auto_increment,\n");
+	cSql = L"  `id` int(4) unsigned NOT NULL auto_increment,\n";
 	cFile.WriteString(cSql);
-	cSql = _T("  `Section` varchar(64) NOT NULL default '',\n");
+	cSql = L"  `Section` varchar(64) NOT NULL default '',\n";
 	cFile.WriteString(cSql);
-	cSql = _T("  PRIMARY KEY (id) \n");
+	cSql = L"  PRIMARY KEY (id) \n";
 	cFile.WriteString(cSql);
-	cSql = _T(") TYPE=MyISAM;\n");
+	cSql = L") TYPE=MyISAM;\n";
 	cFile.WriteString(cSql);
 
 	return result;

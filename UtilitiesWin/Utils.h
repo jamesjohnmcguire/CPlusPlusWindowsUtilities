@@ -36,33 +36,33 @@ const ULONG CodePageUtf8			= 65001;	// Unicode UTF-8
 /////////////////////////////////////////////////////////////////////////////
 // File related utils
 /////////////////////////////////////////////////////////////////////////////
-DllExport TCHAR*
+DllExport wchar_t*
 GetBaseFileName(
-	LPCTSTR	fileName);
+	const wchar_t*	fileName);
 
 /////////////////////////////////////////////////////////////////////////////
 // GetFileNameTempPath
 //
 // Given a filename, will return that filename appended to the temp path
 /////////////////////////////////////////////////////////////////////////////
-DllExport LPCTSTR
+DllExport const wchar_t*
 GetFileNameTempPath(
-	LPCTSTR	fileName);
+	const wchar_t*	fileName);
 
-DllExport TCHAR*
+DllExport wchar_t*
 GetInstallPath(void);
 
-DllExport TCHAR*
+DllExport wchar_t*
 GetUserDataPath(
-	TCHAR*	fileName);
+	wchar_t*	fileName);
 
-DllExport TCHAR*
+DllExport wchar_t*
 GetTempFilePathName(
-	LPCTSTR	applicationName);
+	const wchar_t*	applicationName);
 
-DllExport LPCTSTR
+DllExport const wchar_t*
 GetWindowsDllPath(
-	TCHAR*	fileName);
+	wchar_t*	fileName);
 
 /////////////////////////////////////////////////////////////////////////////
 // Language related utils
@@ -87,10 +87,10 @@ ConcatStreams(
 #endif
 // allow InstallHelper to use
 
-DllExport TCHAR*
+DllExport wchar_t*
 ConcatStrings(
-	LPCTSTR	firstString,
-	LPCTSTR	secondString);
+	const wchar_t*	firstString,
+	const wchar_t*	secondString);
 
 // hide from InstallHelper
 #ifndef INSTALLHELPER_EXPORTS
@@ -99,10 +99,10 @@ DllExport char*
 ConcatStringsA(
 	const char*	firstString,
 	const char*	secondString);
-DllExport TCHAR* __cdecl
+DllExport wchar_t* __cdecl
 ConcatStringsV(
-	LPCTSTR	firstString,
-	LPCTSTR	secondString,
+	const wchar_t*	firstString,
+	const wchar_t*	secondString,
 	...);
 DllExport char* __cdecl
 ConcatStringsVA(
@@ -147,9 +147,9 @@ GetUnicodeStringFromMultiByteString(
 //
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
-DllExport TCHAR*
+DllExport wchar_t*
 GetStringCopy(
-	LPCTSTR	sourceString);
+	const wchar_t*	sourceString);
 
 // hide from InstallHelper
 #ifndef INSTALLHELPER_EXPORTS
@@ -158,9 +158,9 @@ DllExport char*
 GetStringCopyA(
 	const char*	sourceString);
 
-DllExport TCHAR*
+DllExport wchar_t*
 GetStringCopyAmount(
-	LPCTSTR	sourceString,
+	const wchar_t*	sourceString,
 	size_t	amount);
 
 DllExport char*
@@ -168,9 +168,9 @@ GetStringCopyAmountA(
 	const char*	sourceString,
 	size_t		amount);
 
-DllExport TCHAR*
+DllExport wchar_t*
 StringSprintfInt(
-	TCHAR*	originalString,
+	wchar_t*	originalString,
 	int	number);
 
 constexpr DllExport bool IsUtf8BomMark(
@@ -181,22 +181,22 @@ constexpr DllExport bool IsUtf8BomMark(
 /////////////////////////////////////////////////////////////////////////////
 DllExport void
 ShowTestResult(
-	TCHAR * testName,
+	wchar_t * testName,
 	long testResult);
 
 DllExport void
 ShowConditionResult(
-	TCHAR * testName,
+	wchar_t * testName,
 	long testResult,
 	long expectedResult);
 DllExport void
 ShowConditionResultNot(
-	TCHAR * testName,
+	wchar_t * testName,
 	long testResult,
 	long expectedResult);
 DllExport void
 ShowConditionResultNot(
-	TCHAR*	testName,
+	wchar_t*	testName,
 	void*	testResult,
 	void*	expectedResult);
 
@@ -205,7 +205,7 @@ ShowConditionResultNot(
 /////////////////////////////////////////////////////////////////////////////
 DllExport bool
 IsEmailValid(
-	const TCHAR* address);
+	const wchar_t* address);
 
 DllExport bool
 GetLastErrorInfo(

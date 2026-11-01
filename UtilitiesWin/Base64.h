@@ -6,4 +6,4 @@
 
 #include "resource.h"
 
-DllExport int Base64DecodeFile(TCHAR* source, TCHAR* destination);
+DllExport int Base64DecodeFile(wchar_t* source, wchar_t* destination);

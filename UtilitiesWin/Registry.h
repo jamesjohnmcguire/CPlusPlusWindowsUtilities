@@ -29,38 +29,38 @@ class DllExport Registry
 
 			LONG Delete(
 				HKEY	rootKeyHandle,
-				LPCTSTR	registryKeyPath,
-				LPCTSTR	subKeyName,
+				const wchar_t*	registryKeyPath,
+				const wchar_t*	subKeyName,
 				bool	onlyIfEmpty);
 			DWORD GetDwordValue(
 				HKEY	keyRoot,
-				LPCTSTR	keyPath,
-				LPCTSTR	keyVariable);
-			TCHAR** GetSubKeyNames(
+				const wchar_t*	keyPath,
+				const wchar_t*	keyVariable);
+			wchar_t** GetSubKeyNames(
 				HKEY keyRoot,
-				const TCHAR* regKey,
+				const wchar_t* regKey,
 				DWORD*	keyCount);
 			DWORD GetSubKeysCount(
 				HKEY keyRoot,
-				LPCTSTR regKey);
-			TCHAR* GetValue(
+				const wchar_t* regKey);
+			wchar_t* GetValue(
 				HKEY	keyRoot,
-				LPCTSTR	regKeyPath,
-				LPCTSTR	regKeyVar);
+				const wchar_t*	regKeyPath,
+				const wchar_t*	regKeyVar);
 			LONG GetValue(
 				HKEY	rootKeyHandle,
-				LPCTSTR	registryKeyPath,
-				LPCTSTR	registryValueName,
-				LPTSTR	registryValue,
+				const wchar_t*	registryKeyPath,
+				const wchar_t*	registryValueName,
+				wchar_t*	registryValue,
 				DWORD	valueBufferSize);
 			LONG SetValue(
 				HKEY	rootKeyHandle,
-				LPCTSTR	registryKeyPath,
-				LPCTSTR	registryValueName,
-				LPCTSTR	registryValue);
+				const wchar_t*	registryKeyPath,
+				const wchar_t*	registryValueName,
+				const wchar_t*	registryValue);
 			LONG SetValue(
 				HKEY	keyRoot,
-				LPCTSTR	regKeyPath,
-				LPCTSTR	regKeyVar,
+				const wchar_t*	regKeyPath,
+				const wchar_t*	regKeyVar,
 				DWORD	value);
 };

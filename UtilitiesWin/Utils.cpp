@@ -25,7 +25,6 @@
 #endif
 
 #ifdef INSTALLHELPER_EXPORTS
-#include <tchar.h>
 #else
 /////////////////////////////////////////////////////////////////////////////
 // Defines
@@ -135,7 +134,7 @@ BYTE* ConcatStreams(BYTE* firstStream, DWORD firstStreamLength,
 				throw;
 			}
 		}
-		catch(const TCHAR* caughtException)
+		catch(const wchar_t* caughtException)
 		{
 			// log
 			OutputDebugString(caughtException);
@@ -150,9 +149,9 @@ BYTE* ConcatStreams(BYTE* firstStream, DWORD firstStreamLength,
 // ConcatStrings
 // Caller is responsible for 'deleting the string.
 /////////////////////////////////////////////////////////////////////////////
-TCHAR* ConcatStrings(LPCTSTR firstString, LPCTSTR secondString)
+wchar_t* ConcatStrings(const wchar_t* firstString, const wchar_t* secondString)
 {
-	TCHAR*	concatString = nullptr;
+	wchar_t*	concatString = nullptr;
 
 	if ((nullptr != firstString) || (nullptr != secondString))
 	{
@@ -168,17 +167,17 @@ TCHAR* ConcatStrings(LPCTSTR firstString, LPCTSTR secondString)
 			}
 			else
 			{
-				const UINT	concatStringLength = (UINT)_tcslen(firstString) +
-					(UINT)_tcslen(secondString) +
+				const UINT	concatStringLength = (UINT)wcslen(firstString) +
+					(UINT)wcslen(secondString) +
 					1;
 
-				concatString = new TCHAR[concatStringLength];
+				concatString = new wchar_t[concatStringLength];
 
-				_tcscpy_s(concatString, concatStringLength, firstString);
-				_tcscat_s(concatString, concatStringLength, secondString);
+				wcscpy_s(concatString, concatStringLength, firstString);
+				wcscat_s(concatString, concatStringLength, secondString);
 			}
 		}
-		catch (const TCHAR* caughtException)
+		catch (const wchar_t* caughtException)
 		{
 			// log
 			OutputDebugString(caughtException);
@@ -223,7 +222,7 @@ char* ConcatStringsA(const char* firstString, const char* secondString)
 				strcat_s(concatString, concatStringLength, secondString);
 			}
 		}
-		catch(const TCHAR* caughtException)
+		catch(const wchar_t* caughtException)
 		{
 			// log
 			OutputDebugString(caughtException);
@@ -241,16 +240,16 @@ char* ConcatStringsA(const char* firstString, const char* secondString)
 //
 // Caller is responsible for deleting the string.
 /////////////////////////////////////////////////////////////////////////////
-TCHAR* __cdecl ConcatStringsV(LPCTSTR firstString, LPCTSTR secondString, ...)
+wchar_t* __cdecl ConcatStringsV(const wchar_t* firstString, const wchar_t* secondString, ...)
 {
-	TCHAR* newString = nullptr;
+	wchar_t* newString = nullptr;
 	va_list	arguments;
 
 	va_start(arguments, secondString);
 
-	TCHAR* oldString = newString = ConcatStrings(firstString, secondString);
+	wchar_t* oldString = newString = ConcatStrings(firstString, secondString);
 
-	TCHAR* nextArg = va_arg(arguments, TCHAR*);
+	wchar_t* nextArg = va_arg(arguments, wchar_t*);
 
 	while (nullptr != nextArg)
 	{
@@ -259,7 +258,7 @@ TCHAR* __cdecl ConcatStringsV(LPCTSTR firstString, LPCTSTR secondString, ...)
 		delete oldString;
 		oldString = newString;
 
-		nextArg = va_arg(arguments, TCHAR*);
+		nextArg = va_arg(arguments, wchar_t*);
 	}
 
 	va_end(arguments);
@@ -370,8 +369,8 @@ DllExport char *
 			// If no chars were written and the buffer is not 0, error!
 			if (charactersWritten == 0 && multiByteBufferSize > 0)
 			{
-				TCHAR	errorMessage[256];
-				_stprintf_s(errorMessage, _T("\r\nError in WideCharToMultiByte: %d\r\n"), GetLastError());
+				wchar_t	errorMessage[256];
+				swprintf_s(errorMessage, L"\r\nError in WideCharToMultiByte: %d\r\n", GetLastError());
 				OutputDebugString(errorMessage);
 				multiByteString[0]	= '\0';
 			}
@@ -391,7 +390,7 @@ DllExport char *
 	}
 	catch(...)
 	{
-		OutputDebugString(_T("Controlled exception in WideCharToMultiByte!\n"));
+		OutputDebugString(L"Controlled exception in WideCharToMultiByte!\n");
 	}
 
 	return multiByteString;
@@ -399,7 +398,7 @@ DllExport char *
 
 char*
 	GetMultiByteString(
-	LPCTSTR unicodeString)
+	const wchar_t* unicodeString)
 {
 	// if this is not a Unicode build, just use the string itself.
 	// this function is then essentially a NOP, but its stamped all over the place.
@@ -421,7 +420,7 @@ char*
 char*
 	GetMultiByteString(
 	ULONG	codePage,
-	LPCTSTR unicodeString)
+	const wchar_t* unicodeString)
 {
 	// if this is not a Unicode build, just use the string itself.
 	// this function is then essentially a NOP, but its stamped all over the place.
@@ -444,12 +443,12 @@ char*
 //
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
-TCHAR*
+wchar_t*
 	GetStringCopyAmount(
-	LPCTSTR	sourceString,
+	const wchar_t*	sourceString,
 	size_t	amount)
 {
-	TCHAR* stringCopy = nullptr;
+	wchar_t* stringCopy = nullptr;
 
 	if (nullptr != sourceString)
 	{
@@ -457,13 +456,13 @@ TCHAR*
 
 		if (FALSE == badString)
 		{
-			const size_t	sourceStringLength = (_tcslen(sourceString) + 1) * sizeof(TCHAR);
+			const size_t	sourceStringLength = (wcslen(sourceString) + 1) * sizeof(wchar_t);
 
-			stringCopy = new TCHAR[amount+1];
+			stringCopy = new wchar_t[amount+1];
 
 			if (nullptr != stringCopy)
 			{
-				_tcsncpy_s(	stringCopy,
+				wcsncpy_s(	stringCopy,
 					amount+1,
 					sourceString,
 					amount);
@@ -524,15 +523,15 @@ constexpr bool IsUtf8BomMark(BYTE byteInQuestion) noexcept
 //
 // delete returned buffer after use.
 /////////////////////////////////////////////////////////////////////////////
-TCHAR*
+wchar_t*
 	GetBaseFileName(
-	LPCTSTR	fileName)
+	const wchar_t*	fileName)
 {
-	TCHAR*	baseFileName	= nullptr;
+	wchar_t*	baseFileName	= nullptr;
 
 	if (nullptr != fileName)
 	{
-		LPCTSTR	found	= _tcsrchr(fileName, _T('\\'));
+		const wchar_t*	found	= wcsrchr(fileName, L'\\');
 
 		if (nullptr != found)
 		{
@@ -555,12 +554,12 @@ TCHAR*
 //
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
-TCHAR*
+wchar_t*
 	GetUserDataPath(
-	TCHAR*	fileName)
+	wchar_t*	fileName)
 {
-	TCHAR*	dataFilePath	= nullptr;
-	TCHAR*	userDataPath	= new TCHAR[MAX_PATH];
+	wchar_t*	dataFilePath	= nullptr;
+	wchar_t*	userDataPath	= new wchar_t[MAX_PATH];
 
 	const HRESULT	resultCode	= SHGetFolderPath(	nullptr,
 		CSIDL_PERSONAL|CSIDL_FLAG_CREATE,
@@ -575,7 +574,7 @@ TCHAR*
 	{
 		if (fileName[0] != '\\')
 		{
-			TCHAR*	tempUserDataPath = ConcatStrings(userDataPath, _T("\\"));
+			wchar_t*	tempUserDataPath = ConcatStrings(userDataPath, L"\\");
 			delete[] userDataPath;
 			userDataPath	= tempUserDataPath;
 		}
@@ -596,12 +595,12 @@ TCHAR*
 //
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
-LPCTSTR
+const wchar_t*
 	GetWindowsDllPath(
-	TCHAR*	fileName)
+	wchar_t*	fileName)
 {
-	TCHAR*	dataFilePath	= nullptr;
-	TCHAR*	userDataPath	= new TCHAR[MAX_PATH];
+	wchar_t*	dataFilePath	= nullptr;
+	wchar_t*	userDataPath	= new wchar_t[MAX_PATH];
 
 	const HRESULT	resultCode	= SHGetFolderPath(	nullptr,
 		CSIDL_WINDOWS|CSIDL_FLAG_CREATE,
@@ -616,7 +615,7 @@ LPCTSTR
 	{
 		if (fileName[0] != '\\')
 		{
-			TCHAR*	tempUserDataPath = ConcatStrings(userDataPath, _T("\\"));
+			wchar_t*	tempUserDataPath = ConcatStrings(userDataPath, L"\\");
 			delete[] userDataPath;
 			userDataPath	= tempUserDataPath;
 		}
@@ -635,15 +634,15 @@ LPCTSTR
 /////////////////////////////////////////////////////////////////////////////
 // GetFileNameTempPath
 /////////////////////////////////////////////////////////////////////////////
-LPCTSTR	GetFileNameTempPath(
-	LPCTSTR	fileName)
+const wchar_t*	GetFileNameTempPath(
+	const wchar_t*	fileName)
 {
-	TCHAR*	fileNameTempPath		= nullptr;
-	const TCHAR*	friendlyFileNameBase	= GetBaseFileName(fileName);
+	wchar_t*	fileNameTempPath		= nullptr;
+	const wchar_t*	friendlyFileNameBase	= GetBaseFileName(fileName);
 
 	if (nullptr != friendlyFileNameBase)
 	{
-		TCHAR	tempPath[MAX_PATH]	= {0};
+		wchar_t	tempPath[MAX_PATH]	= {0};
 
 		GetTempPath(MAX_PATH, tempPath);
 
@@ -799,7 +798,7 @@ int GetUnicodeStringFromMultiByteString(
 	return charactersWritten;
 }
 
-char* GetUtfMultiByteString(LPCTSTR unicodeString)
+char* GetUtfMultiByteString(const wchar_t* unicodeString)
 {
 	// if this is not a Unicode build, just use the string itself.
 	// this function is then essentially a NOP, but its stamped all over the place.
@@ -823,8 +822,8 @@ char* GetUtfMultiByteString(LPCTSTR unicodeString)
 /////////////////////////////////////////////////////////////////////////////
 int
 	ShowMessageString(
-	LPCTSTR title,
-	LPCTSTR message,
+	const wchar_t* title,
+	const wchar_t* message,
 	UINT uType)
 {
 	const int returnCode	= MessageBox(GetActiveWindow(), message, title, uType);
@@ -832,21 +831,21 @@ int
 	return returnCode;
 }
 
-TCHAR*	StringSprintfInt(
-	TCHAR*	originalString,
+wchar_t*	StringSprintfInt(
+	wchar_t*	originalString,
 	int	number)
 {
-	TCHAR* stringCopy = nullptr;
+	wchar_t* stringCopy = nullptr;
 
 	if (originalString != nullptr)
 	{
-		const size_t	sourceStringLength = (_tcslen(originalString) + 1) * sizeof(TCHAR) + 16;
+		const size_t	sourceStringLength = (wcslen(originalString) + 1) * sizeof(wchar_t) + 16;
 
-		stringCopy = new TCHAR[sourceStringLength];
+		stringCopy = new wchar_t[sourceStringLength];
 
 		if (nullptr != stringCopy)
 		{
-			_stprintf_s(stringCopy, sourceStringLength, originalString, number);
+			swprintf_s(stringCopy, sourceStringLength, originalString, number);
 		}
 	}
 
@@ -856,15 +855,15 @@ TCHAR*	StringSprintfInt(
 /////////////////////////////////////////////////////////////////////////////
 // GetTempFilePathName
 /////////////////////////////////////////////////////////////////////////////
-TCHAR*
+wchar_t*
 	GetTempFilePathName(
-	LPCTSTR	applicationName)
+	const wchar_t*	applicationName)
 {
-	TCHAR*	tempFileName	= new TCHAR[MAX_PATH];
+	wchar_t*	tempFileName	= new wchar_t[MAX_PATH];
 
 	if (nullptr != tempFileName)
 	{
-		TCHAR	tempPath[MAX_PATH] = {0};
+		wchar_t	tempPath[MAX_PATH] = {0};
 
 		GetTempPath(MAX_PATH, tempPath);
 
@@ -888,9 +887,9 @@ bool
 	DWORD	formattedLength;
 	DWORD	formatFlags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM;
 #if FORMAT_MESSAGE_BUFFER_CAST
-	LPTSTR buffer = reinterpret_cast<LPTSTR>(&messageBuffer);
+	wchar_t* buffer = reinterpret_cast<wchar_t*>(&messageBuffer);
 #endif
-	LPTSTR buffer = nullptr;
+	wchar_t* buffer = nullptr;
 
 	if (nullptr != moduleHandle)
 	{
@@ -909,9 +908,9 @@ bool
 	{
 		OutputDebugString(buffer);
 #if MFC_TRACE_LOGGING
-		TRACE(_T("Error: %s\r\n"), buffer);
+		TRACE(L"Error: %s\r\n", buffer);
 #endif
-		_tprintf(_T("\tError: %s"), buffer);
+		wprintf(L"\tError: %s", buffer);
 		LocalFree(messageBuffer);
 	}
 
@@ -923,16 +922,16 @@ bool
 /////////////////////////////////////////////////////////////////////////////
 void
 	ShowTestResult(
-	TCHAR * testName,
+	wchar_t * testName,
 	long testResult)
 {
 	if (testResult > 0)
 	{
-		_tprintf(_T("**%s: succeeded\r\n"), testName);
+		wprintf(L"**%s: succeeded\r\n", testName);
 	}
 	else
 	{
-		_tprintf(_T("--%s: failed\r\n"), testName);
+		wprintf(L"--%s: failed\r\n", testName);
 	}
 }
 
@@ -941,17 +940,17 @@ void
 /////////////////////////////////////////////////////////////////////////////
 void
 	ShowConditionResult(
-	TCHAR * testName,
+	wchar_t * testName,
 	long testResult,
 	long expectedResult)
 {
 	if (testResult == expectedResult)
 	{
-		_tprintf(_T("%s: succeeded\r\n"), testName);
+		wprintf(L"%s: succeeded\r\n", testName);
 	}
 	else
 	{
-		_tprintf(_T("%s: failed\r\n"), testName);
+		wprintf(L"%s: failed\r\n", testName);
 	}
 }
 
@@ -960,17 +959,17 @@ void
 /////////////////////////////////////////////////////////////////////////////
 void
 	ShowConditionResultNot(
-	TCHAR * testName,
+	wchar_t * testName,
 	long testResult,
 	long expectedResult)
 {
 	if (testResult != expectedResult)
 	{
-		_tprintf(_T("%s: succeeded\r\n"), testName);
+		wprintf(L"%s: succeeded\r\n", testName);
 	}
 	else
 	{
-		_tprintf(_T("%s: failed\r\n"), testName);
+		wprintf(L"%s: failed\r\n", testName);
 	}
 }
 
@@ -979,17 +978,17 @@ void
 /////////////////////////////////////////////////////////////////////////////
 void
 	ShowConditionResultNot(
-	TCHAR*	testName,
+	wchar_t*	testName,
 	void*	testResult,
 	void*	expectedResult)
 {
 	if (testResult != expectedResult)
 	{
-		_tprintf(_T("%s: succeeded\r\n"), testName);
+		wprintf(L"%s: succeeded\r\n", testName);
 	}
 	else
 	{
-		_tprintf(_T("%s: failed\r\n"), testName);
+		wprintf(L"%s: failed\r\n", testName);
 	}
 }
 
@@ -1000,19 +999,19 @@ void
 //
 // delete after use.
 /////////////////////////////////////////////////////////////////////////////
-TCHAR* GetStringCopy(LPCTSTR sourceString)
+wchar_t* GetStringCopy(const wchar_t* sourceString)
 {
-	TCHAR* stringCopy = nullptr;
+	wchar_t* stringCopy = nullptr;
 
 	if (sourceString != nullptr)
 	{
-		const size_t	sourceStringLength = (_tcslen(sourceString) + 1) * sizeof(TCHAR);
+		const size_t	sourceStringLength = (wcslen(sourceString) + 1) * sizeof(wchar_t);
 
-		stringCopy = new TCHAR[sourceStringLength];
+		stringCopy = new wchar_t[sourceStringLength];
 
 		if (nullptr != stringCopy)
 		{
-			_tcscpy_s(stringCopy, sourceStringLength, sourceString);
+			wcscpy_s(stringCopy, sourceStringLength, sourceString);
 		}
 	}
 

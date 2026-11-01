@@ -38,9 +38,9 @@ typedef struct _DllVersionInfo
 // To use:
 //
 // CModuleVersion ver
-// if (ver.GetFileVersionInfo("_T("mymodule))) {
+// if (ver.GetFileVersionInfo(L"mymodule")) {
 //		// info is in ver, you can call GetValue to get variable info like
-//		CString s = ver.GetValue(_T("CompanyName"));
+//		CString s = ver.GetValue(L"CompanyName");
 // }
 //
 // You can also call the static fn DllGetVersion to get DLLVERSIONINFO.
@@ -60,7 +60,7 @@ public:
 	CModuleVersion();
 	virtual ~CModuleVersion();
 
-	BOOL		GetFileVersionInfo(LPCTSTR moduleName);
-	std::wstring GetValue(LPCTSTR keyName);
-	static BOOL DllGetVersion(LPCTSTR moduleName, DLLVERSIONINFO& versionInfo);
+	BOOL		GetFileVersionInfo(const wchar_t* moduleName);
+	std::wstring GetValue(const wchar_t* keyName);
+	static BOOL DllGetVersion(const wchar_t* moduleName, DLLVERSIONINFO& versionInfo);
 };

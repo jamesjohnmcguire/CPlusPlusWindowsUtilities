@@ -4,26 +4,26 @@
 
 TEST(LocalizeTests, RecognizesHelpArgument)
 {
-	TCHAR program[] = _T("tool");
-	TCHAR help[] = _T("-h");
-	TCHAR* arguments[] = {program, help};
+	wchar_t program[] = L"tool";
+	wchar_t help[] = L"-h";
+	wchar_t* arguments[] = {program, help};
 
 	EXPECT_TRUE(IsHelp(2, arguments));
 }
 
 TEST(LocalizeTests, IgnoresOrdinaryArgument)
 {
-	TCHAR program[] = _T("tool");
-	TCHAR file[] = _T("input.txt");
-	TCHAR* arguments[] = {program, file};
+	wchar_t program[] = L"tool";
+	wchar_t file[] = L"input.txt";
+	wchar_t* arguments[] = {program, file};
 
 	EXPECT_FALSE(IsHelp(2, arguments));
 }
 
 TEST(LocalizeTests, AcceptsProgramNameWithoutArguments)
 {
-	TCHAR program[] = _T("tool");
-	TCHAR* arguments[] = {program};
+	wchar_t program[] = L"tool";
+	wchar_t* arguments[] = {program};
 
 	EXPECT_FALSE(IsHelp(1, arguments));
 }
