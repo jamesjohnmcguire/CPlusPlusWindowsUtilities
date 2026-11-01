@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /Database/Psynary.xml
+vcpkg_installed/
