@@ -177,30 +177,6 @@ constexpr DllExport bool IsUtf8BomMark(
 	BYTE byteInQuestion) noexcept;
 
 /////////////////////////////////////////////////////////////////////////////
-// Test related utils
-/////////////////////////////////////////////////////////////////////////////
-DllExport void
-ShowTestResult(
-	wchar_t * testName,
-	long testResult);
-
-DllExport void
-ShowConditionResult(
-	wchar_t * testName,
-	long testResult,
-	long expectedResult);
-DllExport void
-ShowConditionResultNot(
-	wchar_t * testName,
-	long testResult,
-	long expectedResult);
-DllExport void
-ShowConditionResultNot(
-	wchar_t*	testName,
-	void*	testResult,
-	void*	expectedResult);
-
-/////////////////////////////////////////////////////////////////////////////
 // Misc functions
 /////////////////////////////////////////////////////////////////////////////
 DllExport bool
