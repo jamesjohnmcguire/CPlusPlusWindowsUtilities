@@ -19,9 +19,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ClCompile Include="ModuleVersion.cpp">
-			<Filter>Source Files</Filter>
-		</ClCompile>
 		<ClCompile Include="pch.cpp">
 			<Filter>Source Files</Filter>
 		</ClCompile>
@@ -44,9 +41,6 @@
 
 	<ItemGroup>
 		<ClInclude Include="FileWrapper.h">
-			<Filter>Header Files</Filter>
-		</ClInclude>
-		<ClInclude Include="ModuleVersion.h">
 			<Filter>Header Files</Filter>
 		</ClInclude>
 		<ClInclude Include="pch.h">

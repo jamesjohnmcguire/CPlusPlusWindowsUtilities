@@ -96,7 +96,6 @@
 
 	<ItemGroup>
 		<ClInclude Include="FileWrapper.h" />
-		<ClInclude Include="ModuleVersion.h" />
 		<ClInclude Include="pch.h" />
 		<ClInclude Include="Registry.h" />
 		<ClInclude Include="Resource.h" />
@@ -108,7 +107,6 @@
 
 	<ItemGroup>
 		<ClCompile Include="FileWrapper.cpp" />
-		<ClCompile Include="ModuleVersion.cpp" />
 		<ClCompile Include="pch.cpp">
 			<PrecompiledHeader>Create</PrecompiledHeader>
 		</ClCompile>
