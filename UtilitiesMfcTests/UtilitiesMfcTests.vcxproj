@@ -40,6 +40,7 @@
 			<AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
 			<ConformanceMode>true</ConformanceMode>
 			<LanguageStandard>stdcpp23</LanguageStandard>
+			<LanguageStandard_C>stdc17</LanguageStandard_C>
 			<PrecompiledHeader>Use</PrecompiledHeader>
 			<PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
 			<PreprocessorDefinitions>_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>

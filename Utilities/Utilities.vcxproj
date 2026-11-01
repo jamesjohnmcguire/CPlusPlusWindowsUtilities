@@ -46,6 +46,7 @@
 			<AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
 			<ConformanceMode>true</ConformanceMode>
 			<LanguageStandard>stdcpp20</LanguageStandard>
+			<LanguageStandard_C>stdc17</LanguageStandard_C>
 			<WarningLevel>Level3</WarningLevel>
 		</ClCompile>
 	</ItemDefinitionGroup>
