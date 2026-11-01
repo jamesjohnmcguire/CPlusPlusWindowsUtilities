@@ -1,0 +1,66 @@
+///////////////////////////////////////////////////////////////////////
+// ModuleVersion.h - Class Declaration
+//
+// Outlook Module Version Class.
+//
+// Based of an 1998 Microsoft Systems Journal articel and sample.
+//
+// Copyright (c) 2010 - 2026 James John McGuire
+// All rights reserved.
+///////////////////////////////////////////////////////////////////////
+#pragma once
+
+// tell linker to link with version.lib for VerQueryValue, etc.
+#pragma comment(linker, "/defaultlib:version.lib")
+
+#ifndef DLLVERSIONINFO
+// following is from shlwapi.h, in November 1997 release of the Windows SDK
+
+typedef struct _DllVersionInfo
+{
+	DWORD cbSize;
+	DWORD dwMajorVersion;                   // Major version
+	DWORD dwMinorVersion;                   // Minor version
+	DWORD dwBuildNumber;                    // Build number
+	DWORD dwPlatformID;                     // DLLVER_PLATFORM_*
+} DLLVERSIONINFO;
+
+// Platform IDs for DLLVERSIONINFO
+#define DLLVER_PLATFORM_WINDOWS         0x00000001      // Windows 95
+#define DLLVER_PLATFORM_NT              0x00000002      // Windows NT
+
+#endif // DLLVERSIONINFO
+
+
+
+//////////////////
+// CModuleVersion version info about a module.
+// To use:
+//
+// CModuleVersion ver
+// if (ver.GetFileVersionInfo(L"mymodule")) {
+//		// info is in ver, you can call GetValue to get variable info like
+//		CString s = ver.GetValue(L"CompanyName");
+// }
+//
+// You can also call the static fn DllGetVersion to get DLLVERSIONINFO.
+//
+class CModuleVersion : 
+	public VS_FIXEDFILEINFO
+{
+protected:
+	BYTE* versionInfoData;	// all version info
+
+	struct TRANSLATION {
+		WORD langID;			// language ID
+		WORD charset;			// character set (code page)
+	} translation;
+
+public:
+	CModuleVersion();
+	virtual ~CModuleVersion();
+
+	BOOL		GetFileVersionInfo(const wchar_t* moduleName);
+	std::wstring GetValue(const wchar_t* keyName);
+	static BOOL DllGetVersion(const wchar_t* moduleName, DLLVERSIONINFO& versionInfo);
+};
