@@ -11,6 +11,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <windows.h>
 
 // tell linker to link with version.lib for VerQueryValue, etc.
@@ -52,12 +53,12 @@ class CModuleVersion :
 	public VS_FIXEDFILEINFO
 {
 protected:
-	BYTE* versionInfoData;	// all version info
+	std::vector<BYTE> versionInfoData;	// all version info
 
 	struct TRANSLATION {
 		WORD langID;			// language ID
 		WORD charset;			// character set (code page)
-	} translation;
+	} translation{};
 
 public:
 	CModuleVersion();

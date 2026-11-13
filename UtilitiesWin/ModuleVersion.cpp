@@ -9,78 +9,107 @@
 #include "pch.h"
 #include "ModuleVersion.h"
 
+#include <utility>
+
 CModuleVersion::CModuleVersion()
 {
-	versionInfoData = nullptr;				// raw version info data
+	// Reset VS_FIXEDFILEINFO to zeroes.
+	*static_cast<VS_FIXEDFILEINFO*>(this) = {};
 }
 
 //////////////////
-// Destroy: delete version info
+// Destroy: release owned version info.
 //
-CModuleVersion::~CModuleVersion()
-{
-	delete [] versionInfoData;
-}
+CModuleVersion::~CModuleVersion() = default;
 
 //////////////////
-// Get file version info for a given module
-// Allocates storage for all info, fills "this" with
-// VS_FIXEDFILEINFO, and sets codepage.
+// Get file version info for a given module.
+// Clear the previous result first, then store valid fixed and string data.
 //
 BOOL CModuleVersion::GetFileVersionInfo(const wchar_t* moduleName)
 {
-	translation.charset = 1252;		// default = ANSI code page
-	memset((VS_FIXEDFILEINFO*)this, 0, sizeof(VS_FIXEDFILEINFO));
+	versionInfoData.clear();
+	translation = {};
+	*static_cast<VS_FIXEDFILEINFO*>(this) = {};
 
 	// get module handle
 	wchar_t moduleFileName[_MAX_PATH];
 	HMODULE moduleHandle = ::GetModuleHandle(moduleName);
+
 	if (moduleHandle==nullptr && moduleName!=nullptr)
 		return FALSE;
 
 	// get module file name
 	DWORD length = GetModuleFileName(moduleHandle, moduleFileName,
 		sizeof(moduleFileName)/sizeof(moduleFileName[0]));
+
 	if (length <= 0)
 		return FALSE;
 
 	// read file version info
 	DWORD ignoredHandle; // will always be set to zero
 	length = GetFileVersionInfoSize(moduleFileName, &ignoredHandle);
+
 	if (length <= 0)
 		return FALSE;
 
-	versionInfoData = new BYTE[length]; // allocate version info
-	if (!::GetFileVersionInfo(moduleFileName, 0, length, versionInfoData))
+	std::vector<BYTE> loadedVersionInfo(length);
+
+	if (!::GetFileVersionInfo(moduleFileName, 0, length,
+		loadedVersionInfo.data()))
 		return FALSE;
 
-	LPVOID versionValue;
-	UINT valueLength;
-	if (!VerQueryValue(versionInfoData, L"\\", &versionValue, &valueLength))
+	LPVOID versionValue = nullptr;
+	UINT valueLength = 0;
+
+	if (!VerQueryValue(loadedVersionInfo.data(), L"\\", &versionValue,
+		&valueLength))
 		return FALSE;
 
-	// copy fixed info to myself, which am derived from VS_FIXEDFILEINFO
-	*(VS_FIXEDFILEINFO*)this = *(VS_FIXEDFILEINFO*)versionValue;
+	if (versionValue == nullptr)
+		return FALSE;
+
+	if (valueLength < sizeof(VS_FIXEDFILEINFO))
+		return FALSE;
+
+	const VS_FIXEDFILEINFO loadedFixedInfo =
+		*static_cast<VS_FIXEDFILEINFO*>(versionValue);
+
+	if (loadedFixedInfo.dwSignature != VS_FFI_SIGNATURE)
+		return FALSE;
 
 	// Get translation info
-	if (VerQueryValue(versionInfoData,
-		L"\\VarFileInfo\\Translation", &versionValue, &valueLength) && valueLength >= 4) {
-		translation = *(TRANSLATION*)versionValue;
+	TRANSLATION loadedTranslation{};
+	versionValue = nullptr;
+	valueLength = 0;
+	const BOOL translationFound = VerQueryValue(loadedVersionInfo.data(),
+		L"\\VarFileInfo\\Translation", &versionValue, &valueLength);
+
+	if (translationFound && versionValue != nullptr)
+	{
+		if (valueLength >= sizeof(TRANSLATION))
+		{
+			loadedTranslation = *static_cast<TRANSLATION*>(versionValue);
+		}
 	}
 
-	return dwSignature == VS_FFI_SIGNATURE;
+	*static_cast<VS_FIXEDFILEINFO*>(this) = loadedFixedInfo;
+	translation = loadedTranslation;
+	versionInfoData = std::move(loadedVersionInfo);
+
+	return TRUE;
 }
 
 //////////////////
 // Get string file info.
 // Key name is something like "CompanyName".
-// returns the value as a CString.
+// Returns the value as a std::wstring.
 //
 std::wstring CModuleVersion::GetValue(const wchar_t* keyName)
 {
 	std::wstring result;
 
-	if (versionInfoData)
+	if (!versionInfoData.empty())
 	{
 		// To get a string value must pass query in the form
 		//
@@ -100,7 +129,7 @@ std::wstring CModuleVersion::GetValue(const wchar_t* keyName)
 		UINT valueLength;
 
 		bool returnCode = VerQueryValue(
-			versionInfoData,
+			versionInfoData.data(),
 			query.c_str(),
 			(LPVOID*)&value,
 			&valueLength);
@@ -121,24 +150,30 @@ typedef HRESULT (CALLBACK* DLLGETVERSIONPROC)(DLLVERSIONINFO *);
 /////////////////
 // Get DLL Version by calling DLL's DllGetVersion proc
 //
-BOOL CModuleVersion::DllGetVersion(const wchar_t* moduleName, DLLVERSIONINFO& versionInfo)
+BOOL CModuleVersion::DllGetVersion(
+	const wchar_t* moduleName, DLLVERSIONINFO& versionInfo)
 {
+	BOOL result = FALSE;
+
 	HINSTANCE moduleHandle = LoadLibrary(moduleName);
-	if (!moduleHandle)
-		return FALSE;
 
-	// Must use GetProcAddress because the DLL might not implement 
-	// DllGetVersion. Depending upon the DLL, the lack of implementation of the 
-	// function may be a version marker in itself.
-	//
-	DLLGETVERSIONPROC getDllVersion =
-		(DLLGETVERSIONPROC)GetProcAddress(moduleHandle, "DllGetVersion");
+	if (moduleHandle != nullptr)
+	{
+		// Must use GetProcAddress because the DLL might not implement 
+		// DllGetVersion. Depending upon the DLL, the lack of implementation of
+		// the function may be a version marker in itself.
+		DLLGETVERSIONPROC getDllVersion =
+			(DLLGETVERSIONPROC)GetProcAddress(moduleHandle, "DllGetVersion");
 
-	if (!getDllVersion)
-		return FALSE;
+		if (getDllVersion != nullptr)
+		{
+			memset(&versionInfo, 0, sizeof(versionInfo));
+			versionInfo.cbSize = sizeof(versionInfo);
 
-	memset(&versionInfo, 0, sizeof(versionInfo));			 // clear
-	versionInfo.cbSize = sizeof(versionInfo);				 // set size for Windows
+			HRESULT longResult = (*getDllVersion)(&versionInfo);
+			result = SUCCEEDED(longResult);
+		}
+	}
 
-	return SUCCEEDED((*getDllVersion)(&versionInfo));
+	return result;
 }

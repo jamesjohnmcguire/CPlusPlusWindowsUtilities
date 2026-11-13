@@ -31,6 +31,30 @@ TEST(ModuleVersionTests, ReportsMissingModule)
 	EXPECT_TRUE(version.GetValue(L"CompanyName").empty());
 }
 
+TEST(ModuleVersionTests, ReplacesPriorSuccessfulLookup)
+{
+	CModuleVersion version;
+
+	ASSERT_TRUE(version.GetFileVersionInfo(nullptr));
+	ASSERT_TRUE(version.GetFileVersionInfo(nullptr));
+	EXPECT_EQ(version.GetValue(L"CompanyName"),
+		L"DigitalZenWorks Test Fixture");
+}
+
+TEST(ModuleVersionTests, ClearsPreviousValueAfterFailedLookup)
+{
+	CModuleVersion version;
+
+	ASSERT_TRUE(version.GetFileVersionInfo(nullptr));
+	EXPECT_FALSE(version.GetFileVersionInfo(
+		L"Missing.ModuleVersion.Fixture.dll"));
+	EXPECT_EQ(version.dwSignature, 0u);
+	EXPECT_TRUE(version.GetValue(L"CompanyName").empty());
+	ASSERT_TRUE(version.GetFileVersionInfo(nullptr));
+	EXPECT_EQ(version.GetValue(L"CompanyName"),
+		L"DigitalZenWorks Test Fixture");
+}
+
 TEST(TextEncodingTests, ConvertsUnicodeToUtf8AndBack)
 {
 	const std::wstring unicode = L"Copyright \u00A9 \u65E5";
