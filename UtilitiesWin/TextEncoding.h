@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include <optional>
+#include <string>
+
 #include "UtilitiesWin.h"
 
 class TextEncoding
@@ -14,7 +17,8 @@ class TextEncoding
 		/// @param input Unicode input string
 		/// @param encoding Encoding name for conversion (default: "UTF-8")
 		/// return Multi-byte string, or std::nullopt on error
-		static std::optional<std::string> GetMultiByteTextFromUnicode(
+		static UTILITIESWIN_API std::optional<std::string>
+			GetMultiByteTextFromUnicode(
 			const std::wstring& input,
 			const std::string& encoding = "UTF-8");
 
@@ -22,7 +26,8 @@ class TextEncoding
 		/// @param input Multi-byte input string
 		/// @param encoding Encoding name for conversion (default: "UTF-8")
 		/// @return Unicode string, or std::nullopt on error
-		static std::optional<std::wstring> GetUnicodeTextFromMultiByte(
+		static UTILITIESWIN_API std::optional<std::wstring>
+			GetUnicodeTextFromMultiByte(
 			const std::string& input,
 			const std::string& encoding = "UTF-8");
 

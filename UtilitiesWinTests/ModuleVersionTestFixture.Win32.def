@@ -1,4 +1,0 @@
-LIBRARY "ModuleVersionTestFixture"
-
-EXPORTS
-	DllGetVersion = _DllGetVersion@4

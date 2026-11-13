@@ -9,11 +9,11 @@ DllExport void GetDateFromYYMMDDHHMMSS(
 	char* formattedDate,
 	size_t len);
 
-extern "C" DllExport bool GetDateFromTimeLocal(
+extern "C" UTILITIESWIN_API bool GetDateFromTimeLocal(
 	std::time_t value,
 	char* buffer,
 	size_t len);
-extern "C" DllExport bool GetDateFromTimeUtc(
+extern "C" UTILITIESWIN_API bool GetDateFromTimeUtc(
 	std::time_t value,
 	char* buffer,
 	size_t len);

@@ -41,11 +41,11 @@
 			<LanguageStandard>stdcpp23</LanguageStandard>
 			<LanguageStandard_C>stdc17</LanguageStandard_C>
 			<PrecompiledHeader>NotUsing</PrecompiledHeader>
+			<PreprocessorDefinitions>MODULEVERSIONTESTFIXTURE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
 			<WarningLevel>Level3</WarningLevel>
 		</ClCompile>
 		<Link>
-			<ModuleDefinitionFile Condition="'$(Platform)'=='x64'">ModuleVersionTestFixture.def</ModuleDefinitionFile>
-			<ModuleDefinitionFile Condition="'$(Platform)'=='Win32'">ModuleVersionTestFixture.Win32.def</ModuleDefinitionFile>
+			<ModuleDefinitionFile>ModuleVersionTestFixture.def</ModuleDefinitionFile>
 		</Link>
 	</ItemDefinitionGroup>
 	<ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -59,9 +59,9 @@
 		</ClCompile>
 	</ItemDefinitionGroup>
 	<ItemGroup>
+		<ClInclude Include="ModuleVersionTestFixture.h" />
 		<ClCompile Include="ModuleVersionTestFixture.cpp" />
 		<None Include="ModuleVersionTestFixture.def" />
-		<None Include="ModuleVersionTestFixture.Win32.def" />
 	</ItemGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

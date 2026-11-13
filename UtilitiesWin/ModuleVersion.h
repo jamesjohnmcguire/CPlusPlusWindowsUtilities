@@ -12,7 +12,7 @@
 
 #include <string>
 #include <vector>
-#include <windows.h>
+#include "UtilitiesWin.h"
 
 // tell linker to link with version.lib for VerQueryValue, etc.
 #pragma comment(linker, "/defaultlib:version.lib")
@@ -61,10 +61,11 @@ protected:
 	} translation{};
 
 public:
-	CModuleVersion();
-	virtual ~CModuleVersion();
+	UTILITIESWIN_API CModuleVersion();
+	virtual UTILITIESWIN_API ~CModuleVersion();
 
-	BOOL		GetFileVersionInfo(const wchar_t* moduleName);
-	std::wstring GetValue(const wchar_t* keyName);
-	static BOOL DllGetVersion(const wchar_t* moduleName, DLLVERSIONINFO& versionInfo);
+	UTILITIESWIN_API BOOL GetFileVersionInfo(const wchar_t* moduleName);
+	UTILITIESWIN_API std::wstring GetValue(const wchar_t* keyName);
+	static UTILITIESWIN_API BOOL DllGetVersion(
+		const wchar_t* moduleName, DLLVERSIONINFO& versionInfo);
 };

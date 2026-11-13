@@ -1,4 +1,4 @@
-#include "../UtilitiesWin/ModuleVersion.h"
+#include "ModuleVersionTestFixture.h"
 
 extern "C" HRESULT CALLBACK DllGetVersion(DLLVERSIONINFO* versionInfo)
 {

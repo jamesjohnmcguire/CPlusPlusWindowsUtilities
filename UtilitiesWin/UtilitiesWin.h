@@ -12,6 +12,12 @@
 
 #define DllExport __declspec(dllexport)
 
+#ifdef UTILITIESWIN_EXPORTS
+	#define UTILITIESWIN_API __declspec(dllexport)
+#else
+	#define UTILITIESWIN_API __declspec(dllimport)
+#endif
+
 constexpr int GENERAL_ERROR = -1;
 constexpr int CONNECTION_ERROR = -2;
 
