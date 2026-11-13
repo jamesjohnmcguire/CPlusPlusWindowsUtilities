@@ -72,6 +72,10 @@
 		<ResourceCompile Include="VersionFixture.rc" />
 	</ItemGroup>
 	<ItemGroup>
+		<ProjectReference Include="ModuleVersionTestFixture.vcxproj">
+			<Project>{AF4F57D1-2977-4C9B-8A37-2F52902AE764}</Project>
+			<LinkLibraryDependencies>false</LinkLibraryDependencies>
+		</ProjectReference>
 		<ProjectReference Include="..\UtilitiesWin\UtilitiesWin.vcxproj">
 			<Project>{F2CC2CFA-F806-4022-9A85-1C5C86E733BB}</Project>
 		</ProjectReference>

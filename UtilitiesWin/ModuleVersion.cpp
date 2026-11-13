@@ -148,7 +148,8 @@ std::wstring CModuleVersion::GetValue(const wchar_t* keyName)
 typedef HRESULT (CALLBACK* DLLGETVERSIONPROC)(DLLVERSIONINFO *);
 
 /////////////////
-// Get DLL Version by calling DLL's DllGetVersion proc
+// Get DLL Version by calling the DLL's DllGetVersion proc.
+// Release the loaded library whether the export exists or not.
 //
 BOOL CModuleVersion::DllGetVersion(
 	const wchar_t* moduleName, DLLVERSIONINFO& versionInfo)
@@ -173,6 +174,8 @@ BOOL CModuleVersion::DllGetVersion(
 			HRESULT longResult = (*getDllVersion)(&versionInfo);
 			result = SUCCEEDED(longResult);
 		}
+
+		FreeLibrary(moduleHandle);
 	}
 
 	return result;

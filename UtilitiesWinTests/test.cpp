@@ -55,6 +55,47 @@ TEST(ModuleVersionTests, ClearsPreviousValueAfterFailedLookup)
 		L"DigitalZenWorks Test Fixture");
 }
 
+TEST(ModuleVersionTests, CallsDllGetVersionAndReleasesLibrary)
+{
+	wchar_t executablePath[MAX_PATH]{};
+	const DWORD pathLength = GetModuleFileNameW(nullptr, executablePath,
+		MAX_PATH);
+	ASSERT_GT(pathLength, 0u);
+	ASSERT_LT(pathLength, static_cast<DWORD>(MAX_PATH));
+
+	const std::filesystem::path fixturePath =
+		std::filesystem::path(executablePath).parent_path() /
+		L"ModuleVersionTestFixture.dll";
+	ASSERT_TRUE(std::filesystem::exists(fixturePath));
+	ASSERT_EQ(GetModuleHandleW(L"ModuleVersionTestFixture.dll"), nullptr);
+
+	DLLVERSIONINFO versionInfo{};
+	ASSERT_TRUE(CModuleVersion::DllGetVersion(fixturePath.c_str(),
+		versionInfo));
+	EXPECT_EQ(versionInfo.cbSize, sizeof(DLLVERSIONINFO));
+	EXPECT_EQ(versionInfo.dwMajorVersion, 3u);
+	EXPECT_EQ(versionInfo.dwMinorVersion, 7u);
+	EXPECT_EQ(versionInfo.dwBuildNumber, 11u);
+	EXPECT_EQ(versionInfo.dwPlatformID, DLLVER_PLATFORM_NT);
+	EXPECT_EQ(GetModuleHandleW(L"ModuleVersionTestFixture.dll"), nullptr);
+}
+
+TEST(ModuleVersionTests, ReportsMissingDllVersionExport)
+{
+	DLLVERSIONINFO versionInfo{};
+
+	EXPECT_FALSE(CModuleVersion::DllGetVersion(L"UtilitiesWin.dll",
+		versionInfo));
+}
+
+TEST(ModuleVersionTests, ReportsMissingDll)
+{
+	DLLVERSIONINFO versionInfo{};
+
+	EXPECT_FALSE(CModuleVersion::DllGetVersion(
+		L"Missing.ModuleVersion.Fixture.dll", versionInfo));
+}
+
 TEST(TextEncodingTests, ConvertsUnicodeToUtf8AndBack)
 {
 	const std::wstring unicode = L"Copyright \u00A9 \u65E5";
